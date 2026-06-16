@@ -1,0 +1,103 @@
+# ============================================================
+# n9n docker-compose.yml
+#
+# 서비스 구성:
+#   postgres  — chatbot 인증 DB
+#   n8n       — 워크플로우 자동화
+#   backend   — FastAPI RAG 추론 서버 (포트 8000)
+#   chatbot   — Next.js 프론트엔드 (포트 3000)
+#
+# 사용법:
+#   cp .env.example .env  →  값 입력  →  make up
+# ============================================================
+
+services:
+  # ── PostgreSQL ─────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: n9n-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-n9n}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-chatbot}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-n9n} -d ${POSTGRES_DB:-chatbot}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── n8n ────────────────────────────────────────────────────
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      TZ: Asia/Seoul
+      GENERIC_TIMEZONE: Asia/Seoul
+      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_PORT: ${N8N_PORT:-5678}
+      N8N_PROTOCOL: ${N8N_PROTOCOL:-http}
+      N8N_EDITOR_BASE_URL: http://${N8N_HOST:-localhost}:5678/
+      WEBHOOK_URL: http://${N8N_HOST:-localhost}:5678/
+      N8N_SECURE_COOKIE: "false"
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+  # ── FastAPI 백엔드 ─────────────────────────────────────────
+  backend:
+    build:
+      context: .                  # 프로젝트 루트 (query_engine.py 포함)
+      dockerfile: server/Dockerfile
+    container_name: n9n-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      LLM_MODEL: ${LLM_MODEL:-gemma4-e4b:latest}
+      EMBED_MODEL: ${EMBED_MODEL:-bge-m3:latest}
+      RERANKER_MODEL: ${RERANKER_MODEL:-bge-reranker-v2-m3}
+    volumes:
+      # RAG 데이터 읽기전용 마운트 (대용량 파일 이미지 미포함)
+      - ./RAG_dataset:/app/RAG_dataset:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # Ollama 별도 서버 접근용
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s           # RAG 인덱스 로드 시간 확보
+
+  # ── Next.js 프론트엔드 ─────────────────────────────────────
+  chatbot:
+    build:
+      context: chatbot
+      dockerfile: Dockerfile
+    container_name: n9n-chatbot
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      POSTGRES_URL: ${POSTGRES_URL:-postgresql://n9n:changeme@postgres:5432/chatbot}
+      AUTH_SECRET: ${AUTH_SECRET}
+      N9N_API: ${N9N_API:-http://backend:8000}
+      BLOB_READ_WRITE_TOKEN: ${BLOB_READ_WRITE_TOKEN:-}
+      REDIS_URL: ${REDIS_URL:-}
+      AI_GATEWAY_API_KEY: ${AI_GATEWAY_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+
+volumes:
+  n8n_data:
+  postgres_data:

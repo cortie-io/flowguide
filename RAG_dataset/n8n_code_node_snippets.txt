@@ -1,0 +1,441 @@
+n8n Code Node Snippets (JavaScript + Python)
+=============================================
+
+목적
+- n8n Code 노드에서 자주 쓰는 데이터 가공/검증/변환 패턴을 빠르게 재사용하기 위한 실전 족보.
+- 모든 예시는 n8n 표준 item 포맷([{ json: ... }])을 기준으로 작성.
+
+기본 규칙
+- JavaScript Code 노드는 최종적으로 item 배열을 반환해야 함.
+- Python Code 노드도 최종적으로 item 배열과 동등한 구조를 반환해야 함.
+- 입력 컨텍스트를 먼저 확인하고, 없을 수 있는 필드는 방어적으로 처리.
+
+# 케이스 01: data 배열을 n8n item 배열로 변환 (JavaScript)
+- 상황: API 응답이 { data: [...] } 형태.
+- 코드:
+  const arr = $input.item.json.data ?? [];
+  return arr.map(element => ({ json: element }));
+
+# 케이스 02: data 배열을 n8n item 배열로 변환 (Python)
+- 상황: API 응답이 { data: [...] } 형태.
+- 코드:
+  arr = _input.item.json.get("data", [])
+  return [{"json": element} for element in arr]
+
+# 케이스 03: null/undefined 필드 기본값 채우기 (JavaScript)
+- 상황: 누락 필드 때문에 이후 노드가 실패.
+- 코드:
+  return $input.all().map(item => ({
+    json: {
+      id: item.json.id ?? "unknown",
+      email: item.json.email ?? "",
+      active: item.json.active ?? false,
+    },
+  }));
+
+# 케이스 04: 문자열 숫자를 number로 변환 (JavaScript)
+- 상황: "price": "1200" 같은 문자열 숫자.
+- 코드:
+  return $input.all().map(item => ({
+    json: {
+      ...item.json,
+      price: Number(item.json.price ?? 0),
+      qty: Number(item.json.qty ?? 0),
+    },
+  }));
+
+# 케이스 05: 중첩 객체 안전 접근 (JavaScript)
+- 상황: customer.profile.name 경로가 없는 데이터가 섞여 있음.
+- 코드:
+  return $input.all().map(item => ({
+    json: {
+      ...item.json,
+      customerName: item.json.customer?.profile?.name ?? "(no name)",
+    },
+  }));
+
+# 케이스 06: 특정 키만 화이트리스트 추출 (JavaScript)
+- 상황: 불필요한 필드를 제거하고 최소 데이터만 전달.
+- 코드:
+  const keys = ["id", "name", "email", "createdAt"];
+  return $input.all().map(item => {
+    const out = {};
+    for (const k of keys) out[k] = item.json[k];
+    return { json: out };
+  });
+
+# 케이스 07: 배열 flatten (JavaScript)
+- 상황: tags: [["a"], ["b", "c"]] 형태를 평탄화.
+- 코드:
+  return $input.all().map(item => ({
+    json: {
+      ...item.json,
+      tags: (item.json.tags ?? []).flat(),
+    },
+  }));
+
+# 케이스 08: 중복 제거 by id (JavaScript)
+- 상황: API 중복 응답으로 같은 id가 여러 번 들어옴.
+- 코드:
+  const seen = new Set();
+  const out = [];
+  for (const item of $input.all()) {
+    const id = item.json.id;
+    if (id == null || seen.has(id)) continue;
+    seen.add(id);
+    out.push({ json: item.json });
+  }
+  return out;
+
+# 케이스 09: 날짜 문자열을 ISO로 정규화 (JavaScript)
+- 상황: 다양한 포맷 날짜를 표준 ISO로 맞춤.
+- 코드:
+  return $input.all().map(item => {
+    const d = new Date(item.json.created_at ?? item.json.createdAt ?? Date.now());
+    return { json: { ...item.json, createdAtIso: d.toISOString() } };
+  });
+
+# 케이스 10: 금액 합계 집계 1개 item 반환 (JavaScript)
+- 상황: 여러 item 총합을 구해 다음 노드로 단일 전달.
+- 코드:
+  const total = $input.all().reduce((sum, item) => sum + Number(item.json.amount ?? 0), 0);
+  return [{ json: { totalAmount: total, count: $input.all().length } }];
+
+# 케이스 11: 그룹핑 by status (JavaScript)
+- 상황: status별 묶음이 필요.
+- 코드:
+  const groups = {};
+  for (const item of $input.all()) {
+    const key = item.json.status ?? "unknown";
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item.json);
+  }
+  return [{ json: { groups } }];
+
+# 케이스 12: 조건 필터링 (JavaScript)
+- 상황: active=true 이고 score>=70만 통과.
+- 코드:
+  return $input
+    .all()
+    .filter(item => Boolean(item.json.active) && Number(item.json.score ?? 0) >= 70)
+    .map(item => ({ json: item.json }));
+
+# 케이스 13: 정렬 후 상위 N개 추출 (JavaScript)
+- 상황: 최신 10개만 필요.
+- 코드:
+  const sorted = [...$input.all()].sort((a, b) => {
+    const ta = new Date(a.json.createdAt ?? 0).getTime();
+    const tb = new Date(b.json.createdAt ?? 0).getTime();
+    return tb - ta;
+  });
+  return sorted.slice(0, 10).map(item => ({ json: item.json }));
+
+# 케이스 14: 문자열 정리(trim/lowercase) (JavaScript)
+- 상황: 이메일/태그 비교 전 정규화.
+- 코드:
+  return $input.all().map(item => ({
+    json: {
+      ...item.json,
+      email: String(item.json.email ?? "").trim().toLowerCase(),
+      tag: String(item.json.tag ?? "").trim().toLowerCase(),
+    },
+  }));
+
+# 케이스 15: 키 이름 변경(snake -> camel) (JavaScript)
+- 상황: 외부 API 필드를 내부 표준으로 매핑.
+- 코드:
+  return $input.all().map(item => ({
+    json: {
+      userId: item.json.user_id,
+      userName: item.json.user_name,
+      createdAt: item.json.created_at,
+    },
+  }));
+
+# 케이스 16: 에러 필드가 있으면 실패 처리 (JavaScript)
+- 상황: upstream 에러를 조기에 감지.
+- 코드:
+  for (const item of $input.all()) {
+    if (item.json.error) {
+      throw new Error(`Upstream error: ${item.json.error}`);
+    }
+  }
+  return $input.all().map(item => ({ json: item.json }));
+
+# 케이스 17: CSV 라인 생성 (JavaScript)
+- 상황: 간단한 CSV 텍스트를 만들고 싶을 때.
+- 코드:
+  const rows = $input.all().map(i => [i.json.id, i.json.name, i.json.email]);
+  const header = ["id", "name", "email"];
+  const csv = [header, ...rows]
+    .map(cols => cols.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(","))
+    .join("\n");
+  return [{ json: { csv } }];
+
+# 케이스 18: JSON 문자열 파싱 (JavaScript)
+- 상황: payload가 문자열 JSON으로 들어옴.
+- 코드:
+  return $input.all().map(item => {
+    let parsed = {};
+    try {
+      parsed = JSON.parse(item.json.payload ?? "{}");
+    } catch {
+      parsed = { _parseError: true };
+    }
+    return { json: { ...item.json, parsed } };
+  });
+
+# 케이스 19: 딥 머지(얕은 + 중첩 일부) (JavaScript)
+- 상황: defaults + incoming 설정 병합.
+- 코드:
+  const defaults = { retries: 3, timeout: 5000, headers: { "x-source": "n8n" } };
+  return $input.all().map(item => ({
+    json: {
+      ...defaults,
+      ...item.json,
+      headers: { ...defaults.headers, ...(item.json.headers ?? {}) },
+    },
+  }));
+
+# 케이스 20: 페이지네이션 토큰 추출 (JavaScript)
+- 상황: 다음 요청을 위한 nextPageToken이 필요.
+- 코드:
+  const first = $input.item.json;
+  return [{
+    json: {
+      nextPageToken: first.nextPageToken ?? null,
+      hasNext: Boolean(first.nextPageToken),
+    },
+  }];
+
+# 케이스 21: 여러 입력 병합(all input) (JavaScript)
+- 상황: Merge 이후 전체를 하나로 요약.
+- 코드:
+  const all = $input.all().map(i => i.json);
+  return [{ json: { merged: all, count: all.length } }];
+
+# 케이스 22: item을 여러 개로 explode (JavaScript)
+- 상황: 한 item 안 lines 배열을 item 단위로 분리.
+- 코드:
+  const lines = $input.item.json.lines ?? [];
+  return lines.map((line, idx) => ({
+    json: { index: idx, line },
+  }));
+
+# 케이스 23: Python에서 숫자 변환 + 필터
+- 상황: score 문자열을 숫자로 바꾸고 기준값 이상만 통과.
+- 코드:
+  out = []
+  for item in _input.all():
+      score = float(item.json.get("score", 0) or 0)
+      if score >= 70:
+          data = dict(item.json)
+          data["score"] = score
+          out.append({"json": data})
+  return out
+
+# 케이스 24: Python에서 중복 제거 by email
+- 상황: 이메일 기준 중복 제거.
+- 코드:
+  seen = set()
+  out = []
+  for item in _input.all():
+      email = str(item.json.get("email", "")).strip().lower()
+      if not email or email in seen:
+          continue
+      seen.add(email)
+      out.append({"json": item.json})
+  return out
+
+# 케이스 25: Python에서 그룹별 카운트 집계
+- 상황: status별 개수 요약.
+- 코드:
+  counts = {}
+  for item in _input.all():
+      key = item.json.get("status", "unknown")
+      counts[key] = counts.get(key, 0) + 1
+  return [{"json": {"counts": counts}}]
+
+# 케이스 26: Python에서 날짜 정규화(ISO)
+- 상황: created_at 문자열 표준화.
+- 코드:
+  from datetime import datetime
+
+  out = []
+  for item in _input.all():
+      raw = item.json.get("created_at")
+      try:
+          iso = datetime.fromisoformat(str(raw).replace("Z", "+00:00")).isoformat()
+      except Exception:
+          iso = None
+      data = dict(item.json)
+      data["createdAtIso"] = iso
+      out.append({"json": data})
+  return out
+
+# 케이스 27: Python에서 화이트리스트 필드 추출
+- 상황: 민감정보 제거 후 최소 필드만 전달.
+- 코드:
+  keys = ["id", "name", "email"]
+  out = []
+  for item in _input.all():
+      data = {k: item.json.get(k) for k in keys}
+      out.append({"json": data})
+  return out
+
+# 케이스 28: Python에서 중첩 경로 안전 접근
+- 상황: profile.address.city가 없을 수 있음.
+- 코드:
+  def get_city(obj):
+      profile = obj.get("profile") or {}
+      address = profile.get("address") or {}
+      return address.get("city", "unknown")
+
+  out = []
+  for item in _input.all():
+      data = dict(item.json)
+      data["city"] = get_city(item.json)
+      out.append({"json": data})
+  return out
+
+# 케이스 29: Python에서 문자열 JSON 파싱
+- 상황: payload가 문자열 JSON.
+- 코드:
+  import json
+
+  out = []
+  for item in _input.all():
+      payload = item.json.get("payload", "{}")
+      try:
+          parsed = json.loads(payload)
+      except Exception:
+          parsed = {"_parseError": True}
+      data = dict(item.json)
+      data["parsed"] = parsed
+      out.append({"json": data})
+  return out
+
+# 케이스 30: Python에서 상위 N개 정렬 추출
+- 상황: amount 큰 순서 상위 5개.
+- 코드:
+  rows = [i.json for i in _input.all()]
+  rows.sort(key=lambda r: float(r.get("amount", 0) or 0), reverse=True)
+  return [{"json": r} for r in rows[:5]]
+
+# 케이스 31: 이전 노드 데이터 참조 (JavaScript)
+- 상황: 현재 item에 이전 노드 값 병합.
+- 코드:
+  const profile = $("Get User Profile").item.json;
+  return $input.all().map(item => ({
+    json: {
+      ...item.json,
+      userProfile: profile,
+    },
+  }));
+
+# 케이스 32: 이전 노드 데이터 참조 (Python)
+- 상황: 이전 노드의 단일 결과를 현재 아이템에 추가.
+- 코드:
+  profile = _("Get User Profile").item.json
+  out = []
+  for item in _input.all():
+      data = dict(item.json)
+      data["userProfile"] = profile
+      out.append({"json": data})
+  return out
+
+# 케이스 33: IF 대체용 플래그 생성 (JavaScript)
+- 상황: 복잡한 조건을 하나의 플래그로 계산.
+- 코드:
+  return $input.all().map(item => {
+    const score = Number(item.json.score ?? 0);
+    const hasEmail = Boolean(item.json.email);
+    const eligible = score >= 80 && hasEmail;
+    return { json: { ...item.json, eligible } };
+  });
+
+# 케이스 34: 문자열 배열 조인/분해 (JavaScript)
+- 상황: tags 문자열 "a,b,c" <-> 배열 변환.
+- 코드:
+  return $input.all().map(item => {
+    const tags = String(item.json.tags ?? "")
+      .split(",")
+      .map(t => t.trim())
+      .filter(Boolean);
+    return { json: { ...item.json, tags } };
+  });
+
+# 케이스 35: 에러 내역 보존 후 계속 처리 (JavaScript)
+- 상황: 일부 item만 파싱 실패해도 전체는 진행.
+- 코드:
+  return $input.all().map(item => {
+    try {
+      const normalized = String(item.json.phone ?? "").replace(/[^0-9+]/g, "");
+      return { json: { ...item.json, phoneNormalized: normalized, _error: null } };
+    } catch (e) {
+      return { json: { ...item.json, _error: String(e.message ?? e) } };
+    }
+  });
+
+# 케이스 36: 다중 키 기준 정렬 (Python)
+- 상황: priority 내림차순, createdAt 오름차순.
+- 코드:
+  from datetime import datetime
+
+  def dt(v):
+      try:
+          return datetime.fromisoformat(str(v).replace("Z", "+00:00"))
+      except Exception:
+          return datetime.min
+
+  rows = [i.json for i in _input.all()]
+  rows.sort(key=lambda r: (-int(r.get("priority", 0) or 0), dt(r.get("createdAt"))))
+  return [{"json": r} for r in rows]
+
+# 케이스 37: n8n item 표준 강제 래핑 (JavaScript)
+- 상황: 코드가 순수 객체를 반환해 downstream에서 오류.
+- 코드:
+  const result = { ok: true, ts: new Date().toISOString() };
+  return [{ json: result }];
+
+# 케이스 38: 배열 필드가 없을 때 안전 루프 (Python)
+- 상황: children 필드가 null인 레코드 존재.
+- 코드:
+  out = []
+  for item in _input.all():
+      children = item.json.get("children") or []
+      if not isinstance(children, list):
+          children = []
+      out.append({"json": {**item.json, "childrenCount": len(children)}})
+  return out
+
+# 케이스 39: API 업서트 페이로드 생성 (JavaScript)
+- 상황: 없으면 생성, 있으면 업데이트할 공통 페이로드 필요.
+- 코드:
+  return $input.all().map(item => ({
+    json: {
+      externalId: item.json.id,
+      name: item.json.name,
+      email: item.json.email,
+      updatedAt: new Date().toISOString(),
+    },
+  }));
+
+# 케이스 40: 디버그용 실행 메타 추가 (JavaScript)
+- 상황: 문제 재현용 추적 정보가 필요.
+- 코드:
+  return $input.all().map((item, idx) => ({
+    json: {
+      ...item.json,
+      _debug: {
+        index: idx,
+        runAt: new Date().toISOString(),
+        sourceNode: "Code",
+      },
+    },
+  }));
+
+운영 팁
+- 대량 데이터는 Code 노드 단일 처리보다 Split In Batches + Code 조합이 메모리 안전성이 높음.
+- 외부 API 호출용 payload 생성 시 idempotency key를 함께 넣으면 재시도 중복 이슈를 줄일 수 있음.
+- 에러 핸들링은 throw로 즉시 실패시키는 흐름과 _error 필드로 누적하는 흐름을 목적에 맞게 분리.

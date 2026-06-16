@@ -1,0 +1,371 @@
+n8n Troubleshooting FAQ (Top 50)
+================================
+
+Notes
+- This cheat sheet focuses on high-frequency operational failures in self-hosted and cloud-like environments.
+- Each case includes probable cause and practical mitigation in n8n workflows or runtime config.
+
+# Error Case 01: Container exits repeatedly (CrashLoopBackOff)
+- Symptoms: container starts, then exits in seconds; orchestrator restarts endlessly.
+- Cause: invalid env vars, migration failure, DB connection failure, or OOM.
+- Fix:
+  - Check container logs first and fix the first fatal line.
+  - Validate DB_* and N8N_* env vars.
+  - Increase memory and set NODE_OPTIONS=--max-old-space-size=4096.
+  - Ensure DB is reachable before n8n startup.
+
+# Error Case 02: JavaScript heap out of memory
+- Symptoms: process crashes during large item processing.
+- Cause: too many items handled in one execution path.
+- Fix:
+  - Add Split In Batches node and process chunks.
+  - Move large binary/data payloads to external storage where possible.
+  - Increase memory with NODE_OPTIONS and container memory limit.
+
+# Error Case 03: ECONNREFUSED to database
+- Symptoms: startup fails with connection refused.
+- Cause: wrong host/port, DB not listening, network ACL, Docker network mismatch.
+- Fix:
+  - Verify DB host/port from n8n container namespace.
+  - Check firewall/security group.
+  - Confirm DB service health and credentials.
+
+# Error Case 04: Password authentication failed for DB user
+- Symptoms: DB auth error on startup.
+- Cause: wrong username/password or rotated secret.
+- Fix:
+  - Recheck DB_USER, DB_PASSWORD, DB_NAME.
+  - Rotate and sync secrets in env manager.
+  - Test login directly with psql/mysql client.
+
+# Error Case 05: Migration lock or migration failure
+- Symptoms: startup stuck during migrations or exits with migration error.
+- Cause: multiple instances running migrations simultaneously, schema mismatch.
+- Fix:
+  - Run one main instance for migrations.
+  - Back up DB, then rerun migration.
+  - Ensure matching n8n version across all nodes.
+
+# Error Case 06: SQLITE busy / locking errors
+- Symptoms: random execution failures on sqlite.
+- Cause: concurrent writes, queue mode with sqlite.
+- Fix:
+  - Move to Postgres for production.
+  - Avoid queue mode on sqlite.
+
+# Error Case 07: Webhook returns 404
+- Symptoms: external app cannot reach webhook.
+- Cause: inactive workflow, wrong webhook URL, reverse proxy path mismatch.
+- Fix:
+  - Activate workflow.
+  - Confirm base URL, path prefix, and webhook ID.
+  - Verify reverse proxy forwards correct path.
+
+# Error Case 08: Webhook returns 401/403
+- Symptoms: unauthorized response.
+- Cause: auth config mismatch or missing header.
+- Fix:
+  - Verify webhook auth mode in node.
+  - Ensure sender includes required auth headers.
+  - Check proxy strips Authorization header or not.
+
+# Error Case 09: Webhook timeout from source system
+- Symptoms: sender times out before n8n responds.
+- Cause: long downstream processing in same request cycle.
+- Fix:
+  - Respond immediately with Respond to Webhook.
+  - Offload heavy work to async workflow via Execute Workflow/queue.
+
+# Error Case 10: n8n UI loads but executions never start
+- Symptoms: trigger received but no run appears.
+- Cause: queue workers not running, Redis misconfig, disabled trigger.
+- Fix:
+  - Start worker process(es) in queue mode.
+  - Validate Redis connectivity.
+  - Re-activate trigger workflow.
+
+# Error Case 11: Queue mode jobs stuck in waiting
+- Symptoms: jobs remain queued indefinitely.
+- Cause: no healthy workers, worker concurrency too low, Redis issues.
+- Fix:
+  - Scale worker replicas.
+  - Increase concurrency carefully.
+  - Check Redis CPU/memory and latency.
+
+# Error Case 12: Worker process starts then exits
+- Symptoms: worker boot fails.
+- Cause: wrong EXECUTIONS_MODE, missing shared env/keys.
+- Fix:
+  - Set executions.mode=queue consistently.
+  - Share encryption key and DB credentials across all instances.
+
+# Error Case 13: Credentials suddenly invalid after redeploy
+- Symptoms: existing credentials cannot decrypt.
+- Cause: changed N8N_ENCRYPTION_KEY.
+- Fix:
+  - Restore original encryption key.
+  - Keep key in persistent secret manager.
+
+# Error Case 14: Cannot save credentials
+- Symptoms: save fails silently or with DB error.
+- Cause: DB permission issue or encryption key/config mismatch.
+- Fix:
+  - Verify DB write permissions.
+  - Confirm encryption key is set and stable.
+
+# Error Case 15: HTTP Request node returns 429
+- Symptoms: rate limit errors from target API.
+- Cause: request burst too high.
+- Fix:
+  - Add Wait node or rate-limit logic.
+  - Use retries with exponential backoff and jitter.
+
+# Error Case 16: HTTP Request node returns 5xx intermittently
+- Symptoms: random provider-side failures.
+- Cause: transient upstream outage.
+- Fix:
+  - Enable retry on fail.
+  - Add fallback branch and dead-letter handling.
+
+# Error Case 17: DNS resolution error (ENOTFOUND)
+- Symptoms: host cannot be resolved.
+- Cause: typo domain, DNS outage, container DNS config issue.
+- Fix:
+  - Verify hostname.
+  - Test DNS from container.
+  - Configure reliable resolver.
+
+# Error Case 18: SSL certificate verify failed
+- Symptoms: TLS handshake errors.
+- Cause: self-signed cert, incomplete chain, clock skew.
+- Fix:
+  - Install proper CA chain.
+  - Sync system time (NTP).
+  - Avoid disabling TLS verify in production.
+
+# Error Case 19: Request body too large
+- Symptoms: 413 payload too large.
+- Cause: proxy/body limits too small.
+- Fix:
+  - Increase reverse proxy body size limits.
+  - Send file by URL or chunk uploads.
+
+# Error Case 20: Reverse proxy causes wrong callback URLs
+- Symptoms: OAuth redirect mismatch, wrong links in UI.
+- Cause: missing X-Forwarded-* headers or base URL misconfig.
+- Fix:
+  - Set N8N_HOST/N8N_PROTOCOL/N8N_PORT and WEBHOOK_URL properly.
+  - Forward X-Forwarded-For/Proto/Host headers.
+
+# Error Case 21: OAuth2 invalid_grant
+- Symptoms: token refresh fails.
+- Cause: revoked refresh token, redirect URI mismatch, clock skew.
+- Fix:
+  - Re-authenticate credential.
+  - Verify exact redirect URI.
+  - Ensure server time is synced.
+
+# Error Case 22: OAuth consent screen not verified scopes
+- Symptoms: OAuth flow blocked.
+- Cause: app not approved for sensitive scopes.
+- Fix:
+  - Reduce scopes to minimum.
+  - Complete provider verification steps.
+
+# Error Case 23: Gmail/Google API quota exceeded
+- Symptoms: 403/429 quota errors.
+- Cause: too many calls per user/project.
+- Fix:
+  - Batch operations.
+  - Add delay and retry.
+  - Use service-account strategy where applicable.
+
+# Error Case 24: Slack API rate_limited
+- Symptoms: Slack returns 429 and retry-after.
+- Cause: burst posting or channel-heavy fan-out.
+- Fix:
+  - Respect Retry-After header.
+  - Queue and throttle Slack sends.
+
+# Error Case 25: Notion API rate limit hit
+- Symptoms: 429 from Notion.
+- Cause: fast loop inserts/updates.
+- Fix:
+  - Add Wait between calls.
+  - Use upsert logic to reduce writes.
+
+# Error Case 26: Airtable rate limit hit
+- Symptoms: 429 from Airtable.
+- Cause: too many record operations.
+- Fix:
+  - Batch create/update records.
+  - Throttle to provider limit window.
+
+# Error Case 27: OpenAI token limit exceeded
+- Symptoms: context_length_exceeded.
+- Cause: prompt + completion exceeds model context.
+- Fix:
+  - Chunk input and summarize first.
+  - Trim history and tool outputs.
+
+# Error Case 28: OpenAI 429 insufficient_quota
+- Symptoms: quota/billing errors.
+- Cause: exhausted credits or org limit.
+- Fix:
+  - Check billing and project usage caps.
+  - Route to fallback model/provider.
+
+# Error Case 29: Binary data missing in downstream node
+- Symptoms: file not found in later node.
+- Cause: wrong binary property name or overwritten item.
+- Fix:
+  - Confirm binary field (for example data/file).
+  - Keep binary through merge/transform steps.
+
+# Error Case 30: Code node cannot access expected item fields
+- Symptoms: undefined errors in JS/Python code.
+- Cause: wrong item path or changed input shape.
+- Fix:
+  - Inspect sample data from previous node.
+  - Use defensive checks and defaults.
+
+# Error Case 31: Expression returns null unexpectedly
+- Symptoms: empty fields after Set/HTTP nodes.
+- Cause: wrong expression scope ($json/$item/$node).
+- Fix:
+  - Re-evaluate expression in current execution context.
+  - Use pinned data for deterministic debugging.
+
+# Error Case 32: IF node branch logic behaves opposite
+- Symptoms: true/false branch confusion.
+- Cause: string vs boolean comparison mismatch.
+- Fix:
+  - Normalize types before IF check.
+  - Use explicit operators and cast values.
+
+# Error Case 33: Merge node duplicates or drops records
+- Symptoms: item count mismatch after merge.
+- Cause: wrong merge mode or key mismatch.
+- Fix:
+  - Choose merge mode intentionally (append/multiplex/by key).
+  - Validate key uniqueness.
+
+# Error Case 34: Cron trigger not firing at expected time
+- Symptoms: runs at wrong hour/day.
+- Cause: timezone mismatch.
+- Fix:
+  - Set global timezone and workflow timezone.
+  - Validate daylight saving behavior.
+
+# Error Case 35: Workflow runs twice unexpectedly
+- Symptoms: duplicate downstream actions.
+- Cause: overlapping triggers or webhook retries from source.
+- Fix:
+  - Add idempotency key check.
+  - Deduplicate by event ID in DB/cache.
+
+# Error Case 36: Partial execution in large loops
+- Symptoms: stops mid-way without full completion.
+- Cause: timeout/resource pressure.
+- Fix:
+  - Split into sub-workflows.
+  - Add checkpointing and resume logic.
+
+# Error Case 37: Manual execution works, production trigger fails
+- Symptoms: test mode success but live mode fails.
+- Cause: credentials/environment differences.
+- Fix:
+  - Compare env vars and credentials between environments.
+  - Use same base URL and callback domain.
+
+# Error Case 38: Proxy 502/504 in front of n8n
+- Symptoms: gateway errors under load.
+- Cause: upstream timeout too short, instance saturated.
+- Fix:
+  - Increase proxy timeout.
+  - Scale n8n/worker instances.
+
+# Error Case 39: Redis connection resets
+- Symptoms: queue worker instability.
+- Cause: managed Redis idle timeout/network interruptions.
+- Fix:
+  - Tune Redis client keepalive/retry.
+  - Place n8n and Redis in low-latency network.
+
+# Error Case 40: Execution data DB grows too fast
+- Symptoms: storage costs and slow queries.
+- Cause: saving full execution payloads for all runs.
+- Fix:
+  - Configure execution data retention/pruning.
+  - Store only failed or selected execution data.
+
+# Error Case 41: Pruning never runs
+- Symptoms: old executions never deleted.
+- Cause: pruning disabled or misconfigured schedule.
+- Fix:
+  - Enable execution pruning settings.
+  - Verify main instance performs pruning tasks.
+
+# Error Case 42: n8n update breaks community nodes
+- Symptoms: node load errors after upgrade.
+- Cause: incompatible community package versions.
+- Fix:
+  - Pin n8n and community node versions.
+  - Upgrade in staging first.
+
+# Error Case 43: Community node installation fails
+- Symptoms: package install/build errors.
+- Cause: outbound network blocked or package conflict.
+- Fix:
+  - Check npm registry access.
+  - Rebuild with clean cache and compatible versions.
+
+# Error Case 44: File permissions error in container
+- Symptoms: EACCES on .n8n or binary folder.
+- Cause: UID/GID mismatch with mounted volume.
+- Fix:
+  - Align container user and host volume ownership.
+  - Use explicit user mapping in compose/k8s.
+
+# Error Case 45: Large import of workflows fails
+- Symptoms: import timeout or malformed JSON failures.
+- Cause: oversized payload or inconsistent schema versions.
+- Fix:
+  - Import in smaller batches.
+  - Validate JSON and version compatibility first.
+
+# Error Case 46: Execution appears successful but target unchanged
+- Symptoms: 2xx response, no side effect.
+- Cause: dry-run/test mode endpoint, wrong account/workspace.
+- Fix:
+  - Verify endpoint environment and account IDs.
+  - Log response body and request ID for traceability.
+
+# Error Case 47: Trigger from external SaaS delayed or missing
+- Symptoms: sporadic missing events.
+- Cause: provider webhook retries/backoff or dropped handshake.
+- Fix:
+  - Return 2xx quickly.
+  - Implement replay endpoint or periodic reconciliation.
+
+# Error Case 48: High CPU from code-heavy workflows
+- Symptoms: latency spikes and queue lag.
+- Cause: expensive loops/regex/serialization in Code node.
+- Fix:
+  - Optimize code complexity.
+  - Offload heavy compute to external service.
+
+# Error Case 49: Secret leakage in execution logs
+- Symptoms: API keys visible in logs/history.
+- Cause: logging full request headers/body.
+- Fix:
+  - Redact sensitive fields before logging.
+  - Restrict execution visibility and retention.
+
+# Error Case 50: Disaster recovery impossible after host loss
+- Symptoms: cannot restore workflows/credentials.
+- Cause: no DB backup, missing encryption key backup.
+- Fix:
+  - Back up database regularly.
+  - Back up encryption key securely.
+  - Test restore procedure periodically.

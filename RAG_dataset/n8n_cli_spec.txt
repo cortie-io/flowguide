@@ -1,0 +1,382 @@
+
+========================================
+# CLI FILE: packages/cli/src/commands/start.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: start
+- description: Starts n8n. Makes Web-UI available and starts active workflows
+- usage: n8n start
+- usage: n8n start -o
+- examples:
+  - (empty example)
+  - -o
+- flags:
+  - --open: opens the UI automatically in browser
+
+========================================
+# CLI FILE: packages/cli/src/commands/execute.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: execute
+- description: Executes a given workflow
+- usage: n8n execute --id=5
+- examples:
+  - --id=5
+- flags:
+  - --id: id of the workflow to execute
+  - --rawOutput: Outputs only JSON data, with no other text
+  - --file: DEPRECATED: Please use --id instead
+
+========================================
+# CLI FILE: packages/cli/src/commands/execute-batch.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: execute-batch
+- description: Executes multiple workflows once
+- usage: n8n execute-batch
+- usage: n8n execute-batch --concurrency=10 --skipList=/data/skipList.json
+- usage: n8n execute-batch --debug --output=/data/output.json
+- usage: n8n execute-batch --ids=10,13,15 --shortOutput
+- usage: n8n execute-batch --snapshot=/data/snapshots --shallow
+- usage: n8n execute-batch --compare=/data/previousExecutionData --retries=2
+- examples:
+  - (empty example)
+  - --concurrency=10 --skipList=/data/skipList.json
+  - --debug --output=/data/output.json
+  - --ids=10,13,15 --shortOutput
+  - --snapshot=/data/snapshots --shallow
+  - --compare=/data/previousExecutionData --retries=2
+
+========================================
+# CLI FILE: packages/cli/src/commands/webhook.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: webhook
+- description: Starts n8n webhook process. Intercepts only production URLs.
+- usage: n8n webhook [options]
+
+========================================
+# CLI FILE: packages/cli/src/commands/audit.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: audit
+- description: Generate a security audit report for this n8n instance
+- usage: n8n audit
+- usage: n8n audit --categories=database,credentials
+- usage: n8n audit --days-abandoned-workflow=10
+- examples:
+  - (empty example)
+  - --categories=database,credentials
+  - --days-abandoned-workflow=10
+
+========================================
+# CLI FILE: packages/cli/src/commands/worker.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: worker
+- description: Starts a n8n worker
+- usage: n8n worker --concurrency=5
+- examples:
+  - --concurrency=5
+- flags:
+  - --concurrency: How many jobs can run in parallel.
+
+========================================
+# CLI FILE: packages/cli/src/commands/unpublish/workflow.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: unpublish:workflow
+- description: Unpublish workflow(s)
+- usage: n8n unpublish:workflow --all
+- usage: n8n unpublish:workflow --id=5
+- examples:
+  - --all
+  - --id=5
+- flags:
+  - --all: Unpublish all workflows
+  - --id: The ID of the workflow to unpublish
+
+========================================
+# CLI FILE: packages/cli/src/commands/ttwf/generate.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: ttwf:generate
+- description: Create a workflow(s) using AI Text-to-Workflow builder
+- usage: n8n ttwf:generate $ n8n ttwf:generate --prompt
+- usage: n8n ttwf:generate --output result.json
+- usage: n8n ttwf:generate $ n8n ttwf:generate --input dataset.jsonl --output results.jsonl
+- examples:
+  - $ n8n ttwf:generate --prompt
+  - --output result.json
+  - $ n8n ttwf:generate --input dataset.jsonl --output results.jsonl
+
+========================================
+# CLI FILE: packages/cli/src/commands/license/info.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: license:info
+- description: Print license information
+- usage: n8n license:info [options]
+
+========================================
+# CLI FILE: packages/cli/src/commands/license/clear.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: license:clear
+- description: Clear local license certificate
+- usage: n8n license:clear [options]
+
+========================================
+# CLI FILE: packages/cli/src/commands/update/workflow.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: update:workflow
+- description: [DEPRECATED] Update workflows - use publish:workflow or unpublish:workflow instead
+- usage: n8n update:workflow --all --active=false
+- usage: n8n update:workflow --id=5 --active=true
+- examples:
+  - --all --active=false
+  - --id=5 --active=true
+- flags:
+  - --active: Active state the workflow/s should be set to
+  - --all: Operate on all workflows
+  - --id: The ID of the workflow to operate on
+
+========================================
+# CLI FILE: packages/cli/src/commands/ldap/reset.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: ldap:reset
+- description: Resets the database to the default ldap state.\n\nTHIS DELETES ALL LDAP MANAGED USERS.
+- usage: n8n ldap:reset --userId=1d64c3d2-85fe-4a83-a649-e446b07b3aae
+- usage: n8n ldap:reset --projectId=Ox8O54VQrmBrb4qL
+- usage: n8n ldap:reset --deleteWorkflowsAndCredentials
+- examples:
+  - --userId=1d64c3d2-85fe-4a83-a649-e446b07b3aae
+  - --projectId=Ox8O54VQrmBrb4qL
+  - --deleteWorkflowsAndCredentials
+
+========================================
+# CLI FILE: packages/cli/src/commands/mfa/disable.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: mfa:disable
+- description: Disable MFA authentication for a user
+- usage: n8n mfa:disable --email=johndoe@example.com
+- examples:
+  - --email=johndoe@example.com
+- flags:
+  - --email: The email of the user to disable the MFA authentication
+
+========================================
+# CLI FILE: packages/cli/src/commands/publish/workflow.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: publish:workflow
+- description: Publish a specific version of a workflow. If no version is specified, publishes the current version.
+- usage: n8n publish:workflow --id=5 --versionId=abc123
+- usage: n8n publish:workflow --id=5
+- examples:
+  - --id=5 --versionId=abc123
+  - --id=5
+- flags:
+  - --id: The ID of the workflow to publish
+  - --all: (Deprecated) This flag is no longer supported
+
+========================================
+# CLI FILE: packages/cli/src/commands/list/workflow.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: list:workflow
+- description: List workflows
+- usage: n8n list:workflow
+- usage: n8n list:workflow --active=true --onlyId
+- usage: n8n list:workflow --active=false
+- examples:
+  - (empty example)
+  - --active=true --onlyId
+  - --active=false
+- flags:
+  - --onlyId: Outputs workflow IDs only, one per line.
+
+========================================
+# CLI FILE: packages/cli/src/commands/db/revert.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: db:revert
+- description: Revert last database migration
+- usage: n8n db:revert [options]
+
+========================================
+# CLI FILE: packages/cli/src/commands/user-management/reset.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: user-management:reset
+- description: Resets the database to the default user state
+- usage: n8n user-management:reset [options]
+
+========================================
+# CLI FILE: packages/cli/src/commands/export/nodes.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: export:nodes
+- description: Export all node types to a JSON file
+- usage: n8n export:nodes
+- usage: n8n export:nodes --output=/tmp/nodes.json
+- examples:
+  - (empty example)
+  - --output=/tmp/nodes.json
+
+========================================
+# CLI FILE: packages/cli/src/commands/export/entities.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: export:entities
+- description: Export database entities to JSON files
+- usage: n8n export:entities
+- usage: n8n export:entities --outputDir=./exports
+- usage: n8n export:entities --outputDir=/path/to/backup
+- usage: n8n export:entities --includeExecutionHistoryDataTables=true
+- usage: n8n export:entities --includeDataTableRows=false
+- usage: n8n export:entities --keyFile=/path/to/key.txt
+- usage: n8n export:entities --outputDir=./exports --keyFile=/path/to/key.txt
+- examples:
+  - (empty example)
+  - --outputDir=./exports
+  - --outputDir=/path/to/backup
+  - --includeExecutionHistoryDataTables=true
+  - --includeDataTableRows=false
+  - --keyFile=/path/to/key.txt
+  - --outputDir=./exports --keyFile=/path/to/key.txt
+- flags:
+  - --includeExecutionHistoryDataTables: Include execution history data tables, these are excluded by default as they can be very large', ) .default(false), includeDataTableRows: z.coerce .boolean() .describe( 'Include user-data table row contents. When false, only the data-table schemas (registry rows) are exported.', ) .default(true), keyFile: z .string() .describe('Optional path to a file containing a custom encryption key
+
+========================================
+# CLI FILE: packages/cli/src/commands/export/workflow.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: export:workflow
+- description: Export workflows
+- usage: n8n export:workflow --all
+- usage: n8n export:workflow --projectId=Ox8O54VQrmBrb4qL
+- usage: n8n export:workflow --id=5 --output=file.json
+- usage: n8n export:workflow --id=5 --version=abc-123-def
+- usage: n8n export:workflow --id=5 --published
+- usage: n8n export:workflow --all --published --output=backups/latest/
+- usage: n8n export:workflow --all --output=backups/latest/
+- usage: n8n export:workflow --backup --output=backups/latest/
+- examples:
+  - --all
+  - --projectId=Ox8O54VQrmBrb4qL
+  - --id=5 --output=file.json
+  - --id=5 --version=abc-123-def
+  - --id=5 --published
+  - --all --published --output=backups/latest/
+  - --all --output=backups/latest/
+  - --backup --output=backups/latest/
+- flags:
+  - --all: Export all workflows
+  - --id: The ID of the workflow to export
+  - --projectId: Export all workflows in the specified project
+  - --pretty: Format the output in an easier to read fashion
+  - --version: The version ID to export
+  - --published: Export the published/active version
+
+========================================
+# CLI FILE: packages/cli/src/commands/export/credentials.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: export:credentials
+- description: Export credentials
+- usage: n8n export:credentials --all
+- usage: n8n export:credentials --projectId=Ox8O54VQrmBrb4qL
+- usage: n8n export:credentials --id=5 --output=file.json
+- usage: n8n export:credentials --all --output=backups/latest.json
+- usage: n8n export:credentials --backup --output=backups/latest/
+- usage: n8n export:credentials --all --decrypted --output=backups/decrypted.json
+- examples:
+  - --all
+  - --projectId=Ox8O54VQrmBrb4qL
+  - --id=5 --output=file.json
+  - --all --output=backups/latest.json
+  - --backup --output=backups/latest/
+  - --all --decrypted --output=backups/decrypted.json
+- flags:
+  - --all: Export all credentials
+  - --id: The ID of the credential to export
+  - --projectId: Export all credentials in the specified project
+  - --pretty: Format the output in an easier to read fashion
+
+========================================
+# CLI FILE: packages/cli/src/commands/import/entities.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: import:entities
+- description: Import database entities from JSON files
+- usage: n8n import:entities
+- usage: n8n import:entities --inputDir=./exports
+- usage: n8n import:entities --inputDir=/path/to/backup
+- usage: n8n import:entities --truncateTables
+- usage: n8n import:entities --inputDir=./exports --truncateTables
+- usage: n8n import:entities --keyFile=/path/to/key.txt
+- usage: n8n import:entities --inputDir=./exports --keyFile=/path/to/key.txt
+- usage: n8n import:entities --skipMigrationChecks
+- usage: n8n import:entities --inputDir=./exports --skipMigrationChecks
+- examples:
+  - (empty example)
+  - --inputDir=./exports
+  - --inputDir=/path/to/backup
+  - --truncateTables
+  - --inputDir=./exports --truncateTables
+  - --keyFile=/path/to/key.txt
+  - --inputDir=./exports --keyFile=/path/to/key.txt
+  - --skipMigrationChecks
+  - --inputDir=./exports --skipMigrationChecks
+- flags:
+  - --truncateTables: Truncate tables before import
+  - --skipMigrationChecks: Skip migration validation checks
+  - --skipTogglingForeignKeyConstraints: Skip disabling foreign key constraints
+
+========================================
+# CLI FILE: packages/cli/src/commands/import/workflow.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: import:workflow
+- description: Import workflows
+- usage: n8n import:workflow --input=file.json
+- usage: n8n import:workflow --separate --input=backups/latest/
+- usage: n8n import:workflow --input=file.json --userId=1d64c3d2-85fe-4a83-a649-e446b07b3aae
+- usage: n8n import:workflow --input=file.json --projectId=Ox8O54VQrmBrb4qL
+- usage: n8n import:workflow --separate --input=backups/latest/ --userId=1d64c3d2-85fe-4a83-a649-e446b07b3aae
+- usage: n8n import:workflow --input=file.json --activeState=fromJson
+- examples:
+  - --input=file.json
+  - --separate --input=backups/latest/
+  - --input=file.json --userId=1d64c3d2-85fe-4a83-a649-e446b07b3aae
+  - --input=file.json --projectId=Ox8O54VQrmBrb4qL
+  - --separate --input=backups/latest/ --userId=1d64c3d2-85fe-4a83-a649-e446b07b3aae
+  - --input=file.json --activeState=fromJson
+- flags:
+  - --userId: The ID of the user to assign the imported workflows to
+
+========================================
+# CLI FILE: packages/cli/src/commands/import/credentials.ts
+# COMMAND INDEX IN FILE: 1
+========================================
+- name: import:credentials
+- description: Import credentials
+- usage: n8n import:credentials --input=file.json
+- usage: n8n import:credentials --separate --input=backups/latest/
+- usage: n8n import:credentials --input=file.json --include=id,name,type,data
+- usage: n8n import:credentials --input=file.json --exclude=createdAt,updatedAt
+- usage: n8n import:credentials --input=file.json --userId=1d64c3d2-85fe-4a83-a649-e446b07b3aae
+- usage: n8n import:credentials --input=file.json --projectId=Ox8O54VQrmBrb4qL
+- usage: n8n import:credentials --separate --input=backups/latest/ --userId=1d64c3d2-85fe-4a83-a649-e446b07b3aae
+- examples:
+  - --input=file.json
+  - --separate --input=backups/latest/
+  - --input=file.json --include=id,name,type,data
+  - --input=file.json --exclude=createdAt,updatedAt
+  - --input=file.json --userId=1d64c3d2-85fe-4a83-a649-e446b07b3aae
+  - --input=file.json --projectId=Ox8O54VQrmBrb4qL
+  - --separate --input=backups/latest/ --userId=1d64c3d2-85fe-4a83-a649-e446b07b3aae

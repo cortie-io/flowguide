@@ -1,0 +1,56 @@
+{
+  "manifest_version": 3,
+  "name": "nodi",
+  "version": "1.0.5",
+  "description": "Next-Gen Node Automation Tutor — nodi 인터랙티브 AI 교육 플랫폼",
+  "icons": {
+    "16": "icons/nodi-icon16.png",
+    "48": "icons/nodi-icon48.png",
+    "128": "icons/nodi-icon128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "scripting",
+    "clipboardWrite",
+    "clipboardRead",
+    "storage",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*",
+    "http://localhost:5678/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_title": "nodi Tutor Agent",
+    "default_icon": {
+      "16": "icons/nodi-icon16.png",
+      "48": "icons/nodi-icon48.png",
+      "128": "icons/nodi-icon128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://localhost:5678/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; frame-src http://localhost:3000; script-src 'self'; style-src 'self' 'unsafe-inline';"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["sidepanel.html", "sidepanel.js", "assets/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

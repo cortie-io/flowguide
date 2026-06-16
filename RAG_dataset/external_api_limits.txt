@@ -1,0 +1,315 @@
+External API Limits Cheat Sheet for n8n
+=======================================
+
+Notes
+- Limits change over time by plan, endpoint, and region.
+- Values below are practical defaults or commonly observed ceilings. Always verify with current official docs before production hard-coding.
+- n8n strategy pattern: Wait + retry with exponential backoff + jitter + idempotency key.
+
+# Service: Notion API
+- Typical limit: around 3 requests/second per integration.
+- n8n mitigation:
+  - Add Wait node between write calls (for example 300-500 ms).
+  - Batch updates and avoid unnecessary writes.
+
+# Service: Airtable API
+- Typical limit: around 5 requests/second per base.
+- n8n mitigation:
+  - Use batch create/update operations.
+  - Queue writes and throttle per base.
+
+# Service: Slack Web API
+- Typical limit: tiered by method; many methods are minute-window based.
+- n8n mitigation:
+  - Respect Retry-After on 429.
+  - Split high-volume posting across time windows.
+
+# Service: Discord API
+- Typical limit: route-based with global limits and strict burst control.
+- n8n mitigation:
+  - Centralize send queue.
+  - Use per-route throttling and retry-after.
+
+# Service: Telegram Bot API
+- Typical limit: bot-level and chat-level anti-spam limits.
+- n8n mitigation:
+  - Insert Wait in fan-out messaging flows.
+  - Group notifications rather than per-event messages.
+
+# Service: GitHub REST API
+- Typical limit: primary hourly limit + secondary abuse detection.
+- n8n mitigation:
+  - Use conditional requests (ETag) and pagination.
+  - Back off aggressively on abuse warnings.
+
+# Service: GitHub GraphQL API
+- Typical limit: point-based quota per hour.
+- n8n mitigation:
+  - Minimize query cost and requested fields.
+  - Cache stable metadata.
+
+# Service: GitLab API
+- Typical limit: endpoint and instance-specific throttles.
+- n8n mitigation:
+  - Add retries for 429/5xx.
+  - Use incremental sync by updated_at.
+
+# Service: Jira Cloud API
+- Typical limit: tenant-level throttling; can return 429.
+- n8n mitigation:
+  - Retry with jitter.
+  - Avoid expensive broad searches repeatedly.
+
+# Service: Confluence Cloud API
+- Typical limit: tenant-level throttling with burst controls.
+- n8n mitigation:
+  - Cache page IDs.
+  - Use targeted queries and delays.
+
+# Service: Trello API
+- Typical limit: key/token scoped rate limits.
+- n8n mitigation:
+  - Batch card operations where possible.
+  - Queue writes per board.
+
+# Service: Asana API
+- Typical limit: minute-based user/app limits.
+- n8n mitigation:
+  - Respect retry-after.
+  - Reduce polling frequency.
+
+# Service: Monday.com API
+- Typical limit: complexity and minute windows.
+- n8n mitigation:
+  - Reduce GraphQL complexity.
+  - Cache static board structure.
+
+# Service: HubSpot API
+- Typical limit: app-level and account-level windows.
+- n8n mitigation:
+  - Prefer batch endpoints.
+  - Implement burst guard in looped updates.
+
+# Service: Salesforce API
+- Typical limit: daily API request caps plus per-org constraints.
+- n8n mitigation:
+  - Bulk API for high-volume writes.
+  - Schedule heavy sync off-peak.
+
+# Service: Shopify Admin API
+- Typical limit: leaky bucket model (REST/GraphQL variants).
+- n8n mitigation:
+  - Track bucket usage headers.
+  - Queue product/order sync operations.
+
+# Service: Stripe API
+- Typical limit: endpoint-specific and anti-abuse protection.
+- n8n mitigation:
+  - Use idempotency keys on writes.
+  - Retry safe operations only.
+
+# Service: Twilio API
+- Typical limit: messaging throughput by sender type and geography.
+- n8n mitigation:
+  - Queue SMS sends.
+  - Add sender pools for scale.
+
+# Service: SendGrid API
+- Typical limit: endpoint-specific quotas.
+- n8n mitigation:
+  - Batch contacts and suppress duplicate updates.
+  - Respect 429 headers.
+
+# Service: Mailchimp API
+- Typical limit: burst + connection controls.
+- n8n mitigation:
+  - Use batch operations.
+  - Space out list mutation calls.
+
+# Service: Microsoft Graph API
+- Typical limit: workload and tenant scoped throttling.
+- n8n mitigation:
+  - Exponential backoff on 429/503.
+  - Use delta queries instead of full scans.
+
+# Service: Google Sheets API
+- Typical limit: per-project and per-user quotas.
+- n8n mitigation:
+  - BatchUpdate instead of per-cell writes.
+  - Aggregate rows then write once.
+
+# Service: Google Drive API
+- Typical limit: request quotas and download caps.
+- n8n mitigation:
+  - Cache file metadata.
+  - Avoid repetitive list calls in loops.
+
+# Service: Google Calendar API
+- Typical limit: quota unit model per method.
+- n8n mitigation:
+  - Use sync tokens/incremental sync.
+  - Debounce update workflows.
+
+# Service: YouTube Data API
+- Typical limit: daily quota units.
+- n8n mitigation:
+  - Use low-cost endpoints first.
+  - Cache channel/video metadata.
+
+# Service: OpenAI API
+- Typical limit: RPM/TPM by model and account tier.
+- n8n mitigation:
+  - Token budget control and chunking.
+  - Fallback models and queueing.
+
+# Service: Anthropic API
+- Typical limit: request/token windows by tier.
+- n8n mitigation:
+  - Rate-limit at workflow entrance.
+  - Retry on temporary overload.
+
+# Service: Google Gemini API
+- Typical limit: RPM/TPM by model and project.
+- n8n mitigation:
+  - Cache repeated prompts.
+  - Batch non-urgent generation tasks.
+
+# Service: Mistral API
+- Typical limit: account-tier based throughput.
+- n8n mitigation:
+  - Add central request queue.
+  - Use compact prompts for high volume.
+
+# Service: Pinecone API
+- Typical limit: write/read throughput by index and plan.
+- n8n mitigation:
+  - Batch vector upserts.
+  - Separate ingestion and query workflows.
+
+# Service: Qdrant API
+- Typical limit: infrastructure-bound QPS and payload size.
+- n8n mitigation:
+  - Chunk embeddings and upsert in batches.
+  - Tune payload and index strategy.
+
+# Service: Supabase API
+- Typical limit: project-level DB and REST constraints.
+- n8n mitigation:
+  - Use pagination and server-side filters.
+  - Avoid full-table scans in loops.
+
+# Service: PostgreSQL (managed APIs)
+- Typical limit: connection count and statement timeout.
+- n8n mitigation:
+  - Use pooled connections.
+  - Keep transactions short and batched.
+
+# Service: Redis Cloud
+- Typical limit: ops/sec and connection plans.
+- n8n mitigation:
+  - Reuse connections.
+  - Keep payloads compact and key TTL intentional.
+
+# Service: AWS S3 API
+- Typical limit: request rate scales by key prefix patterns.
+- n8n mitigation:
+  - Distribute object key prefixes.
+  - Retry with backoff for transient 503 slowdowns.
+
+# Service: AWS DynamoDB API
+- Typical limit: provisioned/on-demand RCU/WCU throttling.
+- n8n mitigation:
+  - BatchWrite and adaptive backoff.
+  - Partition key design for uniform traffic.
+
+# Service: Algolia API
+- Typical limit: operation quotas by plan.
+- n8n mitigation:
+  - Batch index updates.
+  - Throttle reindex workflows.
+
+# Service: Elasticsearch/OpenSearch API
+- Typical limit: cluster resource bound; circuit breakers possible.
+- n8n mitigation:
+  - Control bulk size.
+  - Use refresh strategies and retries.
+
+# Service: Zendesk API
+- Typical limit: account-based per-minute limits.
+- n8n mitigation:
+  - Use incremental exports.
+  - Back off on 429 and queue ticket updates.
+
+# Service: Intercom API
+- Typical limit: app-level request windows.
+- n8n mitigation:
+  - Prefer cursor-based incremental fetch.
+  - Compress redundant update calls.
+
+# Service: Pipedrive API
+- Typical limit: token/cost model by endpoint.
+- n8n mitigation:
+  - Cache IDs and use efficient filters.
+  - Batch writes where available.
+
+# Service: Linear API
+- Typical limit: practical throttling on high-frequency writes.
+- n8n mitigation:
+  - Use mutation queues.
+  - Merge low-priority updates.
+
+# Service: ClickUp API
+- Typical limit: workspace/user endpoint limits.
+- n8n mitigation:
+  - Poll less frequently.
+  - Use webhook-first architecture where possible.
+
+# Service: Dropbox API
+- Typical limit: endpoint-specific and namespace constraints.
+- n8n mitigation:
+  - Batch file operations.
+  - Use cursor-based sync APIs.
+
+# Service: Box API
+- Typical limit: user/app quotas and enterprise controls.
+- n8n mitigation:
+  - Cache folder trees.
+  - Retry and stagger uploads.
+
+# Service: X API (Twitter)
+- Typical limit: endpoint and access-tier dependent windows.
+- n8n mitigation:
+  - Track per-endpoint quotas.
+  - Queue posting and engagement actions.
+
+# Service: Reddit API
+- Typical limit: OAuth app/client windows with anti-abuse controls.
+- n8n mitigation:
+  - Respect user-agent and interval guidance.
+  - Use incremental polling.
+
+# Service: Facebook Graph API
+- Typical limit: app mode and business use case dependent.
+- n8n mitigation:
+  - Cache object metadata.
+  - Reduce repeated field expansions.
+
+# Service: LinkedIn API
+- Typical limit: partner-tier and product-specific quotas.
+- n8n mitigation:
+  - Use scheduled posting windows.
+  - Retry with moderate backoff.
+
+# Service: WhatsApp Cloud API
+- Typical limit: messaging throughput and quality tiers.
+- n8n mitigation:
+  - Queue campaign sends.
+  - Monitor template quality and error codes.
+
+Reusable n8n Pattern
+- Node chain recommendation:
+  - Trigger -> Split In Batches -> HTTP Request/API Node -> IF(status=429/5xx) -> Wait -> Retry loop
+- Controls:
+  - max retries: 3-7 depending on SLA
+  - backoff: exponential (for example 1s, 2s, 4s, 8s) + random jitter
+  - idempotency key: required for write operations to avoid duplicates

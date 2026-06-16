@@ -1,0 +1,26 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">n9n Extension Icon</title>
+  <desc id="desc">Rounded square purple icon with white network mark.</desc>
+  <defs>
+    <linearGradient id="bg" x1="20" y1="14" x2="108" y2="114" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#6D28D9"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#bg)"/>
+
+  <g fill="#FFFFFF">
+    <circle cx="64" cy="38" r="10"/>
+    <circle cx="38" cy="84" r="10"/>
+    <circle cx="90" cy="84" r="10"/>
+    <circle cx="64" cy="66" r="12" opacity="0.96"/>
+    <circle cx="64" cy="66" r="4.8" fill="#E9D5FF"/>
+  </g>
+
+  <g stroke="#FFFFFF" stroke-width="6" stroke-linecap="round">
+    <path d="M64 48v8"/>
+    <path d="M46 79 56.5 72"/>
+    <path d="M82 79 71.5 72"/>
+  </g>
+</svg>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>nodi</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100vh; overflow: hidden; background: #09090b; }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    #offline {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 12px;
+      color: #a1a1aa;
+      font-family: -apple-system, sans-serif;
+      font-size: 13px;
+      text-align: center;
+      padding: 24px;
+    }
+    #offline .icon { font-size: 32px; }
+    #offline .title { color: #fff; font-size: 15px; font-weight: 600; }
+    #offline .sub { font-size: 12px; color: #71717a; line-height: 1.6; }
+    #offline code { background: #27272a; padding: 2px 7px; border-radius: 5px;
+      font-family: monospace; font-size: 11.5px; color: #a78bfa; }
+  </style>
+</head>
+<body>
+  <iframe id="frame" src="http://localhost:3000" allow="clipboard-write; clipboard-read"></iframe>
+
+  <div id="offline">
+    <div class="icon">⚡</div>
+    <div class="title">nodi 챗봇 서버 오프라인</div>
+    <div class="sub">
+      아래 명령어로 Next.js 서버를 실행해주세요.<br/>
+      <code>cd nodi/chatbot && pnpm dev</code>
+    </div>
+  </div>
+
+  <script>
+    const frame = document.getElementById('frame');
+    const offline = document.getElementById('offline');
+
+    frame.addEventListener('error', () => {
+      frame.style.display = 'none';
+      offline.style.display = 'flex';
+    });
+
+    // 5초 타임아웃으로 로드 확인
+    const timer = setTimeout(() => {
+      frame.style.display = 'none';
+      offline.style.display = 'flex';
+    }, 5000);
+
+    frame.addEventListener('load', () => {
+      clearTimeout(timer);
+      frame.style.display = 'block';
+      offline.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

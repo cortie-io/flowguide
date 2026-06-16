@@ -1,0 +1,9 @@
+# ── server/.dockerignore ─────────────────────────────────────
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.venv/
+.env
+*.db
+README.md

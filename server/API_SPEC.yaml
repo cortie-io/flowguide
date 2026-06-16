@@ -1,0 +1,319 @@
+# nodi Backend API — 엔지니어링 명세서 v2.0
+# =====================================================================
+
+## 아키텍처 원칙
+# Single Unified Workspace: 모든 기능이 /api/workspace/stream 단일 허브로 집결,
+# IntentRouter가 유저 인풋 컨텍스트에 따라 5대 기능으로 내부 분기.
+
+openapi: "3.1.0"
+info:
+  title: nodi Backend API
+  version: "2.0.0"
+  description: |
+    n8n 오토-아키텍트 RAG 추론 엔진 + 크롬 익스텐션 원격 제어 허브.
+    
+    ## 전체 데이터 흐름
+    
+    [크롬 익스텐션] ─ WS /ws/extension ──► [ExtensionHub] ──► [SessionStore]
+         │                                        │
+         │ POST /api/workspace/stream             │ 이벤트 푸시
+         ▼                                        ▼
+    [WorkspaceRouter]                    [프론트엔드 대화창]
+         │
+         ▼
+    [⑦ CredentialFilter] ← 수신 즉시 마스킹
+         │
+         ▼
+    [IntentRouter] ──────┬──── CURRICULUM     → CurriculumService
+                         ├──── EXPRESSION     → ExpressionService  
+                         ├──── WORKFLOW_BUILD → WorkflowBuildService
+                         ├──── ERROR_PATCH    → ErrorPatchService
+                         ├──── REVERSE        → ReverseService
+                         └──── GENERAL        → GeneralRAGService
+                                    │
+                         ┌──────────▼──────────┐
+                         │   HybridRetriever   │
+                         │  Chroma(0.6)+BM25   │
+                         │  RRF(k=60) → Rerank │
+                         │  Parent-Child 조립  │
+                         └──────────┬──────────┘
+                                    │
+                         ┌──────────▼──────────┐
+                         │   LLM (Ollama SSE)  │
+                         │   온톨로지 가드레일  │
+                         └──────────┬──────────┘
+                                    │
+                         ┌──────────▼──────────┐
+                         │   REG Validator     │
+                         │   Self-Correction   │
+                         └──────────┬──────────┘
+                                    │
+                         SSE 스트리밍 → 클라이언트
+
+paths:
+
+  /api/workspace/stream:
+    post:
+      summary: "단일 통합 스트리밍 허브 (메인 진입점)"
+      description: |
+        모든 유저 대화가 이 엔드포인트로 집결.
+        SSE(text/event-stream)로 토큰을 스트리밍 반환.
+        
+        ## SSE 이벤트 타입
+        | event         | 설명                                        | 트리거 기능 |
+        |--------------|---------------------------------------------|------------|
+        | intent       | 분기된 Intent 정보                           | 전체       |
+        | token        | LLM 스트리밍 토큰                            | 전체       |
+        | card         | 인터랙티브 카드 UI 데이터 (주입 버튼 포함)     | ①③④      |
+        | expression   | 생성된 수식 (인라인 피드백)                   | ②         |
+        | error_alert  | 에러 감지 경고 컨텍스트                       | ④         |
+        | report       | 리버스 엔지니어링 3층 아코디언 리포트          | ⑤         |
+        | reg_warning  | REG 검증 경고 (가짜 속성 감지)                | 전체       |
+        | done         | 스트림 종료                                  | 전체       |
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [session_id, message]
+              properties:
+                session_id:
+                  type: string
+                  description: "클라이언트 세션 UUID"
+                  example: "550e8400-e29b-41d4-a716-446655440000"
+                message:
+                  type: string
+                  description: "유저 메시지 (한국어/영어 혼용)"
+                  example: "Webhook으로 데이터 받아서 Slack으로 보내는 워크플로우 만들어줘"
+                node_data:
+                  type: object
+                  nullable: true
+                  description: "② 익스텐션이 전송한 현재 노드 JSON"
+                  example:
+                    type: "n8n-nodes-base.httpRequest"
+                    parameters:
+                      url: "https://api.example.com/data"
+                      method: "GET"
+                exec_data:
+                  type: object
+                  nullable: true
+                  description: "② 노드 실행 결과 입력 데이터 스냅샷"
+                error_log:
+                  type: string
+                  nullable: true
+                  description: "④ MutationObserver가 캡처한 에러 로그"
+                  example: "Error: Cannot read property 'data' of undefined"
+                raw_json:
+                  type: string
+                  nullable: true
+                  description: "⑤ 유저가 채팅에 붙여넣은 n8n 워크플로우 JSON"
+                model:
+                  type: string
+                  default: "gemma4-e4b:latest"
+      responses:
+        "200":
+          description: "SSE 스트리밍 응답"
+          content:
+            text/event-stream:
+              example: |
+                event: intent
+                data: {"intent":"WORKFLOW_BUILD","label":"③ 워크플로우 합성 / 최적화"}
+
+                event: token
+                data: "워크플로우를 설계하겠습니다.\n"
+
+                event: card
+                data: {"type":"workflow_inject","label":"캔버스에 바로 주입","session_id":"..."}
+
+                event: done
+                data: {"session_id":"550e8400..."}
+
+  /api/node/inspect:
+    post:
+      summary: "② 노드 라이브 인스펙션 (REST 동기 버전)"
+      description: |
+        익스텐션이 노드 선택 시 즉각 호출하는 경량 인스펙션 엔드포인트.
+        LLM 없이 필드 파싱 + 스펙 교차 판정만 수행 (저지연).
+        심화 수식 생성은 /api/workspace/stream 으로 위임.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [session_id, node_data]
+              properties:
+                session_id:
+                  type: string
+                node_data:
+                  type: object
+                  description: "노드 JSON (type + parameters)"
+                exec_data:
+                  type: object
+                  description: "노드 실행 결과 입력 데이터"
+                target_field:
+                  type: string
+                  description: "추출 목표 필드명 (선택)"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  node_type:       {type: string}
+                  missing_params:  {type: array, items: {type: string}}
+                  spec_matched:    {type: boolean}
+                  expressions:     {type: array, items: {type: string}}
+                  inspect_summary: {type: string}
+              example:
+                node_type: "n8n-nodes-base.httpRequest"
+                missing_params: []
+                spec_matched: true
+                expressions:
+                  - "{{ $json.data }}"
+                  - "{{ $json.items[0].id }}"
+                inspect_summary: "httpRequest 노드 검사 완료. 필드 3개 감지됨."
+
+  /api/workflow/inject:
+    post:
+      summary: "⑥ 캔버스 원격 주입 (스냅샷 선행 보장)"
+      description: |
+        익스텐션이 AI 생성 워크플로우를 캔버스에 주입하기 직전 호출.
+        1. 현재 캔버스 상태 → SessionStore 스냅샷 저장
+        2. 주입 페이로드 → ⑦ 자격증명 마스킹
+        3. sanitized_payload 반환 → 익스텐션이 n8n API에 적용
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [session_id, current_workflow, inject_payload]
+              properties:
+                session_id:       {type: string}
+                current_workflow: {type: object, description: "현재 캔버스 원본 (익스텐션 전송)"}
+                inject_payload:   {type: object, description: "주입할 신규 워크플로우"}
+                operation:        {type: string, default: "inject"}
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                status: "ready"
+                snapshot_saved: true
+                message: "스냅샷이 저장되었습니다. [↩️ Undo] 버튼으로 1초 내 롤백 가능."
+                sanitized_payload: {}
+
+  /api/workflow/rollback:
+    post:
+      summary: "⑥ 1초 Undo 롤백"
+      description: |
+        저장된 스냅샷을 꺼내어 익스텐션으로 반환.
+        익스텐션이 캔버스를 원래 상태로 즉시 복원.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [session_id]
+              properties:
+                session_id: {type: string}
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                status: "restored"
+                restored_workflow: {}
+                message: "'inject' 작업 이전 상태로 롤백 완료."
+        "404":
+          description: "롤백 가능한 스냅샷 없음"
+
+  /api/workflow/snapshot/status:
+    get:
+      summary: "스냅샷 존재 여부 확인 (프론트 Undo 버튼 활성화 판단)"
+      parameters:
+        - name: session_id
+          in: query
+          required: true
+          schema: {type: string}
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                session_id: "550e8400..."
+                has_snapshot: true
+
+  /ws/extension:
+    summary: "크롬 익스텐션 WebSocket 실시간 채널"
+    description: |
+      ## 익스텐션 → 백엔드 이벤트
+      | event           | payload 구조                                     | 트리거 기능 |
+      |----------------|--------------------------------------------------|------------|
+      | node_selected   | {type, parameters, inputData}                    | ②         |
+      | error_detected  | {error_message, node_name, execution_id}         | ④         |
+      | workflow_copy   | n8n 워크플로우 JSON 객체                           | ③⑤       |
+      | inject_confirm  | {workflow, session_id}                           | ③⑥       |
+      | rollback_req    | {session_id}                                     | ⑥         |
+      | canvas_ready    | {workflow_id}                                    | 상태 동기화 |
+      
+      ## 백엔드 → 익스텐션 이벤트
+      | event               | payload 구조                    | 용도         |
+      |--------------------|-------------------------------|--------------|
+      | node_inspect_hint   | {node_type, field_hints}       | ② 즉각 힌트  |
+      | error_alert_ui      | {error_log, auto_prompt}       | ④ 경고 바인딩 |
+      | workflow_received   | {node_count, message}          | ⑤ 수신 확인  |
+      | inject_workflow     | {workflow}                     | ③ 주입 명령  |
+      | restore_canvas      | {restored_workflow}            | ⑥ 롤백 복원  |
+      | ui_card             | {type, data}                   | 카드 렌더링   |
+
+components:
+  schemas:
+    
+    IntentEnum:
+      type: string
+      enum:
+        - CURRICULUM      # ① 커리큘럼 퓨전
+        - EXPRESSION      # ② 수식 자동 생성
+        - WORKFLOW_BUILD  # ③ 코드 합성/최적화
+        - ERROR_PATCH     # ④ 에러 원격 수술
+        - REVERSE         # ⑤ 리버스 엔지니어링
+        - GENERAL         # 일반 RAG Q&A
+
+    CurriculumCard:
+      type: object
+      properties:
+        week:          {type: integer}
+        level:         {type: string, enum: [entry, intermediate, advanced]}
+        title:         {type: string}
+        objectives:    {type: array, items: {type: string}}
+        nodes:         {type: array, items: {type: string}}
+        canvas_code_id: {type: string, description: "parent_summary doc_id"}
+
+    WorkflowInjectCard:
+      type: object
+      properties:
+        type:             {type: string, const: "workflow_inject"}
+        label:            {type: string}
+        description:      {type: string}
+        workflow_payload: {type: string}
+        session_id:       {type: string}
+
+    ErrorAlertCard:
+      type: object
+      properties:
+        type:          {type: string, const: "error_patch_apply"}
+        label:         {type: string}
+        patch_payload: {type: string}
+        session_id:    {type: string}
+
+    ReverseReport:
+      type: object
+      properties:
+        layer:
+          type: string
+          enum: [summary, nodes, expressions]
+        title:   {type: string}
+        content: {type: string, nullable: true}
+        items:   {type: array, nullable: true}

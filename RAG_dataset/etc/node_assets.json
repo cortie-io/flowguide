@@ -1,0 +1,1006 @@
+{
+  "Jwt": {
+    "displayName": "Jwt",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Jwt/jwt.svg"
+  },
+  "Freshservice": {
+    "displayName": "Freshservice",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Freshservice/freshservice.svg"
+  },
+  "Webhook": {
+    "displayName": "Webhook",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Webhook/webhook.svg"
+  },
+  "NextCloud": {
+    "displayName": "NextCloud",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/NextCloud/nextcloud.svg"
+  },
+  "Freshdesk": {
+    "displayName": "Freshdesk",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Freshdesk/freshdesk.svg"
+  },
+  "HaloPSA": {
+    "displayName": "HaloPSA",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HaloPSA/halopsa.svg"
+  },
+  "Misp": {
+    "displayName": "Misp",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Misp/misp.svg"
+  },
+  "Webflow": {
+    "displayName": "Webflow",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Webflow/webflow.svg"
+  },
+  "Twitter": {
+    "displayName": "Twitter",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Twitter/x.svg"
+  },
+  "JinaAI": {
+    "displayName": "JinaAI",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/JinaAI/jinaAi.svg"
+  },
+  "Baserow": {
+    "displayName": "Baserow",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Baserow/baserow.svg"
+  },
+  "Cortex": {
+    "displayName": "Cortex",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Cortex/cortex.svg"
+  },
+  "Orbit": {
+    "displayName": "Orbit",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Orbit/orbit.svg"
+  },
+  "Emelia": {
+    "displayName": "Emelia",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Emelia/emelia.svg"
+  },
+  "WooCommerce": {
+    "displayName": "WooCommerce",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/WooCommerce/wooCommerce.svg"
+  },
+  "Form": {
+    "displayName": "Form",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Form/form.svg"
+  },
+  "Vero": {
+    "displayName": "Vero",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Vero/vero.svg"
+  },
+  "TheHive": {
+    "displayName": "TheHive",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/TheHive/thehive.svg"
+  },
+  "NocoDB": {
+    "displayName": "NocoDB",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/NocoDB/nocodb.svg"
+  },
+  "Magento": {
+    "displayName": "Magento",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Magento/magento.svg"
+  },
+  "Wekan": {
+    "displayName": "Wekan",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Wekan/wekan.svg"
+  },
+  "Discord": {
+    "displayName": "Discord",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Discord/discord.svg"
+  },
+  "N8nTrainingCustomerDatastore": {
+    "displayName": "N8nTrainingCustomerDatastore",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/N8nTrainingCustomerDatastore/n8nTrainingCustomerDatastore.svg"
+  },
+  "MistralAI": {
+    "displayName": "MistralAI",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MistralAI/mistralAi.svg"
+  },
+  "Taiga": {
+    "displayName": "Taiga",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Taiga/taiga.svg"
+  },
+  "Gitlab": {
+    "displayName": "Gitlab",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Gitlab/gitlab.svg"
+  },
+  "KoBoToolbox": {
+    "displayName": "KoBoToolbox",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/KoBoToolbox/koBoToolbox.svg"
+  },
+  "MessageBird": {
+    "displayName": "MessageBird",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MessageBird/messagebird.svg"
+  },
+  "HomeAssistant": {
+    "displayName": "HomeAssistant",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HomeAssistant/homeAssistant.svg"
+  },
+  "Raindrop": {
+    "displayName": "Raindrop",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Raindrop/raindrop.svg"
+  },
+  "AiTransform": {
+    "displayName": "AiTransform",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/AiTransform/aitransform.svg"
+  },
+  "MailerLite": {
+    "displayName": "MailerLite",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MailerLite/MailerLite.svg"
+  },
+  "Wordpress": {
+    "displayName": "Wordpress",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Wordpress/wordpress.svg"
+  },
+  "ADC": {
+    "displayName": "ADC",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Netscaler/ADC/netscaler.svg"
+  },
+  "N8nTrainingCustomerMessenger": {
+    "displayName": "N8nTrainingCustomerMessenger",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/N8nTrainingCustomerMessenger/n8nTrainingCustomerMessenger.svg"
+  },
+  "Venafi": {
+    "displayName": "Venafi",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Venafi/venafi.svg"
+  },
+  "Bitly": {
+    "displayName": "Bitly",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Bitly/bitly.svg"
+  },
+  "ElasticSecurity": {
+    "displayName": "ElasticSecurity",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Elastic/ElasticSecurity/elasticSecurity.svg"
+  },
+  "Elasticsearch": {
+    "displayName": "Elasticsearch",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Elastic/Elasticsearch/elasticsearch.svg"
+  },
+  "Merge": {
+    "displayName": "Merge",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Merge/merge.svg"
+  },
+  "Msg91": {
+    "displayName": "Msg91",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Msg91/msg91.svg"
+  },
+  "Redis": {
+    "displayName": "Redis",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Redis/redis.svg"
+  },
+  "Marketstack": {
+    "displayName": "Marketstack",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Marketstack/marketstack.svg"
+  },
+  "SendGrid": {
+    "displayName": "SendGrid",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/SendGrid/sendGrid.svg"
+  },
+  "Mautic": {
+    "displayName": "Mautic",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mautic/mautic.svg"
+  },
+  "Affinity": {
+    "displayName": "Affinity",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Affinity/affinity.svg"
+  },
+  "Mindee": {
+    "displayName": "Mindee",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mindee/mindee.svg"
+  },
+  "DebugHelper": {
+    "displayName": "DebugHelper",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/DebugHelper/DebugHelper.svg"
+  },
+  "Markdown": {
+    "displayName": "Markdown",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Markdown/markdown.svg"
+  },
+  "QuickChart": {
+    "displayName": "QuickChart",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/QuickChart/quickChart.svg"
+  },
+  "Ldap": {
+    "displayName": "Ldap",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Ldap/ldap.svg"
+  },
+  "Egoi": {
+    "displayName": "Egoi",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Egoi/egoi.svg"
+  },
+  "ActiveCampaign": {
+    "displayName": "ActiveCampaign",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ActiveCampaign/activeCampaign.svg"
+  },
+  "Xero": {
+    "displayName": "Xero",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Xero/xero.svg"
+  },
+  "InvoiceNinja": {
+    "displayName": "InvoiceNinja",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/InvoiceNinja/invoiceNinja.svg"
+  },
+  "Ads": {
+    "displayName": "Ads",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Ads/googleAds.svg"
+  },
+  "CloudStorage": {
+    "displayName": "CloudStorage",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/CloudStorage/googleCloudStorage.svg"
+  },
+  "Calendar": {
+    "displayName": "Calendar",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Calendar/googleCalendar.svg"
+  },
+  "Chat": {
+    "displayName": "Chat",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Chat/googleChat.svg"
+  },
+  "BusinessProfile": {
+    "displayName": "BusinessProfile",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/BusinessProfile/googleBusinessProfile.svg"
+  },
+  "GSuiteAdmin": {
+    "displayName": "GSuiteAdmin",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/GSuiteAdmin/gSuiteAdmin.svg"
+  },
+  "BigQuery": {
+    "displayName": "BigQuery",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/BigQuery/googleBigQuery.svg"
+  },
+  "Books": {
+    "displayName": "Books",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Books/googlebooks.svg"
+  },
+  "Docs": {
+    "displayName": "Docs",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Docs/googleDocs.svg"
+  },
+  "Slides": {
+    "displayName": "Slides",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Slides/googleslides.svg"
+  },
+  "RealtimeDatabase": {
+    "displayName": "RealtimeDatabase",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Firebase/RealtimeDatabase/googleFirebaseRealtimeDatabase.svg"
+  },
+  "Task": {
+    "displayName": "Task",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Task/googleTasks.svg"
+  },
+  "Sheet": {
+    "displayName": "Sheet",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Sheet/googleSheets.svg"
+  },
+  "Drive": {
+    "displayName": "Drive",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Drive/googleDrive.svg"
+  },
+  "Perspective": {
+    "displayName": "Perspective",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Perspective/googlePerspective.svg"
+  },
+  "Gmail": {
+    "displayName": "Gmail",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Gmail/gmail.svg"
+  },
+  "Analytics": {
+    "displayName": "Analytics",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Analytics/analytics.svg"
+  },
+  "PagerDuty": {
+    "displayName": "PagerDuty",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/PagerDuty/pagerDuty.svg"
+  },
+  "HighLevel": {
+    "displayName": "HighLevel",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HighLevel/highLevel.svg"
+  },
+  "Zoho": {
+    "displayName": "Zoho",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Zoho/zoho.svg"
+  },
+  "CircleCi": {
+    "displayName": "CircleCi",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/CircleCi/circleCi.svg"
+  },
+  "Dynamics": {
+    "displayName": "Dynamics",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Dynamics/microsoftDynamicsCrm.svg"
+  },
+  "GraphSecurity": {
+    "displayName": "GraphSecurity",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/GraphSecurity/microsoftGraph.svg"
+  },
+  "OneDrive": {
+    "displayName": "OneDrive",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/OneDrive/oneDrive.svg"
+  },
+  "Excel": {
+    "displayName": "Excel",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Excel/excel.svg"
+  },
+  "Storage": {
+    "displayName": "Storage",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Storage/azureStorage.svg"
+  },
+  "ToDo": {
+    "displayName": "ToDo",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/ToDo/todo.svg"
+  },
+  "SharePoint": {
+    "displayName": "SharePoint",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/SharePoint/microsoftSharePoint.svg"
+  },
+  "Teams": {
+    "displayName": "Teams",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Teams/teams.svg"
+  },
+  "Entra": {
+    "displayName": "Entra",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Entra/microsoftEntra.svg"
+  },
+  "AzureCosmosDb": {
+    "displayName": "AzureCosmosDb",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/AzureCosmosDb/AzureCosmosDb.svg"
+  },
+  "Outlook": {
+    "displayName": "Outlook",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Outlook/outlook.svg"
+  },
+  "Sql": {
+    "displayName": "Sql",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Oracle/Sql/oracle.svg"
+  },
+  "Storyblok": {
+    "displayName": "Storyblok",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Storyblok/storyblok.svg"
+  },
+  "PostBin": {
+    "displayName": "PostBin",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/PostBin/postbin.svg"
+  },
+  "Spotify": {
+    "displayName": "Spotify",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Spotify/spotify.svg"
+  },
+  "Copper": {
+    "displayName": "Copper",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Copper/copper.svg"
+  },
+  "Odoo": {
+    "displayName": "Odoo",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Odoo/odoo.svg"
+  },
+  "FormIo": {
+    "displayName": "FormIo",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/FormIo/formio.svg"
+  },
+  "Pipedrive": {
+    "displayName": "Pipedrive",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Pipedrive/pipedrive.svg"
+  },
+  "Linear": {
+    "displayName": "Linear",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Linear/linear.svg"
+  },
+  "Mailjet": {
+    "displayName": "Mailjet",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mailjet/mailjet.svg"
+  },
+  "Segment": {
+    "displayName": "Segment",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Segment/segment.svg"
+  },
+  "ConvertKit": {
+    "displayName": "ConvertKit",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ConvertKit/convertKit.svg"
+  },
+  "HelpScout": {
+    "displayName": "HelpScout",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HelpScout/helpScout.svg"
+  },
+  "Cloudflare": {
+    "displayName": "Cloudflare",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Cloudflare/cloudflare.svg"
+  },
+  "Tapfiliate": {
+    "displayName": "Tapfiliate",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Tapfiliate/tapfiliate.svg"
+  },
+  "Intercom": {
+    "displayName": "Intercom",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Intercom/intercom.svg"
+  },
+  "UrlScanIo": {
+    "displayName": "UrlScanIo",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/UrlScanIo/urlScanIo.svg"
+  },
+  "Databricks": {
+    "displayName": "Databricks",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Databricks/databricks.svg"
+  },
+  "RespondToWebhook": {
+    "displayName": "RespondToWebhook",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/RespondToWebhook/webhook.svg"
+  },
+  "Shopify": {
+    "displayName": "Shopify",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Shopify/shopify.svg"
+  },
+  "Code": {
+    "displayName": "Code",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Code/code.svg"
+  },
+  "Mandrill": {
+    "displayName": "Mandrill",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mandrill/mandrill.svg"
+  },
+  "Adalo": {
+    "displayName": "Adalo",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Adalo/adalo.svg"
+  },
+  "Typeform": {
+    "displayName": "Typeform",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Typeform/typeform.svg"
+  },
+  "Amqp": {
+    "displayName": "Amqp",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Amqp/amqp.svg"
+  },
+  "ClickUp": {
+    "displayName": "ClickUp",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ClickUp/clickup.svg"
+  },
+  "Zulip": {
+    "displayName": "Zulip",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Zulip/zulip.svg"
+  },
+  "QuickBooks": {
+    "displayName": "QuickBooks",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/QuickBooks/quickbooks.svg"
+  },
+  "Grafana": {
+    "displayName": "Grafana",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Grafana/grafana.svg"
+  },
+  "Mailchimp": {
+    "displayName": "Mailchimp",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mailchimp/mailchimp.svg"
+  },
+  "Strava": {
+    "displayName": "Strava",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Strava/strava.svg"
+  },
+  "Html": {
+    "displayName": "Html",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Html/html.svg"
+  },
+  "RabbitMQ": {
+    "displayName": "RabbitMQ",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/RabbitMQ/rabbitmq.svg"
+  },
+  "Snowflake": {
+    "displayName": "Snowflake",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Snowflake/snowflake.svg"
+  },
+  "Cockpit": {
+    "displayName": "Cockpit",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Cockpit/cockpit.svg"
+  },
+  "Clearbit": {
+    "displayName": "Clearbit",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Clearbit/clearbit.svg"
+  },
+  "Demio": {
+    "displayName": "Demio",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Demio/demio.svg"
+  },
+  "SeaTable": {
+    "displayName": "SeaTable",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/SeaTable/seaTable.svg"
+  },
+  "Bubble": {
+    "displayName": "Bubble",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Bubble/bubble.svg"
+  },
+  "MongoDb": {
+    "displayName": "MongoDb",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MongoDb/mongodb.svg"
+  },
+  "HttpRequest": {
+    "displayName": "HttpRequest",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HttpRequest/httprequest.svg"
+  },
+  "Cal": {
+    "displayName": "Cal",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Cal/cal.svg"
+  },
+  "Notion": {
+    "displayName": "Notion",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Notion/notion.svg"
+  },
+  "Drift": {
+    "displayName": "Drift",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Drift/drift.svg"
+  },
+  "Ghost": {
+    "displayName": "Ghost",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Ghost/ghost.svg"
+  },
+  "Supabase": {
+    "displayName": "Supabase",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Supabase/supabase.svg"
+  },
+  "Vonage": {
+    "displayName": "Vonage",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Vonage/vonage.svg"
+  },
+  "Hubspot": {
+    "displayName": "Hubspot",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Hubspot/hubspot.svg"
+  },
+  "CoinGecko": {
+    "displayName": "CoinGecko",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/CoinGecko/coinGecko.svg"
+  },
+  "LoneScale": {
+    "displayName": "LoneScale",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/LoneScale/loneScale.svg"
+  },
+  "Pushover": {
+    "displayName": "Pushover",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Pushover/pushover.svg"
+  },
+  "Oura": {
+    "displayName": "Oura",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Oura/oura.svg"
+  },
+  "Netlify": {
+    "displayName": "Netlify",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Netlify/netlify.svg"
+  },
+  "Zammad": {
+    "displayName": "Zammad",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Zammad/zammad.svg"
+  },
+  "Airtable": {
+    "displayName": "Airtable",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Airtable/airtable.svg"
+  },
+  "N8n": {
+    "displayName": "N8n",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/N8n/n8n.svg"
+  },
+  "Todoist": {
+    "displayName": "Todoist",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Todoist/todoist.svg"
+  },
+  "Mailcheck": {
+    "displayName": "Mailcheck",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mailcheck/mailcheck.svg"
+  },
+  "SentryIo": {
+    "displayName": "SentryIo",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/SentryIo/sentryio.svg"
+  },
+  "Plivo": {
+    "displayName": "Plivo",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Plivo/plivo.svg"
+  },
+  "Postgres": {
+    "displayName": "Postgres",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Postgres/postgres.svg"
+  },
+  "Onfleet": {
+    "displayName": "Onfleet",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Onfleet/Onfleet.svg"
+  },
+  "Perplexity": {
+    "displayName": "Perplexity",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Perplexity/perplexity.svg"
+  },
+  "Jira": {
+    "displayName": "Jira",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Jira/jira.svg"
+  },
+  "Github": {
+    "displayName": "Github",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Github/github.svg"
+  },
+  "Figma": {
+    "displayName": "Figma",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Figma/figma.svg"
+  },
+  "Dropcontact": {
+    "displayName": "Dropcontact",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Dropcontact/dropcontact.svg"
+  },
+  "Facebook": {
+    "displayName": "Facebook",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Facebook/facebook.svg"
+  },
+  "ERPNext": {
+    "displayName": "ERPNext",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ERPNext/erpnext.svg"
+  },
+  "GoToWebinar": {
+    "displayName": "GoToWebinar",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/GoToWebinar/gotowebinar.svg"
+  },
+  "JotForm": {
+    "displayName": "JotForm",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/JotForm/jotform.svg"
+  },
+  "Zendesk": {
+    "displayName": "Zendesk",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Zendesk/zendesk.svg"
+  },
+  "Splunk": {
+    "displayName": "Splunk",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Splunk/splunk.svg"
+  },
+  "Kafka": {
+    "displayName": "Kafka",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Kafka/kafka.svg"
+  },
+  "Bitwarden": {
+    "displayName": "Bitwarden",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Bitwarden/bitwarden.svg"
+  },
+  "Lemlist": {
+    "displayName": "Lemlist",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Lemlist/lemlist.svg"
+  },
+  "OneSimpleApi": {
+    "displayName": "OneSimpleApi",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/OneSimpleApi/onesimpleapi.svg"
+  },
+  "PayPal": {
+    "displayName": "PayPal",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/PayPal/paypal.svg"
+  },
+  "FacebookLeadAds": {
+    "displayName": "FacebookLeadAds",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/FacebookLeadAds/facebook.svg"
+  },
+  "MySql": {
+    "displayName": "MySql",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MySql/mysql.svg"
+  },
+  "HumanticAI": {
+    "displayName": "HumanticAI",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HumanticAI/humanticai.svg"
+  },
+  "Telegram": {
+    "displayName": "Telegram",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Telegram/telegram.svg"
+  },
+  "Reddit": {
+    "displayName": "Reddit",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Reddit/reddit.svg"
+  },
+  "Okta": {
+    "displayName": "Okta",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Okta/Okta.svg"
+  },
+  "DeepL": {
+    "displayName": "DeepL",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/DeepL/deepl.svg"
+  },
+  "Discourse": {
+    "displayName": "Discourse",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Discourse/discourse.svg"
+  },
+  "Zoom": {
+    "displayName": "Zoom",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Zoom/zoom.svg"
+  },
+  "ReadWriteFile": {
+    "displayName": "ReadWriteFile",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Files/ReadWriteFile/readWriteFile.svg"
+  },
+  "ConvertToFile": {
+    "displayName": "ConvertToFile",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Files/ConvertToFile/convertToFile.svg"
+  },
+  "ExtractFromFile": {
+    "displayName": "ExtractFromFile",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Files/ExtractFromFile/extractFromFile.svg"
+  },
+  "Dropbox": {
+    "displayName": "Dropbox",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Dropbox/dropbox.svg"
+  },
+  "Pushbullet": {
+    "displayName": "Pushbullet",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Pushbullet/pushbullet.svg"
+  },
+  "Salesforce": {
+    "displayName": "Salesforce",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Salesforce/salesforce.svg"
+  },
+  "Wise": {
+    "displayName": "Wise",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Wise/wise.svg"
+  },
+  "Mailgun": {
+    "displayName": "Mailgun",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mailgun/mailgun.svg"
+  },
+  "Slack": {
+    "displayName": "Slack",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Slack/slack.svg"
+  },
+  "Aws": {
+    "displayName": "Aws",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/sns.svg"
+  },
+  "S3": {
+    "displayName": "S3",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/S3/s3.svg"
+  },
+  "Cognito": {
+    "displayName": "Cognito",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/Cognito/cognito.svg"
+  },
+  "DynamoDB": {
+    "displayName": "DynamoDB",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/DynamoDB/dynamodb.svg"
+  },
+  "ELB": {
+    "displayName": "ELB",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/ELB/elb.svg"
+  },
+  "SQS": {
+    "displayName": "SQS",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/SQS/sqs.svg"
+  },
+  "IAM": {
+    "displayName": "IAM",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/IAM/AwsIam.svg"
+  },
+  "Textract": {
+    "displayName": "Textract",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/Textract/textract.svg"
+  },
+  "SES": {
+    "displayName": "SES",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/SES/ses.svg"
+  },
+  "Comprehend": {
+    "displayName": "Comprehend",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/Comprehend/comprehend.svg"
+  },
+  "Rekognition": {
+    "displayName": "Rekognition",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/Rekognition/rekognition.svg"
+  },
+  "Transcribe": {
+    "displayName": "Transcribe",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/Transcribe/transcribe.svg"
+  },
+  "CertificateManager": {
+    "displayName": "CertificateManager",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/CertificateManager/acm.svg"
+  },
+  "Mattermost": {
+    "displayName": "Mattermost",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mattermost/mattermost.svg"
+  },
+  "v1": {
+    "displayName": "v1",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mattermost/v1/mattermost.svg"
+  },
+  "CustomerIo": {
+    "displayName": "CustomerIo",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/CustomerIo/customerio.svg"
+  },
+  "Phantombuster": {
+    "displayName": "Phantombuster",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Phantombuster/phantombuster.svg"
+  },
+  "PostHog": {
+    "displayName": "PostHog",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/PostHog/postHog.svg"
+  },
+  "Metabase": {
+    "displayName": "Metabase",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Metabase/metabase.svg"
+  },
+  "FreshworksCrm": {
+    "displayName": "FreshworksCrm",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/FreshworksCrm/freshworksCrm.svg"
+  },
+  "Dhl": {
+    "displayName": "Dhl",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Dhl/dhl.svg"
+  },
+  "Trello": {
+    "displayName": "Trello",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Trello/trello.svg"
+  },
+  "SurveyMonkey": {
+    "displayName": "SurveyMonkey",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/SurveyMonkey/surveyMonkey.svg"
+  },
+  "ItemLists": {
+    "displayName": "ItemLists",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ItemLists/itemLists.svg"
+  },
+  "Grist": {
+    "displayName": "Grist",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Grist/grist.svg"
+  },
+  "MQTT": {
+    "displayName": "MQTT",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MQTT/mqtt.svg"
+  },
+  "Clockify": {
+    "displayName": "Clockify",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Clockify/clockify.svg"
+  },
+  "Bitbucket": {
+    "displayName": "Bitbucket",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Bitbucket/bitbucket.svg"
+  },
+  "Jenkins": {
+    "displayName": "Jenkins",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Jenkins/jenkins.svg"
+  },
+  "Calendly": {
+    "displayName": "Calendly",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Calendly/calendly.svg"
+  },
+  "Currents": {
+    "displayName": "Currents",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Currents/currents.svg"
+  },
+  "ServiceNow": {
+    "displayName": "ServiceNow",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ServiceNow/servicenow.svg"
+  },
+  "UptimeRobot": {
+    "displayName": "UptimeRobot",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/UptimeRobot/uptimerobot.svg"
+  },
+  "Formstack": {
+    "displayName": "Formstack",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Formstack/formstack.svg"
+  },
+  "CompareDatasets": {
+    "displayName": "CompareDatasets",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/CompareDatasets/compare.svg"
+  },
+  "Airtop": {
+    "displayName": "Airtop",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Airtop/airtop.svg"
+  },
+  "ApiTemplateIo": {
+    "displayName": "ApiTemplateIo",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ApiTemplateIo/apiTemplateIo.svg"
+  },
+  "Sms77": {
+    "displayName": "Sms77",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Sms77/seven.svg"
+  },
+  "Gong": {
+    "displayName": "Gong",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Gong/gong.svg"
+  },
+  "OpenWeatherMap": {
+    "displayName": "OpenWeatherMap",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/OpenWeatherMap/openWeatherMap.svg"
+  },
+  "Sort": {
+    "displayName": "Sort",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Transform/Sort/sort.svg"
+  },
+  "Limit": {
+    "displayName": "Limit",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Transform/Limit/limit.svg"
+  },
+  "Aggregate": {
+    "displayName": "Aggregate",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Transform/Aggregate/aggregate.svg"
+  },
+  "Summarize": {
+    "displayName": "Summarize",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Transform/Summarize/summarize.svg"
+  },
+  "RemoveDuplicates": {
+    "displayName": "RemoveDuplicates",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Transform/RemoveDuplicates/removeDuplicates.svg"
+  },
+  "SplitOut": {
+    "displayName": "SplitOut",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Transform/SplitOut/splitOut.svg"
+  },
+  "Autopilot": {
+    "displayName": "Autopilot",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Autopilot/autopilot.svg"
+  },
+  "Brevo": {
+    "displayName": "Brevo",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Brevo/brevo.svg"
+  },
+  "SecurityScorecard": {
+    "displayName": "SecurityScorecard",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/SecurityScorecard/securityScorecard.svg"
+  },
+  "TimescaleDb": {
+    "displayName": "TimescaleDb",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/TimescaleDb/timescaleDb.svg"
+  },
+  "Strapi": {
+    "displayName": "Strapi",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Strapi/strapi.svg"
+  },
+  "MondayCom": {
+    "displayName": "MondayCom",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MondayCom/mondayCom.svg"
+  },
+  "ActionNetwork": {
+    "displayName": "ActionNetwork",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ActionNetwork/actionNetwork.svg"
+  },
+  "Asana": {
+    "displayName": "Asana",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Asana/asana.svg"
+  },
+  "Coda": {
+    "displayName": "Coda",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Coda/coda.svg"
+  },
+  "Npm": {
+    "displayName": "Npm",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Npm/npm.svg"
+  },
+  "ProfitWell": {
+    "displayName": "ProfitWell",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ProfitWell/profitwell.svg"
+  },
+  "N8nTrigger": {
+    "displayName": "N8nTrigger",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/N8nTrigger/n8nTrigger.svg"
+  },
+  "Git": {
+    "displayName": "Git",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Git/git.svg"
+  },
+  "WhatsApp": {
+    "displayName": "WhatsApp",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/WhatsApp/whatsapp.svg"
+  },
+  "Rocketchat": {
+    "displayName": "Rocketchat",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Rocketchat/rocketchat.svg"
+  },
+  "Mocean": {
+    "displayName": "Mocean",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mocean/mocean.svg"
+  },
+  "OpenAi": {
+    "displayName": "OpenAi",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/OpenAi/openAi.svg"
+  },
+  "LinkedIn": {
+    "displayName": "LinkedIn",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/LinkedIn/linkedin.svg"
+  },
+  "Twilio": {
+    "displayName": "Twilio",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Twilio/twilio.svg"
+  },
+  "TheHiveProject": {
+    "displayName": "TheHiveProject",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/TheHiveProject/thehiveproject.svg"
+  },
+  "Stripe": {
+    "displayName": "Stripe",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Stripe/stripe.svg"
+  },
+  "Flow": {
+    "displayName": "Flow",
+    "iconUrl": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Flow/flow.svg"
+  }
+}
