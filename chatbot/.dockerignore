@@ -1,0 +1,16 @@
+# ── chatbot/.dockerignore ────────────────────────────────────
+node_modules/
+.next/
+.turbo/
+.env
+.env.local
+.env.*.local
+*.pem
+npm-debug.log*
+*.pnpm-debug.log*
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+README.md
+playwright.config.ts
