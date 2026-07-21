@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 import { N9NIcon } from "./icons";
 import { VisibilitySelector, type VisibilityType } from "./visibility-selector";
+import { N8nConnectButton } from "./n8n-connect-button";
 
 function PureChatHeader({
   chatId,
@@ -49,11 +50,12 @@ function PureChatHeader({
       )}
 
       <div className="ml-auto hidden items-center gap-2.5 md:flex">
+        <N8nConnectButton />
         <div className="flex size-8 items-center justify-center rounded-lg bg-muted/40 ring-1 ring-border/50">
           <N9NIcon size={17} />
         </div>
         <span className="text-[13px] font-semibold tracking-tight text-sidebar-foreground/70">
-          Nodi <span className="font-normal opacity-60">Tutor Agent</span>
+          Naito <span className="font-normal opacity-60">Tutor Agent</span>
         </span>
       </div>
     </header>

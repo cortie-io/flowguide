@@ -284,17 +284,13 @@ function PureArtifact({
     }
   }, [artifact.documentId, artifactDefinition, setMetadata]);
 
-  if (!artifact.isVisible && !isMobile) {
+  if (!artifact.isVisible) {
     return (
       <div
         className="h-dvh w-0 shrink-0 overflow-hidden transition-[width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
         data-testid="artifact"
       />
     );
-  }
-
-  if (!artifact.isVisible) {
-    return null;
   }
 
   const consoleError =

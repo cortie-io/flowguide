@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-log = logging.getLogger("nodi.engine")
+log = logging.getLogger("naito.engine")
 
 _root = Path(__file__).resolve().parent.parent
 if str(_root) not in sys.path:
@@ -68,11 +68,29 @@ def _init_engine() -> "N8NQueryEngine":
                 return p
         return raw
 
+    def _resolve_chroma_path() -> Path | None:
+        candidates = [
+            _root / "RAG Builder" / "final" / "chroma_db",
+            _root / "RAG_dataset" / "chroma_db",
+            _root / "chroma_db",
+        ]
+        for p in candidates:
+            if p.exists():
+                return p
+        return None
+
     try:
         from query_engine import N8NQueryEngine
         chunks_path = _resolve_chunks_path()
+        chroma_path = _resolve_chroma_path()
         log.info("[Engine] chunks 경로: %s", chunks_path)
-        engine = N8NQueryEngine(chunks_path=chunks_path)
+        log.info("[Engine] ChromaDB 경로: %s", chroma_path or "없음 (BM25만 사용)")
+        engine = N8NQueryEngine(
+            chunks_path=chunks_path,
+            chroma_db_path=chroma_path,
+            ollama_base_url=settings.ollama_base_url,
+            embed_model=settings.embed_model,
+        )
         return engine
 
     except FileNotFoundError as e:

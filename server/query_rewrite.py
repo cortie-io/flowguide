@@ -12,7 +12,7 @@ from __future__ import annotations
 import logging
 import re
 
-log = logging.getLogger("nodi.query_rewrite")
+log = logging.getLogger("naito.query_rewrite")
 
 
 def rewrite_query(user_query: str) -> dict[str, str]:

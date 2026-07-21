@@ -2,7 +2,9 @@ import { z } from "zod";
 
 const textPartSchema = z.object({
   type: z.enum(["text"]),
-  text: z.string().min(1).max(2000),
+  // n8n 워크플로우 JSON을 채팅창에 직접 붙여넣는 수동 폴백 경로를 지원하려면
+  // 넉넉한 상한이 필요함 (복잡한 워크플로우는 수만 자에 달함).
+  text: z.string().min(1).max(100_000),
 });
 
 const filePartSchema = z.object({
@@ -30,8 +32,13 @@ export const postRequestBodySchema = z.object({
   id: z.string().uuid(),
   message: userMessageSchema.optional(),
   messages: z.array(toolApprovalMessageSchema).optional(),
-  selectedChatModel: z.string(),
-  selectedVisibilityType: z.enum(["public", "private"]),
+  selectedChatModel: z.string().optional(),
+  selectedVisibilityType: z.enum(["public", "private"]).default("private"),
+  raw_json: z.string().optional(),
+  needs_canvas: z.boolean().optional(),
+  openai_api_key: z.string().optional(),
+  n8n_url: z.string().optional(),
+  n8n_api_key: z.string().optional(),
 });
 
 export type PostRequestBody = z.infer<typeof postRequestBodySchema>;

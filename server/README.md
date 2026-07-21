@@ -1,4 +1,4 @@
-# nodi — Next-Gen Node Automation Tutor
+# Naito — Next-Gen Node Automation Tutor
 # FastAPI 백엔드 프로젝트 구조
 
 ```

@@ -12,7 +12,7 @@ from typing import AsyncGenerator
 
 from config import settings
 
-log = logging.getLogger("nodi.services")
+log = logging.getLogger("naito.services")
 
 
 def sse(event: str, data: dict | str) -> str:
@@ -25,46 +25,59 @@ def sse(event: str, data: dict | str) -> str:
 # =============================================================================
 
 _ERROR_PATCH_SYSTEM_PROMPT = """\
+[STRICT RULE] 이모지 및 특수 기호를 절대 사용하지 마십시오. 순수 마크다운만 사용.
 당신은 n8n 에러 진단 전문 튜터입니다.
-[에러 로그]를 분석하고 [RAG 처방 컨텍스트]에 근거하여 누구나 이해할 수 있게 해결 방법을 제시하십시오.
-**반드시 마크다운 형식**으로 작성하십시오.
+[에러 로그]를 분석하고 [RAG 처방 컨텍스트]와 n8n 지식을 활용하여 완전하고 상세한 해결 가이드를 제공하십시오.
 
-## 출력 템플릿 (반드시 이 구조 사용)
+## 출력 구조 (반드시 이 순서로, 각 섹션을 충분히 상세하게)
 
-```
 ## 에러 진단
 
-**에러 유형:** [에러 타입 한 줄]
-**발생 원인:** [왜 이 에러가 났는지 비전공자도 이해할 수 있게]
+**에러 유형:** [에러 타입]
+**발생 원인:** 비전공자도 이해할 수 있게 쉽게 설명 (2~3문장)
 
-## 원인 분석
-- **무슨 일이 일어났나**: 쉬운 말로 설명
-- **왜 발생했나**: 기술적 원인
-- **어느 노드에서**: 문제 위치
+## 상세 원인 분석
+
+에러가 발생한 기술적 원인을 깊이 있게 분석하십시오:
+- **무슨 일이 일어났나**: 데이터 흐름 관점에서 설명
+- **왜 발생했나**: 기술적 근본 원인 (n8n 내부 동작 포함)
+- **어느 노드/단계에서**: 에러 발생 위치와 맥락
+- **관련된 n8n 메커니즘**: 이 에러와 관련된 n8n 동작 방식 설명
 
 ## 해결 방법
 
-### 방법 1: [제목]
-1. 단계 설명
-2. 단계 설명
-
-### 방법 2: [제목] (있는 경우)
+### 방법 1: [가장 권장하는 방법 제목]
+이 방법을 권장하는 이유를 먼저 설명하고, 단계별로 상세하게 안내:
+1. 구체적인 단계 (어떤 노드, 어떤 파라미터, 어떤 값)
+2. 다음 단계
 ...
 
-## 패치 코드 (있는 경우)
+### 방법 2: [대안 방법] (해당하는 경우)
+언제 이 방법을 선택하는지 설명:
+1. ...
+
+## 수정 코드
+
 ```json
-{{ 수정된 코드 }}
+수정된 노드 설정 또는 코드 (적용 가능한 경우 반드시 포함)
 ```
 
-## 즉시 캔버스 적용 가능: YES / NO
-이유: ...
+수정 코드의 어떤 부분이 어떻게 달라졌는지 설명하십시오.
 
-## 재발 방지
-- 예방 방법 1
-- 예방 방법 2
-```
+## 즉시 캔버스 적용 가능 여부
 
-**규칙:** 속성명은 `백틱`, 영문 원문 유지, LEG 표기, 제품명은 **n8n**
+**가능 여부**: YES / NO
+**이유**: 구체적인 이유
+**적용 방법**: 단계별 안내
+
+## 재발 방지 및 모범 사례
+
+이 에러를 예방하기 위한 구체적인 방법과 n8n 베스트 프랙티스:
+1. **예방 방법**: 구체적인 설정 또는 패턴
+2. **모니터링**: 조기에 감지하는 방법
+3. **관련 패턴**: 비슷한 에러로 이어질 수 있는 다른 상황
+
+**규칙:** 속성명은 `백틱`, 영문 원문 유지, 제품명은 **n8n**
 
 [에러 로그]
 {error_log}
@@ -116,7 +129,7 @@ class ErrorPatchService:
         # BM25 가중 검색: troubleshooting 타입 우선
         query = " ".join(tokens) if tokens else error_log[:200]
 
-        from workflow_services import _sync_retrieve, _build_context, _stream_llm
+        from workflow_services import _sync_retrieve, _build_context, _stream_llm, _build_rag_sources
 
         import asyncio
         from functools import partial
@@ -133,7 +146,7 @@ class ErrorPatchService:
         user = f"이 에러를 진단하고 즉시 적용 가능한 패치 방법을 알려줘:\n{error_log[:500]}"
 
         patch_code = ""
-        async for token in _stream_llm(system, user, ctx["model"]):
+        async for token in _stream_llm(system, user, ctx["model"], history=ctx.get("history"), openai_api_key=ctx.get("openai_api_key")):
             patch_code += token
 
         # 원격 수술 버튼 카드 발행
@@ -144,6 +157,8 @@ class ErrorPatchService:
             "patch_payload": patch_code,
             "session_id": ctx["session_id"],
         })
+        if chunks:
+            yield sse("rag_sources", {"sources": _build_rag_sources(chunks)})
 
 
 # =============================================================================
@@ -151,64 +166,89 @@ class ErrorPatchService:
 # =============================================================================
 
 _REVERSE_SYSTEM_PROMPT = """\
+[CRITICAL] 이모지 및 특수 기호를 절대 사용하지 마십시오. 순수 마크다운만 사용.
+[CRITICAL] 아래 [워크플로우 데이터]에 실제로 존재하는 노드·파라미터·설정값만 분석하십시오.
+[CRITICAL] 데이터에 없는 내용을 추측·창작·추정하는 것은 엄금. 확인 불가 항목은 "확인 불가"로 표기.
+[CRITICAL] 각 노드의 실제 파라미터 값을 인라인 코드(`)로 명시하십시오.
+
 당신은 n8n 워크플로우 역분석 전문가입니다.
-아래 [워크플로우 토폴로지]와 [RAG 노드 스펙]을 바탕으로
-실무자가 즉시 이해할 수 있는 상세 분석 리포트를 JSON 배열로 출력하십시오.
+아래 [워크플로우 데이터]와 [RAG 노드 스펙]을 바탕으로 실무자가 즉시 이해할 수 있는
+상세 분석 리포트를 마크다운으로 작성하십시오.
+반드시 아래 6개 섹션을 모두 포함하고 각 섹션을 충분한 깊이로 채우십시오.
 
-=== 출력 규칙 (반드시 준수) ===
+---
 
-[layer: summary] — 전체 요약
-- content 필드에 다음을 포함하십시오:
-    1) 이 워크플로우가 수행하는 비즈니스 목적 (1~2문장)
-    2) 전체 데이터 흐름 요약: 트리거 → 처리 → 결과
-    3) 주목해야 할 특이 사항 (에러 처리, 대량 데이터, Rate Limit 등)
+## 1. 워크플로우 전체 목적
 
-[layer: nodes] — 노드별 핵심 역할
-- items 배열의 각 노드마다 반드시:
-    * role: 이 노드가 이 워크플로우에서 구체적으로 무슨 일을 하는지 2~3문장으로 설명.
-        단순히 노드 타입을 반복하지 말 것. Sticky Note는 내용 요약, Code 노드는 로직 요약 필수.
-    * key_params: 해당 노드의 핵심 파라미터 값을 key:value 형식으로 최대 3개.
-        예) url:"https://api.example.com", method:"POST", operation:"insert"
-    * warning: 이 노드에서 발생할 수 있는 운영 위험 (없으면 null)
+이 워크플로우가 자동화하는 비즈니스 프로세스와 목적을 3~5문장으로 구체적으로 설명하십시오.
+노드 이름 나열이 아닌, 이 자동화가 해결하는 문제와 최종 결과물을 중심으로 서술하십시오.
 
-[layer: expressions] — 수식 해설
-- 감지된 표현식이 없으면 items를 빈 배열로 출력하십시오.
-- 있을 경우 각 수식이 어느 노드에서 어떤 값을 꺼내는지 설명하십시오.
+---
 
-출력 형식 (JSON 배열):
-[
-  {{
-    "layer": "summary",
-    "title": "전체 워크플로우 요약",
-    "content": "..."
-  }},
-  {{
-    "layer": "nodes",
-    "title": "노드별 핵심 역할",
-    "items": [
-      {{
-        "node_name": "노드명 (영문 원문)",
-        "type": "n8n-nodes-base.XXX",
-        "layer": "trigger|processing|sink",
-        "role": "이 노드의 구체적 역할 설명 2~3문장",
-        "key_params": [{{"k": "파라미터명", "v": "값"}}],
-        "warning": "운영 주의사항 또는 null"
-      }}
-    ]
-  }},
-  {{
-    "layer": "expressions",
-    "title": "Expression 현미경 해설",
-    "items": [
-      {{"expression": "{{ $json.field }}", "node": "사용 노드명", "explanation": "이 수식이 꺼내는 값과 목적"}}
-    ]
-  }}
-]
+## 2. 전체 데이터 흐름
 
-모든 노드명과 파라미터 식별자는 영문 원문 유지.
-컨텍스트에 없는 내용은 추론으로 채우되, "추정:" 접두사를 붙이십시오.
+트리거에서 최종 출력까지 단계별로 어떤 데이터가 어떻게 변환·전달되는지 설명하십시오.
+아래 형식으로 흐름도를 먼저 표시하고, 각 단계를 2~3줄로 설명하십시오:
 
-[워크플로우 토폴로지]
+```
+[노드명] → [노드명] → [노드명] → ...
+```
+
+---
+
+## 3. 노드별 상세 분석
+
+각 노드를 아래 형식으로 분석하십시오. stickyNote는 제외하고 실행 노드만 분석하십시오.
+
+### [노드명] (`노드_타입_이름`)
+
+**이 노드의 역할**: 이 워크플로우 안에서 이 노드가 구체적으로 수행하는 작업을 2~3문장으로 서술. 타입명 반복 금지.
+
+**주요 파라미터 설정**:
+
+| 파라미터 | 설정값 | 의미 |
+|---|---|---|
+| `파라미터명` | `실제 값` | 이 값이 워크플로우에서 하는 역할 |
+
+데이터에서 확인된 파라미터만 기입. 비어 있으면 "파라미터 정보 없음"으로 기재.
+
+**입출력**:
+- 입력: 이 노드가 받는 데이터
+- 출력: 다음 노드로 넘기는 데이터
+
+**운영 주의사항**: 이 노드에서 발생할 수 있는 장애·에러·성능 이슈 (없으면 생략)
+
+---
+
+## 4. 중요 설정값 일람
+
+이 워크플로우 전체에서 운영 환경 변경 시 수정이 필요한 하드코딩 값, 자격증명, URL, 조건값 등을 표로 정리:
+
+| 노드명 | 설정 항목 | 현재 값 | 비고 |
+|---|---|---|---|
+
+---
+
+## 5. Expression 해설
+
+감지된 `{{{{ $json.xxx }}}}` 형태의 동적 표현식을 각각 설명하십시오.
+
+- `{{{{ 수식 }}}}` — [사용 노드명] — [꺼내는 값과 목적]
+
+감지된 수식이 없으면: "이 워크플로우에는 동적 표현식이 사용되지 않습니다."
+
+---
+
+## 6. 개선 제안
+
+이 워크플로우에서 발견된 문제점과 개선 방향을 구체적으로 최소 3개 제시하십시오:
+
+1. **[개선 항목명]**: 현재 상태 → 권장 개선 방법
+2. ...
+
+---
+
+[워크플로우 데이터]
 {topology}
 
 [RAG 노드 스펙 컨텍스트]
@@ -296,6 +336,60 @@ def _fallback_role_text(node: dict, layer_name: str) -> str:
         f"{node_name}({type_short})에서 데이터 변환·집계·비즈니스 로직이 수행됩니다. "
         f"입력 스키마 불일치와 대량 데이터 처리 시 성능 저하 가능성을 사전 점검해야 합니다."
     )
+
+
+def _build_rich_topology(workflow_json_str: str) -> dict:
+    """LLM에게 전달할 풍부한 워크플로우 데이터 (모든 파라미터 포함)."""
+    try:
+        wf = json.loads(workflow_json_str)
+    except (json.JSONDecodeError, TypeError):
+        return {"error": "JSON 파싱 실패"}
+
+    nodes = wf.get("nodes", [])
+    connections = wf.get("connections", {})
+
+    # 연결 순서 맵 구성
+    connection_map: dict[str, list[str]] = {}
+    for src, src_conns in connections.items():
+        targets: list[str] = []
+        for output_conns in src_conns.values():
+            for conn_list in output_conns:
+                for conn in conn_list:
+                    t = conn.get("node", "")
+                    if t:
+                        targets.append(t)
+        connection_map[src] = targets
+
+    node_data = []
+    for node in nodes:
+        ntype = node.get("type", "")
+        nname = node.get("name", "")
+        raw_params = node.get("parameters", {})
+
+        # 파라미터 정제 — 긴 값은 300자로 트리밍, 단 code 노드는 400자
+        max_val = 400 if ("code" in ntype.lower() or "function" in ntype.lower()) else 300
+        trimmed: dict = {}
+        for k, v in raw_params.items():
+            if isinstance(v, str):
+                trimmed[k] = v[:max_val] + "…" if len(v) > max_val else v
+            elif isinstance(v, (dict, list)):
+                s = json.dumps(v, ensure_ascii=False)
+                trimmed[k] = json.loads(s) if len(s) <= 250 else s[:250] + "…"
+            else:
+                trimmed[k] = v
+
+        node_data.append({
+            "name": nname,
+            "type": ntype,
+            "parameters": trimmed,
+            "connects_to": connection_map.get(nname, []),
+        })
+
+    return {
+        "workflow_name": wf.get("name", "Unknown"),
+        "nodes": node_data,
+        "total_nodes": len(nodes),
+    }
 
 
 def _parse_topology(workflow_json_str: str) -> dict:
@@ -405,28 +499,164 @@ class ReverseService:
     def __init__(self, engine):
         self.engine = engine
 
+    @staticmethod
+    def _find_balanced_json_object(text: str) -> str:
+        """텍스트 어디에 섞여 있든 첫 번째로 균형 잡힌 { ... } 객체를 추출.
+        문자열 리터럴 내부의 중괄호/이스케이프는 깊이 계산에서 제외한다."""
+        start = text.find("{")
+        while start != -1:
+            depth = 0
+            in_string = False
+            escape = False
+            for i in range(start, len(text)):
+                ch = text[i]
+                if in_string:
+                    if escape:
+                        escape = False
+                    elif ch == "\\":
+                        escape = True
+                    elif ch == '"':
+                        in_string = False
+                    continue
+                if ch == '"':
+                    in_string = True
+                elif ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+                    if depth == 0:
+                        return text[start : i + 1]
+            start = text.find("{", start + 1)
+        return ""
+
+    @staticmethod
+    def _extract_json_from_message(message: str) -> str:
+        """사용자 메시지에 붙여넣은 워크플로우 JSON 추출.
+        코드 펜스(언어 태그 유무 무관) / 메시지 전체 JSON / 설명 문구에 섞인 JSON
+        순서로 후보를 모아 첫 번째로 유효한 n8n 워크플로우 JSON을 채택한다."""
+        candidates: list[str] = []
+
+        fenced = re.search(r"```(?:json)?\s*([\s\S]+?)\s*```", message, re.IGNORECASE)
+        if fenced:
+            candidates.append(fenced.group(1).strip())
+
+        candidates.append(message.strip())
+
+        embedded = ReverseService._find_balanced_json_object(message)
+        if embedded:
+            candidates.append(embedded)
+
+        for candidate in candidates:
+            if not candidate.startswith("{"):
+                continue
+            try:
+                obj = json.loads(candidate)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(obj, dict) and ("nodes" in obj or "connections" in obj):
+                return candidate
+        return ""
+
+    @staticmethod
+    async def _fetch_from_n8n(ctx: dict) -> str:
+        """n8n REST API에서 워크플로우 JSON 자동 가져오기."""
+        import httpx as _httpx
+        n8n_url = (ctx.get("n8n_url") or "").rstrip("/")
+        api_key = ctx.get("n8n_api_key") or ""
+        if not n8n_url:
+            return ""
+        headers: dict[str, str] = {}
+        if api_key:
+            headers["X-N8N-API-KEY"] = api_key
+        try:
+            async with _httpx.AsyncClient(timeout=8.0) as client:
+                # 워크플로우 목록 조회
+                list_resp = await client.get(f"{n8n_url}/api/v1/workflows", headers=headers)
+                if not list_resp.is_success:
+                    return ""
+                workflows = list_resp.json().get("data", [])
+                if not workflows:
+                    return ""
+                # 메시지에서 워크플로우 이름 매칭
+                message_lower = ctx.get("message", "").lower()
+                target = None
+                for wf in workflows:
+                    name = (wf.get("name") or "").lower()
+                    if name and name in message_lower:
+                        target = wf
+                        break
+                # 이름 매칭 실패 → 가장 최근 수정된 워크플로우
+                if not target:
+                    target = max(
+                        workflows,
+                        key=lambda w: w.get("updatedAt") or w.get("createdAt") or "",
+                        default=None,
+                    )
+                if not target or not target.get("id"):
+                    return ""
+                # 상세 워크플로우 조회
+                detail_resp = await client.get(
+                    f"{n8n_url}/api/v1/workflows/{target['id']}", headers=headers
+                )
+                if detail_resp.is_success:
+                    log.info("[ReverseService] n8n에서 워크플로우 자동 로드: '%s'", target.get("name"))
+                    return json.dumps(detail_resp.json(), ensure_ascii=False)
+        except Exception as e:
+            log.warning("[ReverseService] n8n 자동 로드 실패: %s", e)
+        return ""
+
     async def stream(self, ctx: dict) -> AsyncGenerator[str, None]:
-        raw_json = ctx.get("raw_json", "")
+        from_extension = bool(ctx.get("raw_json", ""))
+        raw_json = (
+            ctx.get("raw_json", "")
+            or self._extract_json_from_message(ctx.get("message", ""))
+        )
+        fetched_name: str = ""
+        if not raw_json and ctx.get("n8n_url"):
+            fetched = await self._fetch_from_n8n(ctx)
+            if fetched:
+                try:
+                    fetched_name = json.loads(fetched).get("name", "")
+                except Exception:
+                    pass
+                raw_json = fetched
         if not raw_json:
-            yield sse("token", "워크플로우 JSON 데이터가 없습니다.")
+            guide = (
+                "워크플로우 JSON이 전달되지 않았습니다.\n\n"
+                "역분석 기능을 사용하는 방법:\n\n"
+                "**방법 1 — 브라우저 확장 프로그램 사용 (권장)**\n"
+                "Naito 확장 프로그램을 설치하면 n8n 캔버스를 열어두고 "
+                "\"분석해줘\"라고 입력하는 것만으로 자동으로 워크플로우를 가져옵니다.\n\n"
+                "**방법 2 — JSON 직접 붙여넣기**\n"
+                "n8n 에디터에서 워크플로우를 열고 `...` 메뉴 → `Download` → JSON 파일을 열어 내용을 복사한 뒤 "
+                "아래처럼 메시지에 붙여넣으세요:\n\n"
+                "```\n"
+                "이 워크플로우 분석해줘\n\n"
+                "```json\n"
+                "{ \"nodes\": [...], \"connections\": {...} }\n"
+                "```\n"
+                "```"
+            )
+            for chunk in re.split(r"(\n\n+)", guide):
+                if chunk:
+                    yield sse("token", chunk)
             return
 
-        # 토폴로지 파싱
-        topology = _parse_topology(raw_json)
+        # n8n에서 자동 로드한 경우 알림
+        if fetched_name:
+            yield sse("token", f"n8n에서 **{fetched_name}** 워크플로우를 불러왔습니다.\n\n")
+
+        # 풍부한 토폴로지 구성 (모든 파라미터 포함)
+        rich_topology = _build_rich_topology(raw_json)
         expressions = _extract_expressions_from_workflow(raw_json)
-        topology["expressions_found"] = expressions
+        rich_topology["expressions_found"] = expressions
 
-        # 노드 타입 목록으로 RAG 스펙 검색
-        all_nodes = (
-            topology.get("layers", {}).get("trigger", []) +
-            topology.get("layers", {}).get("processing", []) +
-            topology.get("layers", {}).get("sink", [])
-        )
+        # RAG 스펙 검색 — 노드 타입 쿼리
         node_types_query = " ".join(
-            set(n.get("type", "").split(".")[-1] for n in all_nodes)
+            set(n.get("type", "").split(".")[-1] for n in rich_topology.get("nodes", []))
         )
 
-        from workflow_services import _sync_retrieve, _build_context, _stream_llm
+        from workflow_services import _sync_retrieve, _build_context, _stream_llm, _build_rag_sources
         import asyncio
         from functools import partial
 
@@ -437,141 +667,15 @@ class ReverseService:
                     node_types_query, {"spec", "official_docs"}, 10)
         )
         context_str = _build_context(chunks)
-        topology_str = json.dumps(topology, ensure_ascii=False, indent=2)
+        topology_str = json.dumps(rich_topology, ensure_ascii=False, indent=2)
         system = _REVERSE_SYSTEM_PROMPT.format(
             topology=topology_str, context=context_str
         )
-        user = "이 n8n 워크플로우 토폴로지를 3층 아코디언 리포트 형식으로 역분석해줘."
+        user = "위 워크플로우 데이터를 6개 섹션으로 상세하게 역분석해줘."
 
-        report_json = ""
-        async for token in _stream_llm(system, user, ctx["model"]):
-            report_json += token
+        # 토큰을 실시간 스트리밍
+        async for token in _stream_llm(system, user, ctx["model"], history=ctx.get("history"), openai_api_key=ctx.get("openai_api_key")):
+            yield sse("token", token)
 
-        # 구조화 리포트 이벤트 발행
-        try:
-            report_data = json.loads(report_json.strip())
-        except json.JSONDecodeError:
-            report_data = {"raw": report_json}
-
-        if isinstance(report_data, list):
-            normalized_report = {
-                "summary": "",
-                "node_roles": [],
-                "expressions": [],
-                "raw_report": report_data,
-            }
-            for item in report_data:
-                layer = (item or {}).get("layer") if isinstance(item, dict) else None
-                if layer == "summary":
-                    normalized_report["summary"] = item.get("content", "")
-                elif layer in {"nodes", "node_roles"}:
-                    normalized_report["node_roles"] = item.get("items", [])
-                elif layer == "expressions":
-                    normalized_report["expressions"] = item.get("items", [])
-        elif isinstance(report_data, dict):
-            normalized_report = {
-                "summary": report_data.get("summary")
-                or report_data.get("topology_summary")
-                or report_data.get("overview")
-                or "",
-                "node_roles": report_data.get("node_roles")
-                or report_data.get("nodes")
-                or report_data.get("items")
-                or [],
-                "expressions": report_data.get("expressions")
-                or report_data.get("expressions_found")
-                or [],
-                "raw_report": report_data,
-            }
-
-            parsed_raw = _parse_report_from_raw(report_data.get("raw") or report_data.get("raw_report"))
-            if isinstance(parsed_raw, list):
-                for item in parsed_raw:
-                    layer = (item or {}).get("layer") if isinstance(item, dict) else None
-                    if layer == "summary" and not normalized_report.get("summary"):
-                        normalized_report["summary"] = item.get("content", "")
-                    elif layer in {"nodes", "node_roles"} and not normalized_report.get("node_roles"):
-                        normalized_report["node_roles"] = item.get("items", [])
-                    elif layer == "expressions" and not normalized_report.get("expressions"):
-                        normalized_report["expressions"] = item.get("items", [])
-            elif isinstance(parsed_raw, dict):
-                if not normalized_report.get("summary"):
-                    normalized_report["summary"] = parsed_raw.get("summary") or parsed_raw.get("overview") or ""
-                if not normalized_report.get("node_roles"):
-                    normalized_report["node_roles"] = (
-                        parsed_raw.get("node_roles")
-                        or parsed_raw.get("nodes")
-                        or parsed_raw.get("items")
-                        or []
-                    )
-                if not normalized_report.get("expressions"):
-                    normalized_report["expressions"] = (
-                        parsed_raw.get("expressions")
-                        or parsed_raw.get("expressions_found")
-                        or []
-                    )
-        else:
-            normalized_report = {
-                "summary": "",
-                "node_roles": [],
-                "expressions": [],
-                "raw_report": report_data,
-            }
-
-        topology_summary = {
-            "total_nodes": topology.get("total_nodes"),
-            "layers": {k: len(v) for k, v in topology.get("layers", {}).items()},
-            "expressions_count": len(expressions),
-        }
-
-        if not normalized_report.get("summary"):
-            normalized_report["summary"] = (
-                f"총 {topology_summary['total_nodes'] or 0}개 노드, "
-                f"트리거 {topology_summary['layers'].get('trigger', 0)}개, "
-                f"처리 {topology_summary['layers'].get('processing', 0)}개, "
-                f"적재 {topology_summary['layers'].get('sink', 0)}개, "
-                f"표현식 {topology_summary['expressions_count']}개"
-            )
-
-        if not normalized_report.get("node_roles"):
-            fallback_items = []
-            for node in all_nodes:
-                if node in topology.get("layers", {}).get("trigger", []):
-                    layer_name = "trigger"
-                    warning = "이벤트 급증 시 중복 실행/과호출 가능성을 모니터링하세요."
-                elif node in topology.get("layers", {}).get("sink", []):
-                    layer_name = "sink"
-                    warning = "외부 시스템 쓰기 실패 시 재시도/멱등성 전략이 필요합니다."
-                else:
-                    layer_name = "processing"
-                    if "stickynote" in str(node.get("type", "")).lower():
-                        warning = None
-                    else:
-                        warning = "입력 데이터 스키마 변동 시 런타임 오류가 발생할 수 있습니다."
-
-                fallback_items.append({
-                    "node_name": node.get("name", "Unknown"),
-                    "type": node.get("type", ""),
-                    "layer": layer_name,
-                    "role": _fallback_role_text(node, layer_name),
-                    "key_params": node.get("key_params", [])[:3],
-                    "warning": warning,
-                })
-
-            normalized_report["node_roles"] = fallback_items
-
-        if not normalized_report.get("expressions"):
-            normalized_report["expressions"] = [
-                {"expression": expr, "explanation": "워크플로우에서 감지된 표현식입니다."}
-                for expr in expressions
-            ]
-
-        yield sse("report", {
-            "type": "reverse_engineering",
-            "topology_summary": topology_summary,
-            # 구버전 사이드패널 호환: 최상위 필드도 함께 제공
-            "summary": normalized_report.get("summary", ""),
-            "node_roles": normalized_report.get("node_roles", []),
-            "expressions": normalized_report.get("expressions", []),
-            "report": normalized_report,
-        })
+        if chunks:
+            yield sse("rag_sources", {"sources": _build_rag_sources(chunks)})

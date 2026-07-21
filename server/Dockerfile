@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────
-# server/Dockerfile — nodi FastAPI 백엔드
+# server/Dockerfile — Naito FastAPI 백엔드
 #
 # 빌드 컨텍스트: 프로젝트 루트 (docker compose에서 context: . 로 실행)
 # 포함 항목:

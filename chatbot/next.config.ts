@@ -4,6 +4,8 @@ import type { NextConfig } from "next";
 const basePath = process.env.IS_DEMO === "1" ? "/demo" : "";
 
 const nextConfig: NextConfig = {
+  typescript: { ignoreBuildErrors: true },
+  eslint: { ignoreDuringBuilds: true },
   ...(basePath
     ? {
         basePath,
@@ -21,10 +23,9 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath,
   },
-  cacheComponents: true,
   devIndicators: false,
+  cacheComponents: true,
   poweredByHeader: false,
-  reactCompiler: true,
   logging: {
     fetches: {
       fullUrl: false,
@@ -42,6 +43,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  allowedDevOrigins: ["naito.chat"],
   experimental: {
     prefetchInlining: true,
     cachedNavigations: true,

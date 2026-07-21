@@ -45,8 +45,14 @@ function parseStructuredResponse(text: string): unknown | null {
 }
 
 function renderValue(value: unknown): string {
-  if (value === null || value === undefined) return "-";
-  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+  if (value === null || value === undefined) {
+    return "-";
+  }
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
     return String(value);
   }
   try {
@@ -61,7 +67,9 @@ function StructuredResponseView({ data }: { data: unknown }) {
     const isObjectRows = data.length > 0 && data.every((row) => isRecord(row));
     if (isObjectRows) {
       const keys = Array.from(
-        new Set(data.flatMap((row) => Object.keys(row as Record<string, unknown>)))
+        new Set(
+          data.flatMap((row) => Object.keys(row as Record<string, unknown>))
+        )
       ).slice(0, 8);
       return (
         <div className="overflow-x-auto rounded-xl border border-border/60 bg-background/80">
@@ -77,9 +85,15 @@ function StructuredResponseView({ data }: { data: unknown }) {
             </thead>
             <tbody>
               {data.map((row, rowIndex) => (
-                <tr className="border-t border-border/40" key={`row-${rowIndex}`}>
+                <tr
+                  className="border-t border-border/40"
+                  key={`row-${rowIndex}`}
+                >
                   {keys.map((key) => (
-                    <td className="px-3 py-2 align-top text-muted-foreground" key={`${rowIndex}-${key}`}>
+                    <td
+                      className="px-3 py-2 align-top text-muted-foreground"
+                      key={`${rowIndex}-${key}`}
+                    >
                       <pre className="whitespace-pre-wrap break-words font-mono text-[11px] leading-5">
                         {renderValue((row as Record<string, unknown>)[key])}
                       </pre>
@@ -112,7 +126,9 @@ function StructuredResponseView({ data }: { data: unknown }) {
       return (
         <CurriculumRenderer
           cards={data.cards}
-          description={typeof data.description === "string" ? data.description : undefined}
+          description={
+            typeof data.description === "string" ? data.description : undefined
+          }
         />
       );
     }
@@ -123,11 +139,18 @@ function StructuredResponseView({ data }: { data: unknown }) {
         {data.cards.map((card, index) => {
           const cardObj = isRecord(card) ? card : { value: card };
           return (
-            <section className="border-l-2 border-border/60 pl-4" key={`card-${index}`}>
+            <section
+              className="border-l-2 border-border/60 pl-4"
+              key={`card-${index}`}
+            >
               {Object.entries(cardObj).map(([key, value]) => (
                 <div className="mb-1 text-sm leading-6" key={key}>
-                  <span className="mr-1 font-semibold text-foreground/90">{key}:</span>
-                  <span className="text-muted-foreground">{renderValue(value)}</span>
+                  <span className="mr-1 font-semibold text-foreground/90">
+                    {key}:
+                  </span>
+                  <span className="text-muted-foreground">
+                    {renderValue(value)}
+                  </span>
                 </div>
               ))}
             </section>
@@ -143,8 +166,13 @@ function StructuredResponseView({ data }: { data: unknown }) {
         <table className="w-full text-left text-[12px]">
           <tbody>
             {Object.entries(data).map(([key, value]) => (
-              <tr className="border-t border-border/40 first:border-0" key={key}>
-                <th className="w-40 px-3 py-2 align-top font-semibold">{key}</th>
+              <tr
+                className="border-t border-border/40 first:border-0"
+                key={key}
+              >
+                <th className="w-40 px-3 py-2 align-top font-semibold">
+                  {key}
+                </th>
                 <td className="px-3 py-2 text-muted-foreground">
                   <pre className="whitespace-pre-wrap break-words font-mono text-[11px] leading-5">
                     {renderValue(value)}
@@ -254,7 +282,10 @@ const PurePreviewMessage = ({
     }
 
     if (type === "text") {
-      const parsed = message.role === "assistant" ? parseStructuredResponse(part.text) : null;
+      const parsed =
+        message.role === "assistant"
+          ? parseStructuredResponse(part.text)
+          : null;
       return (
         <MessageContent
           className={cn("text-[13px] leading-[1.65]", {
@@ -491,7 +522,7 @@ const PurePreviewMessage = ({
         {isAssistant && (
           <div className="flex shrink-0 items-start pt-0.5">
             <div className="flex size-9 items-center justify-center rounded-xl bg-muted/60 text-muted-foreground ring-1 ring-border/50">
-                <N9NIcon size={14} />
+              <N9NIcon size={14} />
             </div>
           </div>
         )}
@@ -517,7 +548,7 @@ export const ThinkingMessage = () => {
       <div className="flex items-start gap-3">
         <div className="flex shrink-0 items-start pt-0.5">
           <div className="flex size-9 items-center justify-center rounded-xl bg-muted/60 text-muted-foreground ring-1 ring-border/50">
-              <N9NIcon size={14} />
+            <N9NIcon size={14} />
           </div>
         </div>
 

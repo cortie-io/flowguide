@@ -11,13 +11,14 @@ app/routers/reverse.py   — 리버스 엔지니어링 전용 엔드포인트
 from __future__ import annotations
 
 import logging
+import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from app.core.credential_filter import get_credential_filter, CredentialFilter
 from app.core.session import get_session_store, SessionStore
 
-log = logging.getLogger("nodi.workflow")
+log = logging.getLogger("naito.workflow")
 router = APIRouter()
 
 
@@ -95,6 +96,49 @@ async def rollback_workflow(
         restored_workflow = snap.workflow_json,
         message           = f"'{snap.operation}' 작업 이전 상태로 롤백 완료.",
     )
+
+
+class RemoteInjectRequest(BaseModel):
+    n8n_url: str
+    api_key: str | None = None
+    workflow_json: dict
+
+
+@router.post("/remote-inject")
+async def remote_inject_workflow(req: RemoteInjectRequest):
+    """웹 유저가 자신의 n8n 인스턴스에 REST API로 워크플로우를 직접 생성."""
+    url = req.n8n_url.rstrip("/") + "/api/v1/workflows"
+    headers: dict[str, str] = {"Content-Type": "application/json"}
+    if req.api_key:
+        headers["X-N8N-API-KEY"] = req.api_key
+
+    payload = {
+        "name": req.workflow_json.get("name", "Naito 생성 워크플로우"),
+        "nodes": req.workflow_json.get("nodes", []),
+        "connections": req.workflow_json.get("connections", {}),
+        "settings": req.workflow_json.get("settings", {"executionOrder": "v1"}),
+        "staticData": None,
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(url, json=payload, headers=headers)
+            resp.raise_for_status()
+            data = resp.json()
+            workflow_id = data.get("id", "")
+            log.info("[RemoteInject] n8n 워크플로우 생성 완료 id=%s", workflow_id)
+            return {
+                "status": "ok",
+                "workflow_id": workflow_id,
+                "message": f"워크플로우가 n8n에 생성되었습니다 (ID: {workflow_id})",
+            }
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(
+            status_code=e.response.status_code,
+            detail=f"n8n API 오류: {e.response.text[:300]}",
+        )
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=502, detail=f"n8n 연결 실패: {str(e)}")
 
 
 @router.get("/snapshot/status")

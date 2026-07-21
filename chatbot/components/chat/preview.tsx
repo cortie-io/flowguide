@@ -18,8 +18,12 @@ export function Preview() {
         <div className="flex size-5 items-center justify-center rounded bg-muted/60 ring-1 ring-border/50">
           <SparklesIcon size={10} />
         </div>
-        <span className="text-[13px] font-semibold text-muted-foreground">Nodi</span>
-        <span className="text-[13px] text-muted-foreground/50">Tutor Agent</span>
+        <span className="text-[13px] font-semibold text-muted-foreground">
+          Naito
+        </span>
+        <span className="text-[13px] text-muted-foreground/50">
+          Tutor Agent
+        </span>
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center gap-8 px-8">

@@ -3,8 +3,8 @@
   "version": "3.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
-    "build": "tsx lib/db/migrate && next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "check": "ultracite check",
     "fix": "ultracite fix",

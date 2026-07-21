@@ -1,4 +1,4 @@
-// nodi background service worker — Side Panel edition
+// Naito background service worker — Side Panel edition
 'use strict';
 
 const AUTO_OPEN_THROTTLE_MS = 4500;
@@ -11,6 +11,7 @@ function isN8nUrl(url) {
     url.startsWith('http://127.0.0.1:5678') ||
     url.startsWith('https://localhost:5678') ||
     url.startsWith('https://127.0.0.1:5678') ||
+    url.startsWith('https://n8n.cortie.io') ||
     url.includes('://app.n8n.cloud/') ||
     url.includes('.n8n.cloud/')
   );
@@ -133,11 +134,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     resolveTargetTab((tab) => {
       if (!tab) {
-        sendResponse({ success: false, error: 'n8n 탭이 열려있지 않습니다. localhost:5678을 먼저 열어주세요.' });
+        sendResponse({ success: false, error: 'n8n 탭이 열려있지 않습니다. n8n.cortie.io 또는 localhost:5678을 먼저 열어주세요.' });
         return;
       }
 
-      console.info('[nodi] GET_CANVAS_JSON target tab:', {
+      console.info('[Naito] GET_CANVAS_JSON target tab:', {
         tabId: tab.id,
         url: tab.url,
       });
@@ -424,44 +425,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             return null;
           };
 
-          // ── Step 5: 클립보드 폴백 — Ctrl+A → Ctrl+C ─────────
-          // Pinia 접근 실패 시 n8n의 클립보드 복사 단축키를 사용
-          const clipboardFallback = () => {
-            return new Promise((resolve) => {
-              // 현재 포커스 위치 저장
-              const prevActive = document.activeElement;
-              
-              // 캔버스 영역 클릭 (포커스 이동)
-              const canvas = document.querySelector('.canvas-node-renderer, .workflow-canvas, [data-test-id="canvas"]');
-              if (canvas) canvas.click();
-
-              // Ctrl+A (전체 선택)
-              document.dispatchEvent(new KeyboardEvent('keydown', {
-                key: 'a', code: 'KeyA', ctrlKey: true, bubbles: true, cancelable: true
-              }));
-
-              setTimeout(() => {
-                // Ctrl+C (복사)
-                document.dispatchEvent(new KeyboardEvent('keydown', {
-                  key: 'c', code: 'KeyC', ctrlKey: true, bubbles: true, cancelable: true
-                }));
-
-                setTimeout(async () => {
-                  try {
-                    const text = await navigator.clipboard.readText();
-                    if (text && text.includes('"nodes"')) {
-                      resolve({ success: true, data: text, method: 'clipboard' });
-                    } else {
-                      resolve({ success: false, error: '클립보드에 워크플로우 데이터가 없습니다.' });
-                    }
-                  } catch (e) {
-                    resolve({ success: false, error: `클립보드 읽기 실패: ${e.message}` });
-                  }
-                }, 300);
-              }, 150);
-            });
-          };
-
           // ── 메인 실행 흐름 ────────────────────────────────────
           const vueApp = getVueApp();
 
@@ -713,6 +676,36 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         .catch(e => sendResponse({ success: false, error: e.message }));
     });
     return true;
+  }
+
+  // ── 현재 탭 스크린샷 캡처 ────────────────────────────────────
+  if (msg.type === 'CAPTURE_SCREENSHOT') {
+    // 캡처 대상: n8n 탭 우선, 없으면 현재 활성 탭
+    const doCapture = (windowId) => {
+      chrome.tabs.captureVisibleTab(
+        windowId,
+        { format: 'jpeg', quality: 80 },
+        (dataUrl) => {
+          if (chrome.runtime.lastError || !dataUrl) {
+            sendResponse({ success: false, error: chrome.runtime.lastError?.message || '캡처 실패' });
+          } else {
+            sendResponse({ success: true, dataUrl });
+          }
+        }
+      );
+    };
+
+    findN8nTab((tab) => {
+      if (tab) {
+        doCapture(tab.windowId);
+      } else {
+        // n8n 탭 없으면 현재 포커스 윈도우 기준 캡처
+        chrome.windows.getCurrent((win) => {
+          doCapture(win.id);
+        });
+      }
+    });
+    return true; // 비동기 sendResponse 유지
   }
 
   // ── Forward error from content script to side panel ──────────

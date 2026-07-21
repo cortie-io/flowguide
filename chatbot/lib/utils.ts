@@ -71,6 +71,11 @@ export async function fetchWithErrorHandlers(
       throw new ChatbotError('offline:chat');
     }
 
+    // Normalize opaque runtime/network TypeErrors into a user-friendly domain error.
+    if (error instanceof TypeError) {
+      throw new ChatbotError('offline:chat');
+    }
+
     throw error;
   }
 }
@@ -94,7 +99,9 @@ export function getDocumentTimestampByIndex(
 }
 
 export function sanitizeText(text: string) {
-  return text.replace('<has_function_call>', '');
+  return text
+    .replace('<has_function_call>', '')
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}]/gu, '');
 }
 
 export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {

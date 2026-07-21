@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  PanelLeftIcon,
-  PenSquareIcon,
-  TrashIcon,
-} from "lucide-react";
-import { N9NIcon, N9NWordmark } from "@/components/chat/icons";
+import { PanelLeftIcon, PenSquareIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "next-auth";
@@ -13,6 +8,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useSWRConfig } from "swr";
 import { unstable_serialize } from "swr/infinite";
+import { N9NIcon, N9NWordmark } from "@/components/chat/icons";
 import {
   getChatHistoryPaginationKey,
   SidebarHistory,
@@ -74,7 +70,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                 <SidebarMenuButton
                   asChild
                   className="size-11 !px-0 items-center justify-center group-data-[collapsible=icon]:group-hover/logo:opacity-0"
-                  tooltip="Nodi Tutor"
+                  tooltip="Naito Tutor"
                 >
                   <Link href="/" onClick={() => setOpenMobile(false)}>
                     <N9NIcon size={32} />

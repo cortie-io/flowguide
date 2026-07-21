@@ -8,12 +8,13 @@ import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   metadataBase: new URL("http://localhost:3000"),
-  title: "Nodi — n8n Tutor Agent",
-  description: "n8n 워크플로우 자동화 AI 튜터. 워크플로우 설계, 디버깅, 커리큘럼 학습을 도와드립니다.",
+  title: "Naito — n8n Tutor Agent",
+  description:
+    "n8n 워크플로우 자동화 AI 튜터. 워크플로우 설계, 디버깅, 커리큘럼 학습을 도와드립니다.",
   icons: {
-    icon: "/nodi-favicon.svg?v=3",
-    shortcut: "/nodi-favicon.svg?v=3",
-    apple: "/nodi-favicon.svg?v=3",
+    icon: "/naito-favicon.svg?v=6",
+    shortcut: "/naito-favicon.svg?v=6",
+    apple: "/apple-touch-icon.png",
   },
 };
 
@@ -65,9 +66,10 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <link href="/nodi-favicon.svg?v=3" rel="icon" type="image/svg+xml" />
-        <link href="/nodi-favicon.svg?v=3" rel="shortcut icon" />
-        <link href="/nodi-favicon.svg?v=3" rel="apple-touch-icon" />
+        <link href="/naito-favicon.svg?v=6" rel="icon" type="image/svg+xml" />
+        <link href="/naito-favicon.svg?v=6" rel="shortcut icon" />
+        <link href="/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180" />
+        <link href="/apple-touch-icon.png" rel="apple-touch-icon-precomposed" />
         <script
           // biome-ignore lint/security/noDangerouslySetInnerHtml: "Required"
           dangerouslySetInnerHTML={{

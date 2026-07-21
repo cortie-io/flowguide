@@ -1,12 +1,12 @@
 // ═══════════════════════════════════════════════════════════════
-//  nodi _Tutor Agent — sidepanel.js  (Side Panel Edition v2)
+//  Naito _Tutor Agent — sidepanel.js  (Side Panel Edition v2)
 //  Enterprise-grade single workspace controller
 // ═══════════════════════════════════════════════════════════════
 
 'use strict';
 
-const API_BASE   = 'http://localhost:8000';
-const WS_URL     = 'ws://localhost:8000/ws/extension';
+const API_BASE   = 'https://naito.chat/naito';
+const WS_URL     = 'wss://naito.chat/naito/ws/extension';
 const SESSION_KEY = 'n9n_sp_session';
 const AUTH_TOKEN_KEY = 'n9n_auth_token';
 
@@ -32,6 +32,20 @@ const ICON_SVG = {
 };
 
 // ══════════════════════════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════════════════════════
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ══════════════════════════════════════════════════════════════
 //  MARKDOWN RENDERER (regex-based simple parser)
 // ══════════════════════════════════════════════════════════════
 function renderMarkdown(mdText) {
@@ -42,21 +56,18 @@ function renderMarkdown(mdText) {
   let src = String(mdText).replace(/```([\w]*)\n?([\s\S]*?)```/g, (_, lang, code) => {
     const idx = codeBlocks.length;
     const langLabel = lang ? `<span class="code-lang">${esc(lang)}</span>` : '';
-    const copyBtn = `<button class="code-copy-btn" onclick="(function(b){navigator.clipboard.writeText(b.previousElementSibling.textContent).then(()=>{b.textContent='✓ 복사됨';setTimeout(()=>b.textContent='복사',1500)})})(this)">복사</button>`;
+    const copyBtn = `<button class="code-copy-btn" data-code-copy>복사</button>`;
     codeBlocks.push(`<div class="code-block-wrapper">${langLabel}<pre><code>${escHtml(code.trim())}</code></pre>${copyBtn}</div>`);
     return `\x00CODE${idx}\x00`;
   });
 
-  // ── 2. 인라인 이스케이프 ─────────────────────────────────────
-  const escHtml2 = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
-  // ── 3. 라인 단위 파싱 ────────────────────────────────────────
+  // ── 2. 라인 단위 파싱 ────────────────────────────────────────
   const lines = src.split('\n');
   const out   = [];
   let   i     = 0;
 
   const inlineFormat = (s) => {
-    s = escHtml2(s);
+    s = escHtml(s);
     s = s.replace(/`([^`]+)`/g,    '<code>$1</code>');
     s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
     s = s.replace(/\*([^*]+)\*/g,  '<em>$1</em>');
@@ -149,11 +160,7 @@ function renderMarkdown(mdText) {
   return out.join('\n');
 }
 
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-// ── DOM ────────────────────────────────────────────────────────
+// ── DOM refs ──────────────────────────────────────────────────
 const $stream      = document.getElementById('chat-stream');
 const $input       = document.getElementById('chat-input');
 const $sendBtn     = document.getElementById('send-btn');
@@ -189,7 +196,7 @@ const $docsView    = document.getElementById('docs-view');
 function getSessionId() {
   let sid = sessionStorage.getItem(SESSION_KEY);
   if (!sid) {
-    sid = `nodi-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    sid = `naito-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     sessionStorage.setItem(SESSION_KEY, sid);
   }
   return sid;
@@ -546,16 +553,6 @@ document.getElementById('empty-shortcuts')?.addEventListener('click', (e) => {
 });
 
 // ══════════════════════════════════════════════════════════════
-//  HTML ESCAPING
-// ══════════════════════════════════════════════════════════════
-function esc(s) {
-  return String(s ?? '')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-    .replace(/'/g,'&#39;');
-}
-
-// ══════════════════════════════════════════════════════════════
 //  RENDER — USER BUBBLE
 // ══════════════════════════════════════════════════════════════
 function renderUserBubble(text) {
@@ -589,7 +586,7 @@ function createAiBlock(intentLabel = 'AI') {
         </svg>
       </div>
       <div class="ai-meta">
-        <span class="ai-name">nodi</span>
+        <span class="ai-name">Naito</span>
         <span class="intent-badge ${badgeClass}" data-badge>${esc(intentLabel)}</span>
       </div>
     </div>
@@ -623,7 +620,7 @@ function appendSkeleton() {
           <circle cx="22.5" cy="19.5" r="2.8" fill="#C4B5FD" opacity="0.7"/>
         </svg>
       </div>
-      <span class="ai-name">nodi</span>
+      <span class="ai-name">Naito</span>
     </div>
     <div class="skeleton-wrap">
       <div class="skeleton-line" style="width:88%"></div>
@@ -1512,12 +1509,29 @@ function handleSend() {
   if (!text || state.streaming) return;
 
   // Auto-detect pasted n8n JSON
-  let raw_json = null;
   if (text.includes('"connections"') && text.includes('"nodes"')) {
-    raw_json = text;
+    sendMessage(text, { raw_json: text });
+    $input.value = '';
+    autoResize();
+    return;
   }
 
-  sendMessage(text, { raw_json });
+  // 현재 워크플로우 관련 요청이면 캔버스 JSON 자동 첨부
+  const needsCanvas = /현재|이\s*워크플로우|캔버스|분석|설명|봐줘|해줘|흐름/.test(text);
+  if (needsCanvas && typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+    $input.value = '';
+    autoResize();
+    chrome.runtime.sendMessage({ type: 'GET_CANVAS_JSON' }, (resp) => {
+      if (resp?.success && resp.data) {
+        sendMessage(text, { raw_json: resp.data });
+      } else {
+        sendMessage(text, {});
+      }
+    });
+    return;
+  }
+
+  sendMessage(text, {});
   $input.value = '';
   autoResize();
 }
@@ -1557,7 +1571,7 @@ function handleChipCanvas() {
 
     // 디버그 정보가 있으면 콘솔에 출력
     if (resp.debug_store_ids) {
-      console.warn('[nodi] 스토어 ID 목록:', resp.debug_store_ids);
+      console.warn('[Naito] 스토어 ID 목록:', resp.debug_store_ids);
     }
 
     // 실패 메시지 표시
@@ -1567,21 +1581,11 @@ function handleChipCanvas() {
     // 스토어 ID를 못 찾은 경우 → 디버그 모드 안내
     if (resp.debug_store_ids) {
       console.info(
-        '[nodi] 캔버스 수집 실패 — background.js에 스토어 ID를 추가해야 할 수 있습니다.\n' +
+        '[Naito] 캔버스 수집 실패 — background.js에 스토어 ID를 추가해야 할 수 있습니다.\n' +
         '발견된 스토어 ID: ' + resp.debug_store_ids.join(', ') + '\n' +
         'DEBUG_STORE_IDS 메시지로 상세 정보를 확인하세요.'
       );
     }
-  });
-}
-
-// 디버그 전용: 현재 n8n Pinia 스토어 구조 출력 (콘솔 확인용)
-function debugStoreIds() {
-  if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) return;
-  chrome.runtime.sendMessage({ type: 'DEBUG_STORE_IDS' }, (resp) => {
-    console.group('[nodi] Pinia 스토어 디버그');
-    console.log(resp);
-    console.groupEnd();
   });
 }
 
@@ -1608,6 +1612,20 @@ $fileInput.addEventListener('change', (e) => {
   };
   reader.readAsText(file);
   $fileInput.value = '';
+});
+
+// ── 코드 블록 복사 이벤트 위임 ────────────────────────────────
+$stream.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-code-copy]');
+  if (!btn) return;
+  const code = btn.previousElementSibling?.textContent ?? '';
+  navigator.clipboard.writeText(code)
+    .then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ 복사됨';
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    })
+    .catch(() => {});
 });
 
 // ══════════════════════════════════════════════════════════════

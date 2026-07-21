@@ -14,7 +14,7 @@ from typing import AsyncGenerator
 
 from config import settings
 
-log = logging.getLogger("nodi.services.general")
+log = logging.getLogger("naito.services.general")
 
 
 def sse(event: str, data: dict | str) -> str:
@@ -23,38 +23,26 @@ def sse(event: str, data: dict | str) -> str:
 
 
 _GENERAL_SYSTEM_PROMPT = """\
+[CRITICAL] 이모지 및 특수 기호(🚀💡✨ 등)를 절대 사용하지 마십시오. 순수 마크다운만 사용.
+[CRITICAL] [검색된 컨텍스트]를 주요 근거로 삼되, 컨텍스트가 부족한 경우 n8n에 대한 일반 지식을 보완적으로 활용하십시오.
+[CRITICAL] 확인할 수 없는 내용은 "확인되지 않은 내용입니다"라고 명시하십시오.
+
 당신은 n8n 워크플로우 자동화 전문 튜터입니다.
-아래 [검색된 컨텍스트]에 근거하여 초보자부터 전문가까지 누구나 이해할 수 있도록 체계적으로 답변하십시오.
+단순한 요약이 아닌, 실무자가 즉시 활용할 수 있는 수준의 상세하고 깊이 있는 답변을 제공하십시오.
 
-## 출력 형식 규칙 (반드시 마크다운으로 작성)
+**답변 원칙:**
+- 개념 설명 → 실제 사용 방법 → 예시 코드/설정 → 주의사항 순으로 전개
+- 추상적 설명이 아닌 구체적인 파라미터값, 설정 방법, 실제 예시를 포함
+- 관련 노드나 패턴이 있으면 함께 언급
+- 흔한 실수나 트러블슈팅 포인트 포함
 
-**구조 템플릿:**
-```
-## 핵심 요약
-한 문장으로 핵심을 설명
-
-## 상세 설명
-개념과 원리를 단계별로 서술
-
-## 실전 활용법
-- 사용 시나리오 1
-- 사용 시나리오 2
-
-## 주의사항 (해당되는 경우)
-중요한 주의점
-```
-
-**필수 포맷 규칙:**
-- 섹션 제목은 `##` 헤더 사용
-- 목록은 `- ` 불릿 또는 `1.` 번호 사용
-- 핵심 키워드는 **볼드** 강조
-- 파라미터/노드명은 `백틱` 코드 형식
-- 코드 예시는 반드시 ```json 또는 ```javascript 블록
-- 제품명은 반드시 **n8n** (nn, N8N 금지)
-- 컨텍스트에 없는 내용은 "확인되지 않습니다"로 명시
-- 한 문단은 최대 2~3문장으로 유지
-- 서로 다른 주제는 반드시 빈 줄로 분리
-- 목록이 2개 이상이면 문장으로 늘어놓지 말고 반드시 목록으로 정리
+**포맷 규칙:**
+- 섹션 제목: `##` 헤더
+- 목록: `- ` 불릿 또는 `1.` 번호
+- 핵심 키워드: **볼드**
+- 노드/파라미터명: `백틱`
+- 코드: ```json 또는 ```javascript 블록
+- 제품명: **n8n** (nn, N8N 금지)
 
 [검색된 컨텍스트]
 {context}
@@ -62,56 +50,34 @@ _GENERAL_SYSTEM_PROMPT = """\
 
 
 _NODE_DETAIL_SYSTEM_PROMPT = """\
+[CRITICAL] 이모지 및 특수 기호를 절대 사용하지 마십시오. 순수 마크다운만 사용.
+[CRITICAL] [검색된 컨텍스트]를 우선 근거로 삼되, 일반적인 n8n 노드 지식으로 보완하십시오.
+[CRITICAL] "(LEG: ...)" 또는 "(팩트)" 등 출처 표기를 절대 추가하지 마십시오.
+
 당신은 n8n 노드 전문 튜터입니다.
-아래 [검색된 컨텍스트]를 근거로 노드와 속성을 초보자도 이해할 수 있게 체계적으로 설명하십시오.
+노드에 대한 완전하고 상세한 설명을 제공하십시오.
 
-## 출력 형식 규칙 (반드시 마크다운으로 작성)
+## 답변 구조 (항상 이 구조로 작성)
 
-**노드 전체 설명 시 — 다음 순서를 반드시 지킬 것:**
-```
-## [노드명] 노드란?
-한 줄 정의: 이 노드는 ___입니다.
+### 노드 개요
+이 노드가 무엇인지, 어떤 상황에서 사용하는지 3~4문장으로 설명.
 
-## 언제 사용하나요?
-- 상황 1
-- 상황 2
+### 주요 파라미터
+각 파라미터의 역할, 허용값, 기본값을 상세히 설명. 코드 예시 포함.
 
-## 동작 방식
-단계별 흐름 설명 (1→2→3)
+### 실제 사용 예시
+구체적인 사용 사례와 설정값을 코드 블록으로 제시.
 
-## 주요 속성
-- **`속성명`** (`타입`): 설명. 기본값: `값`
-- **`속성명`** (`타입`): 설명
+### 연결 패턴
+이 노드 앞뒤에 자주 오는 노드와 그 이유.
 
-## 유사 노드와 차이점 (해당되는 경우)
-| 노드 | 특징 |
-|------|------|
-| Switch | 여러 분기 가능 |
-| IF | 참/거짓 2개 분기만 |
+### 주의사항 및 트러블슈팅
+흔한 실수, 에러 케이스, 해결 방법.
 
-## 주의사항
-중요한 함정이나 제한사항
-```
-
-**특정 속성 질문 시:**
-```
-## `속성명` 속성
-- **정의**: 무엇을 하는 속성인지
-- **타입**: options / boolean / string 등
-- **선택지**: 각 값의 의미
-- **언제 쓰는지**: 실제 사용 시나리오
-- **기본값**: 기본적으로 어떻게 설정되어 있는지
-```
-
-**필수 포맷 규칙:**
-- 섹션 제목은 `##` 사용
-- 속성명은 **`백틱+볼드`** 형식: **`operationMode`**
-- 목록은 `- ` 불릿
-- 코드는 반드시 코드 블록
-- 제품명은 **n8n** (nn, N8N 금지)
-- ※ 속성 설명 후: "(LEG: n8n_properties_spec 기반 팩트)"
-- 한 문단은 최대 2~3문장으로 유지
-- 서로 다른 설명 블록은 빈 줄로 분리
+**포맷 규칙:**
+- 속성명: **`백틱+볼드`** 형식
+- 코드: 반드시 코드 블록
+- 제품명: **n8n** (nn, N8N 금지)
 
 [검색된 컨텍스트]
 {context}
@@ -124,9 +90,9 @@ _GREETING_PATTERN = re.compile(
 )
 
 
-_GREETING_RESPONSE = """## Nodi에 오신 걸 환영합니다
+_GREETING_RESPONSE = """## Naito에 오신 걸 환영합니다
 
-안녕하세요. 저는 **n8n 자동화 튜터 Nodi**입니다.
+안녕하세요. 저는 **n8n 자동화 튜터 Naito**입니다.
 
 도와드릴 수 있는 대표 영역은 아래와 같습니다.
 
@@ -155,6 +121,119 @@ _GREETING_RESPONSE = """## Nodi에 오신 걸 환영합니다
 
 def _is_greeting(message: str) -> bool:
     return bool(_GREETING_PATTERN.search(message.strip()))
+
+
+# ── 노드 존재 검증 레이어 ──────────────────────────────────────────
+
+_NODE_QUERY_PATTERNS = [
+    re.compile(r"([A-Za-z][A-Za-z0-9 ]{2,50}?)\s*노드란", re.IGNORECASE),
+    re.compile(r"([A-Za-z][A-Za-z0-9 ]{2,50}?)\s*노드\s*(설명|사용법|뭐야|무엇|이란|에 대해|어떻게|란|알려|소개|가 뭐|가 어떤)", re.IGNORECASE),
+    re.compile(r"([A-Za-z][A-Za-z0-9 ]{2,50}?)\s*(이란|란|가 뭐야|가 무엇|을 설명|에 대해)\s*\??$", re.IGNORECASE),
+    re.compile(r"([A-Za-z][A-Za-z0-9 ]{2,50}?)\s+Trigger\b.*노드", re.IGNORECASE),
+    re.compile(r"([A-Za-z][A-Za-z0-9 ]{2,50}?)\s+Node\b.*란", re.IGNORECASE),
+]
+
+_IGNORED_QUERY_TARGETS = {
+    "n8n", "the", "this", "what", "해당", "이", "그", "해당 노드", "어떤", "특정",
+    "a", "an", "trigger", "node",
+}
+
+
+def _extract_node_query_target(message: str) -> str | None:
+    """
+    "MeshNetwork Trigger 노드란?" → "MeshNetwork Trigger"
+    특정 노드를 물어보는 패턴일 때 노드명을 반환한다.
+    일반 질문("노드 연결법이 뭐야?" 등)에서는 None 반환.
+    """
+    for pattern in _NODE_QUERY_PATTERNS:
+        m = pattern.search(message.strip())
+        if m:
+            name = m.group(1).strip()
+            if (
+                len(name) >= 3
+                and name.lower() not in _IGNORED_QUERY_TARGETS
+                and not name.lower().startswith("n8n ")
+            ):
+                return name
+    return None
+
+
+_GENERIC_NODE_WORDS = {"trigger", "node", "action", "event", "service", "api", "tool", "connector"}
+
+
+def _node_in_ontology(node_name: str) -> bool:
+    """
+    453-노드 온톨로지에서 해당 노드명이 존재하는지 확인.
+    - 양방향 문자열 포함 일치
+    - 단어 교집합은 의미 있는 단어(generic 단어 제외)에 한해서만 적용
+    """
+    try:
+        from ontology_enhancer import _ALL_NODE_DEFS, _KO_TO_SHORT
+    except Exception:
+        return True  # import 실패 시 안전하게 True 반환 (차단하지 않음)
+
+    name_lower = node_name.lower().strip()
+    name_words = set(name_lower.split())
+    # 의미 있는 단어만 추출 (generic 단어 제외)
+    meaningful_words = name_words - _GENERIC_NODE_WORDS
+
+    for node in _ALL_NODE_DEFS:
+        dn = node.display_name.lower()
+        st = node.short_type.lower()
+        # 1. 양방향 부분 일치 (길이 3 이상인 경우만)
+        if len(name_lower) >= 4 and (name_lower in dn or dn in name_lower):
+            return True
+        if len(name_lower) >= 4 and (name_lower in st or st in name_lower):
+            return True
+        # 2. 의미 있는 단어 전체 일치 (generic 단어 제외 후 모두 일치)
+        if meaningful_words:
+            dn_meaningful = set(dn.split()) - _GENERIC_NODE_WORDS
+            if meaningful_words and meaningful_words == dn_meaningful:
+                return True
+            # camelCase short_type에서 분리된 단어들과도 비교
+            st_meaningful = set(re.sub(r"([A-Z])", r" \1", node.short_type).lower().split()) - _GENERIC_NODE_WORDS
+            if meaningful_words and meaningful_words == st_meaningful:
+                return True
+
+    if node_name in _KO_TO_SHORT:
+        return True
+
+    return False
+
+
+def _node_in_chunks(node_name: str, chunks: list[dict]) -> bool:
+    """RAG 검색 결과에 해당 노드명이 실제로 등장하는지 확인."""
+    name_lower = node_name.lower()
+    words = node_name.split()
+    # camelCase 변환 (예: "HTTP Request" → "httpRequest")
+    camel = words[0].lower() + "".join(w.capitalize() for w in words[1:]) if len(words) > 1 else name_lower
+
+    for chunk in chunks:
+        haystack = " ".join(
+            str(chunk.get(k, "")) for k in ("title", "source", "text", "node_type", "node_name")
+        ).lower()
+        if name_lower in haystack or camel.lower() in haystack:
+            return True
+    return False
+
+
+_NOT_FOUND_SUGGEST = """\
+### 혹시 이런 노드를 찾고 계신가요?
+
+찾으시는 기능이 있다면 아래 노드들을 확인해 보세요.
+
+**이벤트/트리거 관련:**
+- **Webhook** — 외부 서비스에서 HTTP 요청을 받아 워크플로우 시작
+- **Schedule Trigger** — 크론(Cron) 기반 주기 실행
+- **Manual Trigger** — 수동으로 워크플로우 실행
+
+**데이터 수신/연동:**
+- **HTTP Request** — 외부 API 호출
+- **MQTT Trigger** — IoT/메시지 브로커 연동
+- **WebSocket Trigger** — 실시간 소켓 이벤트 수신
+
+원하시는 자동화 시나리오를 말씀해 주시면 적합한 노드를 추천해 드리겠습니다.\
+"""
 
 
 _CORE_NODE_ALIASES = {
@@ -349,13 +428,13 @@ class GeneralRAGService:
         self.engine = engine
 
     async def stream(self, ctx: dict) -> AsyncGenerator[str, None]:
-        from workflow_services import _sync_retrieve, _sync_retrieve_spec, _build_context, _stream_llm
+        from workflow_services import _sync_retrieve, _sync_retrieve_spec, _build_context, _stream_llm, _build_rag_sources
         import asyncio
         from functools import partial
 
-        query = ctx["message"]
+        query = ctx.get("rag_query") or ctx["message"]
 
-        if _is_greeting(query):
+        if _is_greeting(ctx["message"]):
             for chunk in re.split(r"(\n\n)", _GREETING_RESPONSE):
                 if chunk:
                     yield sse("token", chunk)
@@ -386,21 +465,84 @@ class GeneralRAGService:
                 partial(_sync_retrieve, self.engine, expanded_query, None, 8)
             )
 
+        # ── 노드 존재 검증 (Layer 1: LLM 호출 전 차단) ───────────────
+        specific_node = _extract_node_query_target(ctx["message"])
+        if specific_node and filter_types is not None:
+            in_ontology = _node_in_ontology(specific_node)
+            in_chunks   = _node_in_chunks(specific_node, chunks)
+
+            if not in_ontology and not in_chunks:
+                # 온톨로지 + RAG 모두 해당 노드 없음 → 존재하지 않는 노드
+                log.info("[AntiHallucination] 미존재 노드 요청 차단: '%s'", specific_node)
+                not_found = (
+                    f"**{specific_node}** 노드는 n8n 공식 노드 목록에 존재하지 않습니다.\n\n"
+                    "이 이름의 노드는 n8n에 내장되어 있지 않으며, "
+                    "저의 지식 베이스(RAG 코퍼스)에도 관련 문서가 없습니다.\n\n"
+                    + _NOT_FOUND_SUGGEST
+                )
+                for chunk in re.split(r"(\n\n)", not_found):
+                    if chunk:
+                        yield sse("token", chunk)
+                return
+
+            if not in_chunks and in_ontology:
+                # 노드는 실존하지만 RAG에 상세 문서 없음 → 제한 주의
+                log.info("[AntiHallucination] 온톨로지에는 있으나 RAG 문서 없음: '%s'", specific_node)
+
         if not chunks:
-            system = (
-                _NODE_DETAIL_SYSTEM_PROMPT if filter_types is not None else _GENERAL_SYSTEM_PROMPT
-            ).format(context="(검색된 컨텍스트 없음 — RAG 엔진 미초기화 상태)")
+            context_str = "(검색된 컨텍스트 없음 — RAG 엔진 미초기화 상태)"
         else:
             context_str = _build_context(chunks)
-            system = (
-                _NODE_DETAIL_SYSTEM_PROMPT if filter_types is not None else _GENERAL_SYSTEM_PROMPT
-            ).format(context=context_str)
+
+        base_prompt = _NODE_DETAIL_SYSTEM_PROMPT if filter_types is not None else _GENERAL_SYSTEM_PROMPT
+        system = base_prompt.format(context=context_str)
+
+        # ── 노드 존재하나 문서 부족 시 system에 경고 주입 ─────────────
+        if specific_node and filter_types is not None:
+            if not _node_in_chunks(specific_node, chunks) and _node_in_ontology(specific_node):
+                system += (
+                    f"\n\n[⚠ 컨텍스트 경고] '{specific_node}' 노드는 n8n에 존재하지만 "
+                    "현재 검색된 컨텍스트에 해당 노드의 상세 문서가 없습니다. "
+                    "확인된 기본 정보만 제공하고, 속성이나 동작 방식을 추측하거나 창작하지 마십시오. "
+                    "정보가 부족하면 솔직하게 '상세 정보를 확인할 수 없습니다'라고 답하십시오."
+                )
+
+        # 온톨로지 힌트 주입 (ANTI-PATTERN / RECOMMEND / BEST-PRACTICE 등)
+        ontology_hints: list = ctx.get("ontology_hints") or []
+        if ontology_hints:
+            system += "\n\n[온톨로지 힌트 — 답변 시 반드시 참고]\n" + "\n".join(f"- {h}" for h in ontology_hints)
+
+        # 오타 교정 주입 — LLM이 원래 의도를 정확히 인식하도록
+        typo_corrections: list = ctx.get("typo_corrections") or []
+        if typo_corrections:
+            lines = "\n".join(f"  - '{orig}' → {canon}" for orig, canon in typo_corrections)
+            system += (
+                "\n\n[⚠ 오타 자동 교정 — 매우 중요]\n"
+                "사용자가 입력한 단어에 오타가 감지되어 아래와 같이 교정하였습니다.\n"
+                + lines + "\n"
+                "규칙:\n"
+                "1. 오타 단어(교정 전)는 실제로 존재하지 않는 용어입니다. 절대 별도 개념으로 설명하지 마십시오.\n"
+                "2. '비공식 표현', '구어체', '약어' 등으로 정당화하지 마십시오.\n"
+                "3. 교정된 공식 노드명만 기준으로 답변하십시오.\n"
+                "4. 필요하다면 답변 첫 줄에 '(입력하신 [오타]는 [교정어]의 오타로 인식됩니다)'라고 한 줄 언급 후 본론으로 넘어가십시오."
+            )
 
         # 구조화된 속성 카드 이벤트 먼저 발행 (spec 청크에 properties 있을 때)
         if filter_types is not None:
             prop_card = _build_property_card(chunks, query)
             if prop_card:
                 yield sse("node_property_card", prop_card)
+
+        image_urls: list = ctx.get("image_urls") or []
+        if image_urls:
+            system += (
+                "\n\n[첨부 이미지 분석 지침]\n"
+                "사용자가 이미지를 첨부했습니다. 이미지를 주의 깊게 분석하여 다음을 수행하세요:\n"
+                "- n8n 워크플로우 스크린샷이면: 노드 구성, 연결 관계, 설정 오류, 개선점을 분석하세요.\n"
+                "- 에러 메시지/로그 스크린샷이면: 에러 원인과 해결 방법을 구체적으로 설명하세요.\n"
+                "- 텍스트가 포함된 이미지이면: 내용을 읽고 관련 n8n 컨텍스트에서 분석하세요.\n"
+                "- 이미지에서 명확히 보이는 내용만 언급하고, 추측하지 마세요."
+            )
 
         user = (
             f"{ctx['message']}\n\n"
@@ -410,5 +552,8 @@ class GeneralRAGService:
             "문장을 길게 한 덩어리로 쓰지 말고 주제마다 빈 줄로 분리해주세요."
         )
 
-        async for token in _stream_llm(system, user, ctx["model"]):
+        async for token in _stream_llm(system, user, ctx["model"], history=ctx.get("history"), openai_api_key=ctx.get("openai_api_key"), image_urls=ctx.get("image_urls")):
             yield sse("token", token)
+
+        if chunks:
+            yield sse("rag_sources", {"sources": _build_rag_sources(chunks)})

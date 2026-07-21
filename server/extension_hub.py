@@ -25,7 +25,7 @@ from typing import Callable
 
 from fastapi import WebSocket
 
-log = logging.getLogger("nodi.ws")
+log = logging.getLogger("naito.ws")
 
 
 class ExtensionHub:

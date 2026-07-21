@@ -1,11 +1,10 @@
-export const DEFAULT_CHAT_MODEL = "moonshotai/kimi-k2.5";
+export const DEFAULT_CHAT_MODEL = "gemma4-e4b:latest";
 
 export const titleModel = {
-  id: "moonshotai/kimi-k2.5",
-  name: "Kimi K2.5",
-  provider: "moonshotai",
+  id: "gemma4-e4b:latest",
+  name: "Gemma 4",
+  provider: "google",
   description: "Fast model for title generation",
-  gatewayOrder: ["fireworks", "bedrock"],
 };
 
 export type ModelCapabilities = {
@@ -25,85 +24,43 @@ export type ChatModel = {
 
 export const chatModels: ChatModel[] = [
   {
-    id: "deepseek/deepseek-v3.2",
-    name: "DeepSeek V3.2",
-    provider: "deepseek",
-    description: "Fast and capable model with tool use",
-    gatewayOrder: ["bedrock", "deepinfra"],
+    id: "gemma4-e4b:latest",
+    name: "Gemma 4",
+    provider: "google",
+    description: "Google Gemma 4 (default)",
   },
   {
-    id: "moonshotai/kimi-k2.5",
-    name: "Kimi K2.5",
-    provider: "moonshotai",
-    description: "Moonshot AI flagship model",
-    gatewayOrder: ["fireworks", "bedrock"],
+    id: "qwen3.6:35b-a3b",
+    name: "Qwen 3.6 35B",
+    provider: "alibaba",
+    description: "Alibaba Qwen 3.6 35B MoE model",
   },
   {
-    id: "openai/gpt-oss-20b",
-    name: "GPT OSS 20B",
+    id: "openai:gpt-4o",
+    name: "GPT-4o",
     provider: "openai",
-    description: "Compact reasoning model",
-    gatewayOrder: ["groq", "bedrock"],
-    reasoningEffort: "low",
+    description: "OpenAI GPT-4o (API 키 필요)",
   },
   {
-    id: "openai/gpt-oss-120b",
-    name: "GPT OSS 120B",
+    id: "openai:gpt-4o-mini",
+    name: "GPT-4o mini",
     provider: "openai",
-    description: "Open-source 120B parameter model",
-    gatewayOrder: ["fireworks", "bedrock"],
-    reasoningEffort: "low",
+    description: "OpenAI GPT-4o mini (API 키 필요)",
   },
   {
-    id: "xai/grok-4.1-fast-non-reasoning",
-    name: "Grok 4.1 Fast",
-    provider: "xai",
-    description: "Fast non-reasoning model with tool use",
-    gatewayOrder: ["xai"],
+    id: "openai:gpt-4.1",
+    name: "GPT-4.1",
+    provider: "openai",
+    description: "OpenAI GPT-4.1 (API 키 필요)",
   },
 ];
 
 export async function getCapabilities(): Promise<
   Record<string, ModelCapabilities>
 > {
-  const results = await Promise.all(
-    chatModels.map(async (model) => {
-      try {
-        const res = await fetch(
-          `https://ai-gateway.vercel.sh/v1/models/${model.id}/endpoints`,
-          { next: { revalidate: 86_400 } }
-        );
-        if (!res.ok) {
-          return [model.id, { tools: false, vision: false, reasoning: false }];
-        }
-
-        const json = await res.json();
-        const endpoints = json.data?.endpoints ?? [];
-        const params = new Set(
-          endpoints.flatMap(
-            (e: { supported_parameters?: string[] }) =>
-              e.supported_parameters ?? []
-          )
-        );
-        const inputModalities = new Set(
-          json.data?.architecture?.input_modalities ?? []
-        );
-
-        return [
-          model.id,
-          {
-            tools: params.has("tools"),
-            vision: inputModalities.has("image"),
-            reasoning: params.has("reasoning"),
-          },
-        ];
-      } catch {
-        return [model.id, { tools: false, vision: false, reasoning: false }];
-      }
-    })
+  return Object.fromEntries(
+    chatModels.map((m) => [m.id, { tools: false, vision: false, reasoning: false }])
   );
-
-  return Object.fromEntries(results);
 }
 
 export const isDemo = process.env.IS_DEMO === "1";

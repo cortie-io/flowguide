@@ -29,12 +29,15 @@ from session import get_session_store, SessionStore
 from workflow_services import CurriculumService, ExpressionService, WorkflowBuildService
 from feature_services import ErrorPatchService, ReverseService
 from general_rag import GeneralRAGService
+from ontology_enhancer import get_ontology_enhancer
+from semantic_validator import get_semantic_validator, ValidationSeverity
 
-log = logging.getLogger("nodi.workspace")
+log = logging.getLogger("naito.workspace")
 router = APIRouter()
 _intent_router = IntentRouter()
 
-_REG_REQUIRED_INTENTS = {Intent.WORKFLOW_BUILD, Intent.EXPRESSION, Intent.ERROR_PATCH}
+_REG_REQUIRED_INTENTS  = {Intent.WORKFLOW_BUILD, Intent.EXPRESSION, Intent.ERROR_PATCH}
+_SEM_VALIDATE_INTENTS  = {Intent.WORKFLOW_BUILD, Intent.ERROR_PATCH}
 
 
 # ── Request schema ─────────────────────────────────────────────────────────────
@@ -57,6 +60,12 @@ class WorkspaceRequest(BaseModel):
     error_log: str | None = None
     raw_json: str | None = None
     model: str = Field(default="")
+    openai_api_key: str | None = None
+    # 이미지 처리: Vercel Blob URL 또는 base64 data URL (vision 모델 전용)
+    image_urls: list[str] | None = None
+    # 웹 유저의 n8n 인스턴스 연결 정보 (자동 워크플로우 가져오기용)
+    n8n_url: str | None = None
+    n8n_api_key: str | None = None
 
 
 # ── AI SDK 스트림 헬퍼 ─────────────────────────────────────────────────────────
@@ -116,6 +125,72 @@ def _sse_to_ai(chunk: str) -> str | None:
     return ai_data(parts)
 
 
+# ── 채팅 제목 생성 엔드포인트 ──────────────────────────────────────────────────
+
+class TitleRequest(BaseModel):
+    message: str = Field(default="")
+    model: str = Field(default="")
+
+
+@router.post("/generate-title")
+async def generate_title(req: TitleRequest):
+    """첫 메시지로 채팅 제목 생성 (LLM 단일 호출, 스트리밍 없음)."""
+    import httpx as _httpx
+    model = req.model or settings.llm_model
+    system = (
+        "Summarize the user's message into a short chat title. "
+        "3–6 words, no quotes, no punctuation at the end. "
+        "Reply with the title only, in the same language as the message."
+    )
+    try:
+        async with _httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(
+                f"{settings.ollama_base_url}/api/chat",
+                json={
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": system},
+                        {"role": "user",   "content": req.message[:500]},
+                    ],
+                    "stream": False,
+                    "options": {"num_predict": 30},
+                },
+            )
+            resp.raise_for_status()
+            title = resp.json().get("message", {}).get("content", "").strip()
+            title = title.replace('"', "").replace("#", "").strip()
+            return {"title": title or req.message[:60]}
+    except Exception:
+        return {"title": req.message[:60]}
+
+
+# ── 경량 Intent 판별 엔드포인트 ────────────────────────────────────────────────
+
+class IntentCheckRequest(BaseModel):
+    message: str = Field(default="")
+    session_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    model: str = Field(default="")
+    n8n_url: str | None = Field(default=None)
+    openai_api_key: str | None = Field(default=None)
+
+
+@router.post("/check-intent")
+async def check_intent(
+    req: IntentCheckRequest,
+    store: SessionStore = Depends(get_session_store),
+):
+    """LLM으로 Intent 판별. 클라이언트가 n8n prefetch 여부 결정에 사용."""
+    history = store.get_history(req.session_id)
+    intent = await _intent_router.route(
+        message=req.message,
+        model=req.model or "",
+        history=history,
+        n8n_url=req.n8n_url or None,
+        openai_api_key=req.openai_api_key or None,
+    )
+    return {"intent": intent, "needs_canvas": intent == Intent.REVERSE}
+
+
 # ── 메인 스트리밍 엔드포인트 ────────────────────────────────────────────────────
 
 @router.post("/stream")
@@ -159,12 +234,17 @@ async def workspace_stream(
         sanitized_node_data = cf.filter_workflow(req.node_data) if req.node_data else None
         sanitized_error_log = cf.filter_string(req.error_log) if req.error_log else None
 
-        # Intent 분기
-        intent = _intent_router.route(
+        # Intent 분기 (꼬리 물기 감지를 위해 history 먼저 로드)
+        prior_history = store.get_history(session_id)
+        intent = await _intent_router.route(
             message=message,
+            model=req.model or "",
             node_data=sanitized_node_data,
             error_log=sanitized_error_log,
             raw_json=sanitized_raw_json,
+            history=prior_history,
+            n8n_url=req.n8n_url or None,
+            openai_api_key=req.openai_api_key or None,
         )
         log.info("[%s] Intent → %s", session_id, intent)
         yield ai_data([{
@@ -174,19 +254,65 @@ async def workspace_stream(
         }])
 
         store.add_turn(session_id, "user", message, intent=intent)
+        full_history = store.get_history(session_id)
+
+        # ── 꼬리 물기: 직전 user 메시지를 RAG 쿼리에 포함 ─────────────────
+        rag_query = message
+        if prior_history:
+            last_user_content = next(
+                (
+                    (getattr(t, "content", None) or t.get("content", ""))
+                    for t in reversed(prior_history)
+                    if (getattr(t, "role", None) or t.get("role", "")) == "user"
+                ),
+                None,
+            )
+            if last_user_content and len(message) < 30:
+                rag_query = f"{last_user_content[:120]} {message}"
+                log.info("[%s] RAG 쿼리 강화: %s", session_id, rag_query[:80])
+
+        # ── 온톨로지 기반 쿼리 확장 (OntologyEnhancer) ────────────────────
+        enhancer = get_ontology_enhancer()
+        eq = enhancer.enhance(query=rag_query, intent=str(intent))
+        if eq.expanded_query != rag_query:
+            log.info(
+                "[%s] 온톨로지 확장: 노드=%s, 용어+%d개",
+                session_id,
+                [n.short_type for n in eq.detected_nodes],
+                len(eq.related_node_terms),
+            )
+
+        # 온톨로지 감지 결과를 이벤트로 공개 (투명성)
+        if eq.detected_nodes or eq.pattern:
+            yield ai_data([{
+                "type": "ontology_context",
+                "detected_nodes": [n.display_name for n in eq.detected_nodes],
+                "pattern": eq.pattern.name if eq.pattern else None,
+                "hints_count": len(eq.ontology_hints),
+            }])
 
         ctx = {
-            "session_id":   session_id,
-            "message":      message,
-            "node_data":    sanitized_node_data,
-            "error_log":    sanitized_error_log,
-            "raw_json":     sanitized_raw_json,
-            "model":        req.model or settings.llm_model,
-            "history":      store.get_history(session_id),
+            "session_id":      session_id,
+            "message":         message,
+            "rag_query":       eq.expanded_query,      # 확장된 쿼리 사용
+            "node_data":       sanitized_node_data,
+            "error_log":       sanitized_error_log,
+            "raw_json":        sanitized_raw_json,
+            "model":           req.model or settings.llm_model,
+            "openai_api_key":  req.openai_api_key or None,
+            "history":         full_history,
+            "ontology_hints":    eq.ontology_hints,       # 서비스 프롬프트에 삽입
+            "detected_nodes":    [n.short_type for n in eq.detected_nodes],
+            "typo_corrections":  eq.typo_corrections,     # 오타 교정 정보
+            "image_urls":        req.image_urls or [],     # 이미지 vision 처리
+            "n8n_url":           req.n8n_url or "",
+            "n8n_api_key":       req.n8n_api_key or "",
         }
 
-        reg = get_reg_validator()
+        reg  = get_reg_validator()
+        semv = get_semantic_validator()
         token_buffer: list[str] = []
+        response_tokens: list[str] = []  # 세션 저장용 전체 텍스트 버퍼
 
         # 서비스 선택
         if intent == Intent.CURRICULUM:
@@ -207,24 +333,49 @@ async def workspace_stream(
             ai_chunk = _sse_to_ai(sse_chunk)
             if not ai_chunk:
                 continue
-            # 토큰 버퍼 누적 (REG 검증용)
-            if ai_chunk.startswith("0:") and intent in _REG_REQUIRED_INTENTS:
+            if ai_chunk.startswith("0:"):
                 try:
                     token_text = json.loads(ai_chunk[2:])
                     if isinstance(token_text, str):
-                        token_buffer.append(token_text)
+                        response_tokens.append(token_text)
+                        if intent in _REG_REQUIRED_INTENTS:
+                            token_buffer.append(token_text)
                 except Exception:
                     pass
             yield ai_chunk
 
-        # REG 검증 (코드 생성 Intent)
-        if intent in _REG_REQUIRED_INTENTS and token_buffer:
-            full_text = "".join(token_buffer)
+        # assistant 응답 세션 저장 (다음 턴에서 대화 맥락으로 활용)
+        if response_tokens:
+            store.add_turn(session_id, "assistant", "".join(response_tokens))
+
+        full_text = "".join(token_buffer) if token_buffer else ""
+
+        # ── REG 검증 Stage 1: 파라미터 오타 자동 수정 ─────────────────────
+        if intent in _REG_REQUIRED_INTENTS and full_text:
             _, corrections = reg.validate_and_fix(full_text)
             if corrections:
                 warning = reg.build_warning_event(corrections)
                 log.info("[REG] %d개 파라미터 자동 수정", len(corrections))
                 yield ai_data([{"type": "reg_warning", **warning}])
+
+        # ── Semantic Validation Stage 2–4: 구조·속성·패턴·표현식 ──────────
+        if intent in _SEM_VALIDATE_INTENTS and (full_text or response_tokens):
+            sv_text = full_text or "".join(response_tokens)
+            try:
+                report = semv.validate(
+                    workflow_json_str=sv_text,
+                    response_text=sv_text,
+                )
+                # 에러·경고가 있을 때만 이벤트 발행 (info만 있으면 조용히)
+                if report.errors or report.warnings:
+                    log.info(
+                        "[SemanticValidator] errors=%d warnings=%d",
+                        len(report.errors), len(report.warnings),
+                    )
+                    yield ai_data([{"type": "validation_report",
+                                    **report.to_sse_payload()}])
+            except Exception as e:
+                log.warning("[SemanticValidator] 검증 실패: %s", e)
 
         yield ai_done()
 

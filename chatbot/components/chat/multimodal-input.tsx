@@ -6,7 +6,10 @@ import equal from "fast-deep-equal";
 import {
   ArrowUpIcon,
   BrainIcon,
+  CheckIcon,
   EyeIcon,
+  EyeOffIcon,
+  KeyIcon,
   LockIcon,
   WrenchIcon,
 } from "lucide-react";
@@ -68,6 +71,28 @@ function setCookie(name: string, value: string) {
   document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}`;
 }
 
+// ── Chrome Extension 캔버스 자동 fetch ──────────────────────────
+async function fetchCanvasJson(): Promise<string | null> {
+  return new Promise((resolve) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const chromeApi = typeof window !== "undefined" ? (window as any).chrome : undefined;
+    if (typeof chromeApi?.runtime?.sendMessage !== "function") {
+      resolve(null);
+      return;
+    }
+    chromeApi.runtime.sendMessage(
+      { type: "GET_CANVAS_JSON" },
+      (resp: { success?: boolean; data?: string } | null) => {
+        if (chromeApi.runtime?.lastError || !resp?.success || !resp.data) {
+          resolve(null);
+          return;
+        }
+        resolve(resp.data);
+      }
+    );
+  });
+}
+
 function PureMultimodalInput({
   chatId,
   input,
@@ -110,6 +135,7 @@ function PureMultimodalInput({
   const router = useRouter();
   const { setTheme, resolvedTheme } = useTheme();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const isSubmittingRef = useRef(false);
   const { width } = useWindowSize();
   const hasAutoFocused = useRef(false);
   useEffect(() => {
@@ -215,28 +241,57 @@ function PureMultimodalInput({
   const [slashQuery, setSlashQuery] = useState("");
   const [slashIndex, setSlashIndex] = useState(0);
 
-  const submitForm = useCallback(() => {
+  const submitForm = useCallback(async () => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+
     window.history.pushState(
       {},
       "",
       `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/chat/${chatId}`
     );
 
-    sendMessage({
-      role: "user",
-      parts: [
-        ...attachments.map((attachment) => ({
-          type: "file" as const,
-          url: attachment.url,
-          name: attachment.name,
-          mediaType: attachment.contentType,
-        })),
+    // 서버 intent 판별 → REVERSE면 캔버스 자동 수집
+    let raw_json: string | undefined;
+    let needs_canvas = false;
+    try {
+      const intentResp = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/intent`,
         {
-          type: "text",
-          text: input,
-        },
-      ],
-    });
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: input, session_id: chatId }),
+        }
+      );
+      if (intentResp.ok) {
+        const result = (await intentResp.json()) as { needs_canvas: boolean };
+        needs_canvas = result.needs_canvas;
+        if (needs_canvas) {
+          const canvasData = await fetchCanvasJson();
+          if (canvasData) raw_json = canvasData;
+        }
+      }
+    } catch {
+      // intent check 실패 시 캔버스 없이 진행
+    } finally {
+      isSubmittingRef.current = false;
+    }
+
+    const msgParts = [
+      ...attachments.map((attachment) => ({
+        type: "file" as const,
+        url: attachment.url,
+        name: attachment.name,
+        mediaType: attachment.contentType,
+      })),
+      { type: "text" as const, text: input },
+    ];
+
+    const typedSend = sendMessage as UseChatHelpers<ChatMessage>["sendMessage"];
+    typedSend(
+      { role: "user", parts: msgParts },
+      { body: { needs_canvas, ...(raw_json ? { raw_json } : {}) } }
+    );
 
     setAttachments([]);
     setLocalStorageInput("");
@@ -367,6 +422,34 @@ function PureMultimodalInput({
     textarea.addEventListener("paste", handlePaste);
     return () => textarea.removeEventListener("paste", handlePaste);
   }, [handlePaste]);
+
+  // Chrome 확장 사이드패널에서 스크린샷을 postMessage로 수신
+  useEffect(() => {
+    const handler = async (event: MessageEvent) => {
+      if (event.data?.type !== "naito_screenshot") return;
+      const dataUrl: string = event.data.dataUrl;
+      if (!dataUrl?.startsWith("data:image/")) return;
+
+      setUploadQueue((prev) => [...prev, "스크린샷"]);
+      try {
+        // data URL → Blob → File
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], "screenshot.jpg", { type: "image/jpeg" });
+        const attachment = await uploadFile(file);
+        if (attachment) {
+          setAttachments((curr) => [...curr, attachment as Attachment]);
+        }
+      } catch {
+        toast.error("스크린샷 업로드에 실패했습니다.");
+      } finally {
+        setUploadQueue((prev) => prev.filter((n) => n !== "스크린샷"));
+      }
+    };
+
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, [uploadFile, setAttachments]);
 
   return (
     <div className={cn("relative flex w-full flex-col gap-4", className)}>
@@ -526,6 +609,9 @@ function PureMultimodalInput({
               onModelChange={onModelChange}
               selectedModelId={selectedModelId}
             />
+            {selectedModelId.startsWith("openai:") && (
+              <OpenAIKeyInput />
+            )}
           </PromptInputTools>
 
           {status === "submitted" ? (
@@ -810,6 +896,61 @@ function PureStopButton({
     >
       <StopIcon size={14} />
     </Button>
+  );
+}
+
+function OpenAIKeyInput() {
+  const [storedKey, setStoredKey] = useLocalStorage("openai_api_key", "");
+  const [draft, setDraft] = useState(storedKey);
+  const [showKey, setShowKey] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    setStoredKey(draft.trim());
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const isKeySet = storedKey.length > 0;
+
+  return (
+    <div className="flex items-center gap-1 ml-1">
+      <KeyIcon className={cn("size-3.5 shrink-0", isKeySet ? "text-green-500" : "text-muted-foreground")} />
+      <input
+        className={cn(
+          "h-6 w-40 rounded-md border bg-background px-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring",
+          isKeySet && "border-green-500/40"
+        )}
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") handleSave();
+        }}
+        placeholder="OpenAI API key..."
+        type={showKey ? "text" : "password"}
+        value={draft}
+      />
+      <Button
+        className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+        onClick={() => setShowKey((v) => !v)}
+        size="sm"
+        type="button"
+        variant="ghost"
+      >
+        {showKey ? <EyeOffIcon className="size-3" /> : <EyeIcon className="size-3" />}
+      </Button>
+      <Button
+        className={cn(
+          "h-6 px-2 text-xs",
+          saved && "text-green-500"
+        )}
+        onClick={handleSave}
+        size="sm"
+        type="button"
+        variant="ghost"
+      >
+        {saved ? <CheckIcon className="size-3" /> : "저장"}
+      </Button>
+    </div>
   );
 }
 

@@ -1,4 +1,4 @@
-# nodi Backend API — 엔지니어링 명세서 v2.0
+# Naito Backend API — 엔지니어링 명세서 v2.0
 # =====================================================================
 
 ## 아키텍처 원칙
@@ -7,7 +7,7 @@
 
 openapi: "3.1.0"
 info:
-  title: nodi Backend API
+  title: Naito Backend API
   version: "2.0.0"
   description: |
     n8n 오토-아키텍트 RAG 추론 엔진 + 크롬 익스텐션 원격 제어 허브.

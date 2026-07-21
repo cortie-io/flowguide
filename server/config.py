@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     ollama_base_url:    str  = "http://localhost:11434"
     embed_model:        str  = "bge-m3:latest"
     reranker_model:     str  = "bge-reranker-v2-m3"
-    llm_model:          str  = "gemma4-e4b:latest"
+    llm_model:          str  = "gemma3:latest"
 
     # RAG 인프라
     chunks_jsonl_path:  Path = Path("final_rag_chunks_v2.jsonl")

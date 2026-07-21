@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useActionState, useEffect, useState } from "react";
 import { AuthForm } from "@/components/chat/auth-form";
 import { SubmitButton } from "@/components/chat/submit-button";
@@ -12,6 +11,7 @@ import { type RegisterActionState, register } from "../actions";
 export default function Page() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [isSuccessful, setIsSuccessful] = useState(false);
 
   const [state, formAction] = useActionState<RegisterActionState, FormData>(
@@ -19,9 +19,7 @@ export default function Page() {
     { status: "idle" }
   );
 
-  const { update: updateSession } = useSession();
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: router and updateSession are stable refs
+  // biome-ignore lint/correctness/useExhaustiveDependencies: router is a stable ref
   useEffect(() => {
     if (state.status === "user_exists") {
       toast({ type: "error", description: "Account already exists!" });
@@ -35,12 +33,12 @@ export default function Page() {
     } else if (state.status === "success") {
       toast({ type: "success", description: "Account created!" });
       setIsSuccessful(true);
-      updateSession();
-      router.refresh();
+      router.push("/login");
     }
   }, [state.status]);
 
   const handleSubmit = (formData: FormData) => {
+    setName(formData.get("name") as string);
     setEmail(formData.get("email") as string);
     formAction(formData);
   };
@@ -49,7 +47,12 @@ export default function Page() {
     <>
       <h1 className="text-2xl font-semibold tracking-tight">Create account</h1>
       <p className="text-sm text-muted-foreground">Get started for free</p>
-      <AuthForm action={handleSubmit} defaultEmail={email}>
+      <AuthForm
+        action={handleSubmit}
+        defaultEmail={email}
+        defaultName={name}
+        mode="register"
+      >
         <SubmitButton isSuccessful={isSuccessful}>Sign up</SubmitButton>
         <p className="text-center text-[13px] text-muted-foreground">
           {"Have an account? "}

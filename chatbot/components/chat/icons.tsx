@@ -58,23 +58,29 @@ export const AttachmentIcon = () => {
 
 // Nodi 브랜드 아이콘 — 삼각 3-노드, 컨테이너 없음, currentColor
 export const N9NIcon = ({ size = 17 }: { size?: number }) => (
-  <svg height={size} width={size} viewBox="0 0 20 18" fill="none">
-    <circle cx="10" cy="2.2" r="2.2" fill="currentColor" />
-    <circle cx="2.2" cy="15.8" r="2.2" fill="currentColor" />
-    <circle cx="17.8" cy="15.8" r="2.2" fill="currentColor" />
+  <svg fill="none" height={size} viewBox="0 0 20 18" width={size}>
+    <circle cx="10" cy="2.2" fill="currentColor" r="2.2" />
+    <circle cx="2.2" cy="15.8" fill="currentColor" r="2.2" />
+    <circle cx="17.8" cy="15.8" fill="currentColor" r="2.2" />
     <path
       d="M10 4.4L3.4 14.2M10 4.4L16.6 14.2"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
       opacity="0.5"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.6"
     />
   </svg>
 );
 
-// nodi 워드마크 (사이드바 확장 상태)
+// Naito 워드마크 (사이드바 확장 상태)
 export const N9NWordmark = ({ className }: { className?: string }) => (
-  <svg className={className} fill="currentColor" height="18" viewBox="0 0 58 18" width="58">
+  <svg
+    className={className}
+    fill="currentColor"
+    height="18"
+    viewBox="0 0 72 18"
+    width="72"
+  >
     <text
       fontFamily="var(--font-geist, ui-sans-serif)"
       fontSize="15"
@@ -83,7 +89,7 @@ export const N9NWordmark = ({ className }: { className?: string }) => (
       x="0"
       y="14"
     >
-      nodi
+      Naito
     </text>
   </svg>
 );

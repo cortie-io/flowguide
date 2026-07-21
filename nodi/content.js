@@ -1,4 +1,4 @@
-// nodi content script — n8n editor error detector
+// Naito content script — n8n editor error detector
 (function () {
   'use strict';
   let lastError = '';

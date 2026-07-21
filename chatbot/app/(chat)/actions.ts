@@ -1,12 +1,11 @@
 "use server";
 
-import { generateText, type UIMessage } from "ai";
+import { type UIMessage } from "ai";
 import { cookies } from "next/headers";
 import { auth } from "@/app/(auth)/auth";
 import type { VisibilityType } from "@/components/chat/visibility-selector";
 import { titleModel } from "@/lib/ai/models";
 import { titlePrompt } from "@/lib/ai/prompts";
-import { getTitleModel } from "@/lib/ai/providers";
 import {
   deleteMessagesByChatIdAfterTimestamp,
   getChatById,
@@ -14,6 +13,8 @@ import {
   updateChatVisibilityById,
 } from "@/lib/db/queries";
 import { getTextFromMessage } from "@/lib/utils";
+
+const N9N_API = process.env.N9N_API ?? "http://127.0.0.1:8000";
 
 export async function saveChatModelAsCookie(model: string) {
   const cookieStore = await cookies();
@@ -25,18 +26,21 @@ export async function generateTitleFromUserMessage({
 }: {
   message: UIMessage;
 }) {
-  const { text } = await generateText({
-    model: getTitleModel(),
-    system: titlePrompt,
-    prompt: getTextFromMessage(message),
-    providerOptions: {
-      gateway: { order: titleModel.gatewayOrder },
-    },
-  });
-  return text
-    .replace(/^[#*"\s]+/, "")
-    .replace(/["]+$/, "")
-    .trim();
+  const prompt = getTextFromMessage(message);
+  try {
+    const resp = await fetch(`${N9N_API}/api/workspace/generate-title`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: prompt, model: titleModel.id }),
+    });
+    if (resp.ok) {
+      const data = (await resp.json()) as { title?: string };
+      if (data.title) return data.title;
+    }
+  } catch {
+    // fall through to truncation
+  }
+  return prompt.slice(0, 60).trim();
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {

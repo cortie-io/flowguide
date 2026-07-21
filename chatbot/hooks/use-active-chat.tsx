@@ -9,6 +9,7 @@ import {
   type Dispatch,
   type ReactNode,
   type SetStateAction,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -138,6 +139,28 @@ export function ActiveChatProvider({ children }: { children: ReactNode }) {
             })
           );
 
+        const openaiApiKey = (() => {
+          if (typeof window === "undefined") return "";
+          try {
+            const raw = localStorage.getItem("openai_api_key");
+            if (!raw) return "";
+            const parsed = JSON.parse(raw);
+            return typeof parsed === "string" ? parsed : "";
+          } catch {
+            return "";
+          }
+        })();
+        const n8nConnection = (() => {
+          if (typeof window === "undefined") return null;
+          try {
+            const raw = localStorage.getItem("naito_n8n_connection");
+            if (!raw) return null;
+            return JSON.parse(raw) as { url: string; apiKey: string };
+          } catch {
+            return null;
+          }
+        })();
+
         return {
           body: {
             id: request.id,
@@ -146,6 +169,12 @@ export function ActiveChatProvider({ children }: { children: ReactNode }) {
               : { message: lastMessage }),
             selectedChatModel: currentModelIdRef.current,
             selectedVisibilityType: visibility,
+            ...(currentModelIdRef.current.startsWith("openai:") && openaiApiKey
+              ? { openai_api_key: openaiApiKey }
+              : {}),
+            ...(n8nConnection?.url
+              ? { n8n_url: n8nConnection.url, n8n_api_key: n8nConnection.apiKey || undefined }
+              : {}),
             ...request.body,
           },
         };
@@ -161,15 +190,148 @@ export function ActiveChatProvider({ children }: { children: ReactNode }) {
       if (error.message?.includes("AI Gateway requires a valid credit card")) {
         setShowCreditCardAlert(true);
       } else if (error instanceof ChatbotError) {
-        toast({ type: "error", description: error.message });
-      } else {
+        const message = String(error.message || "");
+        const shouldHideInternalError =
+          message.includes("importKey") ||
+          message.includes(
+            "An unexpected response was received from the server"
+          ) ||
+          message.includes("Failed to fetch") ||
+          message.includes("Cannot read properties of undefined") ||
+          message.includes("TypeError");
+
         toast({
           type: "error",
-          description: error.message || "Oops, an error occurred!",
+          description: shouldHideInternalError
+            ? "일시적인 연결 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+            : message,
+        });
+      } else {
+        const rawMessage = String(error?.message || "");
+        const shouldHideInternalError =
+          rawMessage.includes("importKey") ||
+          rawMessage.includes(
+            "An unexpected response was received from the server"
+          ) ||
+          rawMessage.includes("Failed to fetch") ||
+          rawMessage.includes("Cannot read properties of undefined");
+
+        if (shouldHideInternalError) {
+          console.error("[chat] normalized runtime error", error);
+        }
+
+        toast({
+          type: "error",
+          description: shouldHideInternalError
+            ? "일시적인 연결 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+            : rawMessage || "Oops, an error occurred!",
         });
       }
     },
   });
+
+  // n8n 워크플로우 프리페치 후 sendMessage 호출
+  const sendMessageWithN8nPrefetch: UseChatHelpers<ChatMessage>["sendMessage"] = useCallback(
+    async (message, options) => {
+      const n8nConn = (() => {
+        if (typeof window === "undefined") return null;
+        try {
+          const raw = localStorage.getItem("naito_n8n_connection");
+          if (!raw) return null;
+          return JSON.parse(raw) as { url: string; apiKey: string };
+        } catch { return null; }
+      })();
+
+      const messageText = Array.isArray((message as { parts?: unknown[] }).parts)
+        ? ((message as { parts: { type: string; text?: string }[] }).parts)
+            .filter(p => p.type === "text")
+            .map(p => String(p.text ?? ""))
+            .join(" ")
+        : "";
+
+      let extraBody: Record<string, unknown> = {};
+
+      // n8n 연결 있을 때: LLM에게 intent 먼저 물어보고 REVERSE면 워크플로우 prefetch
+      if (n8nConn?.url && messageText) {
+        try {
+          const apiKey = (() => {
+            if (typeof window === "undefined") return null;
+            try { return localStorage.getItem("openai_api_key"); } catch { return null; }
+          })();
+
+          const checkResp = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/intent`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                message: messageText,
+                session_id: chatId,
+                model: currentModelIdRef.current,
+                n8n_url: n8nConn.url,
+                ...(apiKey ? { openai_api_key: apiKey } : {}),
+              }),
+            }
+          );
+
+          if (checkResp.ok) {
+            const { intent } = await checkResp.json();
+            if (intent === "REVERSE") {
+              // 익스텐션 브릿지를 통해 fetch (CORS 우회)
+              const requestId = Math.random().toString(36).slice(2);
+              const { workflow: workflowJson, error: bridgeError, timedOut } = await new Promise<{
+                workflow: string | null;
+                error?: string;
+                timedOut?: boolean;
+              }>((resolve) => {
+                const handler = (ev: MessageEvent) => {
+                  if (ev.data?.type === "NAITO_WORKFLOW_RESPONSE" && ev.data?.requestId === requestId) {
+                    window.removeEventListener("message", handler);
+                    resolve({ workflow: ev.data.workflow ?? null, error: ev.data.error });
+                  }
+                };
+                window.addEventListener("message", handler);
+                window.postMessage({
+                  type: "NAITO_GET_WORKFLOW",
+                  requestId,
+                  n8nUrl: n8nConn.url,
+                  apiKey: n8nConn.apiKey || "",
+                  messageText,
+                }, "*");
+                // 익스텐션 없거나 응답 없으면 8초 후 포기
+                setTimeout(() => {
+                  window.removeEventListener("message", handler);
+                  resolve({ workflow: null, timedOut: true });
+                }, 8000);
+              });
+              if (workflowJson) {
+                extraBody = { raw_json: workflowJson };
+              } else if (bridgeError) {
+                toast({
+                  type: "error",
+                  description: `n8n에서 워크플로우를 가져오지 못했습니다: ${bridgeError}`,
+                });
+              } else if (timedOut) {
+                toast({
+                  type: "error",
+                  description:
+                    "n8n 워크플로우를 가져오지 못했습니다. Naito 확장 프로그램이 설치·활성화되어 있는지 확인해주세요.",
+                });
+              }
+            }
+          }
+        } catch {
+          // prefetch 실패 시 그냥 진행
+        }
+      }
+
+      return sendMessage(message, {
+        ...options,
+        body: { ...((options as { body?: Record<string, unknown> })?.body ?? {}), ...extraBody },
+      });
+    },
+    [sendMessage, chatId, currentModelIdRef]
+  );
 
   const loadedChatIds = useRef(new Set<string>());
 
@@ -249,7 +411,7 @@ export function ActiveChatProvider({ children }: { children: ReactNode }) {
       chatId,
       messages,
       setMessages,
-      sendMessage,
+      sendMessage: sendMessageWithN8nPrefetch,
       status,
       stop,
       regenerate,
@@ -269,7 +431,7 @@ export function ActiveChatProvider({ children }: { children: ReactNode }) {
       chatId,
       messages,
       setMessages,
-      sendMessage,
+      sendMessageWithN8nPrefetch,
       status,
       stop,
       regenerate,

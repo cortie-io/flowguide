@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 from pathlib import Path
 from typing import Any
@@ -9,6 +10,18 @@ try:
     from rank_bm25 import BM25Okapi
 except Exception:
     BM25Okapi = None
+
+try:
+    import httpx as _httpx
+except Exception:
+    _httpx = None  # type: ignore[assignment]
+
+try:
+    import chromadb as _chromadb
+except Exception:
+    _chromadb = None  # type: ignore[assignment]
+
+log = logging.getLogger("naito.query_engine")
 
 # ── Spec 섹션 파싱 ──────────────────────────────────────────────────────────────
 
@@ -22,17 +35,12 @@ _PROP_BLOCK_RE = re.compile(
 
 
 def _parse_spec_sections(raw_text: str) -> list[dict[str, Any]]:
-    """
-    spec 청크 원문에서 '# NODE DIRECTORY: X' 섹션들을 분리해
-    각각 node_name, properties, cleaned_text를 담은 dict 목록 반환.
-    """
     sections: list[dict[str, Any]] = []
     parts = _SECTION_SPLIT_RE.split(raw_text)
 
     if len(parts) <= 1:
         return []
 
-    # parts = [before, node1, file1, body1, node2, file2, body2, ...]
     i = 1
     while i + 2 <= len(parts):
         node_dir = parts[i].strip()
@@ -52,7 +60,6 @@ def _parse_spec_sections(raw_text: str) -> list[dict[str, Any]]:
 
 
 def _extract_properties(body: str) -> list[dict[str, str]]:
-    """displayName/name/type/default/description 블록 파싱."""
     results: list[dict[str, str]] = []
     for m in _PROP_BLOCK_RE.finditer(body):
         results.append({
@@ -66,11 +73,24 @@ def _extract_properties(body: str) -> list[dict[str, str]]:
 
 
 class HybridRetriever:
-    def __init__(self, chunks_path: str | Path):
+    def __init__(
+        self,
+        chunks_path: str | Path,
+        chroma_db_path: str | Path | None = None,
+        ollama_base_url: str = "http://localhost:11434",
+        embed_model: str = "bge-m3:latest",
+    ):
         self.chunks_path = Path(chunks_path)
         self.chunks = self._load_chunks(self.chunks_path)
 
-        # 전체 인덱스
+        # base_id → 확장된 in-memory 청크 인덱스 목록 (spec 분리용)
+        self._base_id_to_indices: dict[str, list[int]] = {}
+        for i, c in enumerate(self.chunks):
+            cid = str(c.get("chunk_global_id", ""))
+            base_id = cid.split("::")[0]
+            self._base_id_to_indices.setdefault(base_id, []).append(i)
+
+        # BM25 전체 인덱스
         self._valid_idx: list[int] = []
         self._tokenized: list[list[str]] = []
         for i, c in enumerate(self.chunks):
@@ -80,7 +100,7 @@ class HybridRetriever:
                 self._tokenized.append(toks)
         self._bm25 = BM25Okapi(self._tokenized) if BM25Okapi and self._tokenized else None
 
-        # 타입별 분리 인덱스 (spec + official_docs 전용)
+        # BM25 spec 전용 인덱스
         self._spec_idx: list[int] = []
         self._spec_tokenized: list[list[str]] = []
         for i, c in enumerate(self.chunks):
@@ -93,6 +113,21 @@ class HybridRetriever:
             BM25Okapi(self._spec_tokenized)
             if BM25Okapi and self._spec_tokenized else None
         )
+
+        # ChromaDB 벡터 검색
+        self._collection = None
+        self._ollama_base_url = ollama_base_url.rstrip("/")
+        self._embed_model = embed_model
+        if chroma_db_path and _chromadb:
+            try:
+                client = _chromadb.PersistentClient(path=str(chroma_db_path))
+                self._collection = client.get_collection("n8n_rag_v2")
+                log.info(
+                    "[HybridRetriever] ChromaDB 로드 완료: %d개 벡터",
+                    self._collection.count(),
+                )
+            except Exception as e:
+                log.warning("[HybridRetriever] ChromaDB 로드 실패 (BM25만 사용): %s", e)
 
     # ── 청크 로드 + 정규화 ──────────────────────────────────────────────────────
 
@@ -114,10 +149,6 @@ class HybridRetriever:
         return rows
 
     def _expand_chunk(self, chunk: dict[str, Any]) -> list[dict[str, Any]]:
-        """
-        spec 청크 하나에 여러 # NODE DIRECTORY 섹션이 섞여있을 때
-        섹션 단위로 분리해 독립 청크로 반환한다.
-        """
         raw_text = str(chunk.get("page_content") or chunk.get("text") or "")
         dtype = str(chunk.get("data_type") or "")
 
@@ -154,7 +185,6 @@ class HybridRetriever:
         source     = str(clone.get("source_path") or clone.get("source_file") or "")
         dtype      = str(clone.get("data_type") or "")
 
-        # node_name이 'generic'이면 page_content 상단에서 재추출 시도
         if not node_name or node_name.lower() == "generic":
             m = re.search(r"#\s*NODE DIRECTORY:\s*([^\n]+)", page_content)
             if m:
@@ -170,9 +200,8 @@ class HybridRetriever:
         )
         clone["title"]      = title
         clone["source"]     = source
-        clone.setdefault("properties", [])   # 항상 존재 보장
+        clone.setdefault("properties", [])
 
-        # 검색용 enriched text 구성 (BM25가 node_name / property names 에 강하게 반응)
         props: list[dict] = clone.get("properties") or []
         prop_names = " ".join(p.get("name", "") for p in props[:20]) if props else ""
         prop_display = " ".join(p.get("displayName", "") for p in props[:20]) if props else ""
@@ -223,7 +252,6 @@ class HybridRetriever:
             str(chunk.get("text") or ""),
         ]).lower()
         exact        = sum(1 for t in query_tokens if len(t) >= 2 and t in haystack)
-        # node_name 직접 일치 → 강한 부스팅
         node_nm      = str(chunk.get("node_name") or "").lower()
         node_hit     = sum(1 for t in query_tokens if t in node_nm) * 3
         official_b   = 1 if chunk.get("data_type") == "official_docs" else 0
@@ -259,7 +287,6 @@ class HybridRetriever:
         return [i for _, i in scored[:top_k]]
 
     def _bm25_search_spec(self, rewritten_query: dict[str, Any] | str, top_k: int = 20) -> list[int]:
-        """spec + official_docs 전용 인덱스에서 검색."""
         q = self._tokenize(self._query_text(rewritten_query))
         if not q or not self._spec_idx:
             return []
@@ -283,6 +310,69 @@ class HybridRetriever:
         scored.sort(reverse=True)
         return [i for _, i in scored[:top_k]]
 
+    # ── 벡터 검색 ───────────────────────────────────────────────────────────────
+
+    def _get_embedding(self, text: str) -> list[float] | None:
+        if _httpx is None:
+            return None
+        try:
+            resp = _httpx.post(
+                f"{self._ollama_base_url}/api/embed",
+                json={"model": self._embed_model, "input": [text]},
+                timeout=30.0,
+            )
+            resp.raise_for_status()
+            return resp.json()["embeddings"][0]
+        except Exception as e:
+            log.warning("[HybridRetriever] 임베딩 실패: %s", e)
+            return None
+
+    def _vector_search(self, query_text: str, top_k: int = 20) -> list[int]:
+        """ChromaDB 벡터 검색 → in-memory chunk 인덱스 목록 반환."""
+        if self._collection is None:
+            return []
+
+        embedding = self._get_embedding(query_text)
+        if embedding is None:
+            return []
+
+        try:
+            results = self._collection.query(
+                query_embeddings=[embedding],
+                n_results=min(top_k, self._collection.count()),
+                include=["metadatas", "distances"],
+            )
+        except Exception as e:
+            log.warning("[HybridRetriever] ChromaDB 쿼리 실패: %s", e)
+            return []
+
+        indices: list[int] = []
+        seen: set[int] = set()
+        metadatas = results.get("metadatas", [[]])[0]
+        for meta in metadatas:
+            base_id = str(meta.get("chunk_global_id", ""))
+            for idx in self._base_id_to_indices.get(base_id, []):
+                if idx not in seen:
+                    seen.add(idx)
+                    indices.append(idx)
+        return indices
+
+    # ── RRF 결합 ────────────────────────────────────────────────────────────────
+
+    @staticmethod
+    def _rrf_merge(
+        lists: list[list[int]],
+        k: int = 60,
+        top_k: int = 20,
+    ) -> list[int]:
+        scores: dict[int, float] = {}
+        for ranked in lists:
+            for rank, idx in enumerate(ranked):
+                scores[idx] = scores.get(idx, 0.0) + 1.0 / (k + rank + 1)
+        return sorted(scores, key=lambda x: scores[x], reverse=True)[:top_k]
+
+    # ── 공개 API ────────────────────────────────────────────────────────────────
+
     def _make_result(self, c: dict[str, Any]) -> dict[str, Any]:
         return {
             "doc_id":     c.get("doc_id") or c.get("chunk_global_id"),
@@ -296,18 +386,48 @@ class HybridRetriever:
         }
 
     def retrieve(self, rewritten_query: dict[str, Any] | str, top_k: int = 20) -> list[dict[str, Any]]:
-        ranked_idx = self._bm25_search(rewritten_query, top_k=top_k)
-        return [self._make_result(self.chunks[i]) for i in ranked_idx]
+        query_text = self._query_text(rewritten_query)
+        bm25_idx   = self._bm25_search(rewritten_query, top_k=top_k)
+        vector_idx = self._vector_search(query_text, top_k=top_k)
+
+        if vector_idx:
+            merged = self._rrf_merge([bm25_idx, vector_idx], top_k=top_k)
+            log.debug("[retrieve] BM25=%d, vector=%d → merged=%d", len(bm25_idx), len(vector_idx), len(merged))
+        else:
+            merged = bm25_idx[:top_k]
+
+        return [self._make_result(self.chunks[i]) for i in merged]
 
     def retrieve_spec(self, rewritten_query: dict[str, Any] | str, top_k: int = 10) -> list[dict[str, Any]]:
-        """spec / official_docs / book 전용 검색 — 노드/속성 질문에 사용."""
-        ranked_idx = self._bm25_search_spec(rewritten_query, top_k=top_k)
-        return [self._make_result(self.chunks[i]) for i in ranked_idx]
+        query_text = self._query_text(rewritten_query)
+        bm25_idx   = self._bm25_search_spec(rewritten_query, top_k=top_k)
+        vector_idx = self._vector_search(query_text, top_k=top_k)
+
+        # spec 검색에서는 vector 결과를 spec/official_docs 타입으로만 필터
+        if vector_idx:
+            spec_types = {"spec", "official_docs", "book"}
+            vector_idx = [i for i in vector_idx if self.chunks[i].get("data_type") in spec_types]
+            merged = self._rrf_merge([bm25_idx, vector_idx], top_k=top_k)
+        else:
+            merged = bm25_idx[:top_k]
+
+        return [self._make_result(self.chunks[i]) for i in merged]
 
 
 class N8NQueryEngine:
-    def __init__(self, chunks_path: str | Path):
-        self.retriever = HybridRetriever(chunks_path)
+    def __init__(
+        self,
+        chunks_path: str | Path,
+        chroma_db_path: str | Path | None = None,
+        ollama_base_url: str = "http://localhost:11434",
+        embed_model: str = "bge-m3:latest",
+    ):
+        self.retriever = HybridRetriever(
+            chunks_path=chunks_path,
+            chroma_db_path=chroma_db_path,
+            ollama_base_url=ollama_base_url,
+            embed_model=embed_model,
+        )
         self.all_chunks = self.retriever.chunks
 
     def query(self, user_input: str, model: str = "", enable_self_correction: bool = True) -> dict[str, Any]:

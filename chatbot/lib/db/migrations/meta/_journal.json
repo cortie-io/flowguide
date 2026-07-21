@@ -8,6 +8,20 @@
       "when": 1710000000000,
       "tag": "0000_initial",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1750400000000,
+      "tag": "0001_request_log",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1761000000000,
+      "tag": "0002_user_profile_fields",
+      "breakpoints": true
     }
   ]
 }

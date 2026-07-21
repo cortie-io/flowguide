@@ -1,6 +1,6 @@
 """
 =============================================================================
-nodi — Next-Gen Node Automation Tutor
+Naito — Next-Gen Node Automation Tutor
 main.py  |  FastAPI 백엔드 엔트리포인트
 
 Single Unified Workspace 파이프라인:
@@ -35,18 +35,18 @@ from app.core.session import SessionStore       # 인메모리 세션/스냅샷
 from app.routers import workspace, node, workflow, error_patch, reverse
 from app.ws.extension_hub import ExtensionHub
 
-log = logging.getLogger("nodi.main")
+log = logging.getLogger("naito.main")
 
 # ── 앱 라이프사이클 ────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    log.info("nodi 백엔드 기동 — RAG 엔진 워밍업 시작")
+    log.info("Naito 백엔드 기동 — RAG 엔진 워밍업 시작")
     await get_engine()          # Chroma + BM25 인덱스 로드 (최초 1회)
     yield
-    log.info("nodi 백엔드 종료")
+    log.info("Naito 백엔드 종료")
 
 app = FastAPI(
-    title="nodi Backend API",
+    title="Naito Backend API",
     version="2.0.0",
     description="n8n 오토-아키텍트 RAG 추론 엔진 + 크롬 익스텐션 제어 허브",
     lifespan=lifespan,

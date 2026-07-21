@@ -9,13 +9,15 @@ from __future__ import annotations
 import json
 import logging
 import re
+import asyncio
+import time
 from concurrent.futures import ProcessPoolExecutor
 from typing import AsyncGenerator, Any
 
 from config import settings
 from session import SessionStore
 
-log = logging.getLogger("nodi.services")
+log = logging.getLogger("naito.services")
 
 # BM25 연산 전용 ProcessPoolExecutor (CPU 바운드 격리)
 _bm25_executor = ProcessPoolExecutor(max_workers=2)
@@ -80,19 +82,46 @@ def _detect_level(message: str, history: list | None = None) -> str:
     return "beginner"
 
 
-_CURRICULUM_SYSTEM_PROMPT = """\
-당신은 n8n 자동화 교육 전문가입니다.
-아래 [RAG 컨텍스트]의 `level` 메타데이터(entry / intermediate / advanced)와
-선행 노드 의존성 그래프를 기반으로 유저의 학습 수준 [{detected_level}]에 맞는
-주차별 개인 맞춤 로드맵을 설계하십시오.
+_CURRICULUM_SEPARATOR = "---CURRICULUM-JSON---"
 
-출력 규칙:
-1. JSON 배열 형태로 커리큘럼 카드를 출력하십시오.
-    각 카드 스키마: {{week, level, title, objectives: [], nodes: [], canvas_code_id, duration}}
-2. canvas_code_id 는 해당 주차 실습용 parent_summary doc_id 를 기재하십시오.
-3. 학습 수준 {detected_level}에 맞는 난이도와 진행 속도로 설계하십시오.
-4. 한국어로 안내하되 노드명/파라미터명은 영문 원문 유지.
-5. 모든 속성은 n8n_properties_spec 에 의거한 팩트여야 합니다. (LEG)
+_CURRICULUM_SYSTEM_PROMPT = """\
+[CRITICAL] 이모지 및 특수 기호를 절대 사용하지 마십시오. 순수 마크다운만 사용.
+[CRITICAL] 노드명·파라미터명은 반드시 n8n 공식 명칭을 사용하십시오.
+
+당신은 n8n 자동화 교육 전문가입니다.
+[RAG 컨텍스트]를 참고하여 유저의 학습 수준 [{detected_level}]에 맞는
+주차별 개인 맞춤 로드맵을 설계하십시오. RAG에 없는 내용도 n8n 지식을 활용해 풍부하게 구성하십시오.
+
+## 출력 형식 (반드시 이 순서를 지킬 것)
+
+**[파트 1 — 텍스트 소개]**
+마크다운으로 커리큘럼 개요를 충분히 상세하게 작성하십시오:
+
+- **대상 학습자**: 이 커리큘럼이 어떤 사람에게 적합한지 (현재 수준, 배경, 목표)
+- **전체 구성**: 총 주차 수와 각 파트의 핵심 주제 흐름을 단계적으로 설명
+- **학습 목표**: 이 과정을 마치면 독립적으로 할 수 있는 것 3~5가지를 구체적으로 나열
+- **학습 방법**: 주당 권장 학습 시간, 실습 비율, 효과적인 학습 전략
+- **선수 지식**: 이 커리큘럼 시작 전 알아야 할 것 (없으면 "없음"으로 명시)
+
+**[구분자 — 반드시 이 줄을 그대로 출력할 것]**
+---CURRICULUM-JSON---
+
+**[파트 2 — JSON 배열]**
+```json
+[
+  {{
+    "week": "1주차",
+    "level": "{detected_level}",
+    "title": "카드 제목",
+    "description": "이 주차에서 배우는 핵심 내용과 실습 목표를 2~3문장으로",
+    "duration": "45m",
+    "canvas_code_id": "curriculum_w1"
+  }},
+  ...
+]
+```
+
+노드명은 n8n 공식 명칭만 사용. 한국어 안내, 노드명/파라미터명은 영문 원문 유지.
 
 [RAG 컨텍스트 — 난이도 {detected_level} 필터 적용]
 {{context}}
@@ -211,7 +240,7 @@ class CurriculumService:
 
         chunks = await _rag_with_filter(
             engine=self.engine,
-            query=ctx["message"],
+            query=ctx.get("rag_query") or ctx["message"],
             filter_types=rag_types,
             top_n=12,
         )
@@ -226,17 +255,35 @@ class CurriculumService:
             f"요청: {ctx['message']}"
         )
 
-        # LLM 스트리밍 (토큰 emit 없음 - 구조화된 이벤트만 발행)
+        # LLM 전체 출력 수집 (텍스트 + JSON 혼합 포맷)
         full_text = ""
-        async for token in _stream_llm(system, user, ctx["model"]):
+        async for token in _stream_llm(system, user, ctx["model"], history=ctx.get("history"), openai_api_key=ctx.get("openai_api_key"), image_urls=ctx.get("image_urls")):
             full_text += token
 
-        parsed = self._extract_json_array(full_text)
+        # 구분자 기준으로 텍스트 소개와 JSON 분리
+        if _CURRICULUM_SEPARATOR in full_text:
+            text_part, json_part = full_text.split(_CURRICULUM_SEPARATOR, 1)
+        else:
+            text_part = ""
+            json_part = full_text
+
+        # 텍스트 소개를 토큰 스트림으로 발행 (마크다운 렌더링됨)
+        intro = text_part.strip()
+        if intro:
+            # 단락 단위로 쪼개어 자연스럽게 스트리밍
+            for chunk in re.split(r"(\n\n+)", intro):
+                if chunk:
+                    yield sse("token", chunk)
+
+        # 커리큘럼 카드 이벤트 발행
+        parsed = self._extract_json_array(json_part)
         cards = self._normalize_cards(parsed)
         yield sse("curriculum", {
             "cards": cards,
             "description": "주차별 커리큘럼 카드 — 각 카드의 [실습 코드 주입] 버튼으로 바로 실행",
         })
+        if chunks:
+            yield sse("rag_sources", {"sources": _build_rag_sources(chunks)})
 
 
 # =============================================================================
@@ -244,41 +291,40 @@ class CurriculumService:
 # =============================================================================
 
 _EXPRESSION_SYSTEM_PROMPT = """\
-당신은 n8n 표현식(Expression) 전문 튜터입니다.
-[노드 실행 데이터]와 [RAG 스펙 컨텍스트]를 분석하여 정확한 표현식을 생성하십시오.
-**반드시 마크다운 형식**으로 작성하십시오.
+[CRITICAL] 이모지 및 특수 기호를 절대 사용하지 마십시오. 순수 마크다운만 사용.
+[CRITICAL] 표현식은 [노드 실행 데이터]에 존재하는 필드명을 우선 사용하되, 없으면 일반적인 패턴을 제시하십시오.
+[CRITICAL] 필드가 확인되지 않을 때는 예시 패턴을 제시하고 "실제 필드명으로 교체 필요"라고 명시하십시오.
 
-## 표현식 문법 절대 규칙 (RULE-04)
+당신은 n8n 표현식(Expression) 전문 튜터입니다.
+[노드 실행 데이터]와 [RAG 스펙 컨텍스트]를 분석하여 정확하고 상세한 표현식 가이드를 제공하십시오.
+
+## n8n v1.x 표현식 문법 규칙
 - 현재 노드 데이터: `{{ $json.fieldName }}`
 - 이전 노드 데이터: `{{ $node["노드명"].json.fieldName }}`
 - 배열 첫 번째: `{{ $json.items[0].field }}`
+- 배열 전체 길이: `{{ $json.items.length }}`
+- 조건식: `{{ $json.status === "active" ? "활성" : "비활성" }}`
+- 날짜 포맷: `{{ $now.format("YYYY-MM-DD") }}`
 - **금지**: `$item()`, `.item.json` → n8n v1.x에서 폐기됨
 
-## 출력 템플릿
+## 출력 구조
 
+### 요청 분석
+사용자가 원하는 것이 무엇인지, 어떤 노드 데이터를 활용할지 설명하십시오.
+
+### 정확한 표현식
 ```
-## 생성된 표현식
-
-### 표현식 1
+{{ 표현식 }}
 ```
-{{ $json.fieldName }}
-```
-**설명**: 이 수식이 하는 일 (비전공자도 이해 가능하게)
-**언제 사용**: 어떤 상황에서 이 수식이 필요한지
+이 표현식이 어떻게 동작하는지 단계별로 설명하십시오.
 
-### 표현식 2 (있는 경우)
-...
+### 응용 표현식
+비슷하게 활용할 수 있는 표현식 변형 2~3개를 추가로 제시하십시오.
 
-## 사용 방법
-1. 위 표현식을 복사합니다
-2. n8n 캔버스에서 해당 필드를 클릭합니다
-3. 표현식 입력창에 붙여넣습니다
-
-## 주의사항
-주의해야 할 엣지케이스
-```
-
-(LEG: n8n_properties_spec 기반 팩트)
+### 사용 위치 및 주의사항
+- 이 표현식을 어느 노드의 어떤 파라미터에 넣어야 하는지
+- 흔한 실수와 디버깅 방법
+- 데이터가 없거나 null인 경우 대처법
 
 [노드 실행 데이터]
 {node_data}
@@ -303,7 +349,21 @@ class ExpressionService:
             filter_types={"spec", "cli_spec", "official_docs"},
             top_n=6,
         )
-        context_str = _build_context(chunks)
+
+        # 온톨로지 힌트 + 오타 교정 추가
+        ontology_hints = ctx.get("ontology_hints") or []
+        hint_block = ""
+        if ontology_hints:
+            hint_block = "\n\n[온톨로지 관계 힌트]\n" + "\n".join(ontology_hints)
+        typo_corrections = ctx.get("typo_corrections") or []
+        if typo_corrections:
+            lines = "\n".join(f"  - '{o}' → {c}" for o, c in typo_corrections)
+            hint_block += (
+                "\n\n[⚠ 오타 자동 교정]\n오타 단어는 실제로 존재하지 않는 용어입니다. "
+                "절대 별도 개념으로 설명하거나 '비공식 표현'으로 정당화하지 말 것.\n" + lines
+            )
+
+        context_str = _build_context(chunks) + hint_block
         node_json   = json.dumps(node_data, ensure_ascii=False, indent=2)
         system = _EXPRESSION_SYSTEM_PROMPT.format(
             node_data=node_json, context=context_str
@@ -311,100 +371,267 @@ class ExpressionService:
         user = f"이 노드 데이터에서 다음을 추출하는 표현식을 만들어줘: {ctx['message']}"
 
         full_expr = ""
-        async for token in _stream_llm(system, user, ctx["model"]):
+        async for token in _stream_llm(system, user, ctx["model"], history=ctx.get("history"), openai_api_key=ctx.get("openai_api_key"), image_urls=ctx.get("image_urls")):
+            yield sse("token", token)
             full_expr += token
 
-        # 생성된 수식 인라인 피드백
+        # 생성된 수식 인라인 피드백 (익스텐션 호환)
         yield sse("expression", {
             "raw_expression": full_expr,
             "node_type": node_type,
             "insert_hint": "클릭하여 현재 노드 파라미터에 붙여넣기",
         })
+        if chunks:
+            yield sse("rag_sources", {"sources": _build_rag_sources(chunks)})
 
 
 # =============================================================================
 # ③ 워크플로우 합성 + 최적화 서비스
 # =============================================================================
 
-_WORKFLOW_BUILD_SYSTEM_PROMPT = """\
-당신은 n8n 워크플로우 아키텍트이자 튜터입니다.
-[RAG 컨텍스트]의 검증된 코드 뼈대를 활용하여 워크플로우를 설계하십시오.
-**반드시 마크다운 형식**으로 작성하십시오.
+# =============================================================================
+# ③ 워크플로우 합성 — 3-Phase 추론 아키텍처
+#    Phase 1: DECOMPOSE  — 요청을 구조화된 설계 플랜으로 분해
+#    Phase 2: RESOLVE    — 플랜 각 단계별 노드 스펙 병렬 RAG 검색
+#    Phase 3: ASSEMBLE   — 플랜 + 스펙 기반 완성 워크플로우 생성 (스트리밍)
+# =============================================================================
 
-## 출력 템플릿 (이 구조를 반드시 따를 것)
+_DECOMPOSE_SYSTEM = """\
+[CRITICAL] JSON 객체만 출력하십시오. 설명, 마크다운, 코드 펜스 없음.
+당신은 n8n 워크플로우 설계 분석가입니다.
+사용자의 자동화 요청을 분석하여 아래 JSON 스키마를 정확히 출력하십시오.
 
-```
-## 워크플로우 설계 — [요청 제목]
+{
+  "goal": "한 문장: 이 워크플로우가 달성하는 목표",
+  "trigger": {
+    "type": "webhook | schedule | manual | email | database | file",
+    "when": "언제/무엇이 워크플로우를 실행하는지 한 줄 설명"
+  },
+  "steps": [
+    {
+      "order": 1,
+      "name": "단계명",
+      "purpose": "이 단계가 하는 일",
+      "node_keyword": "핵심 n8n 노드 키워드 (예: HTTP Request, Postgres, Code, If, Slack)"
+    }
+  ],
+  "output": {
+    "type": "API 응답 | DB 저장 | 이메일 | Slack | 파일 | 기타",
+    "where": "결과가 어디로 가는지"
+  },
+  "complexity": "simple | moderate | complex"
+}
+"""
 
-## 전체 흐름
-[1] 노드명 → [2] 노드명 → [3] 노드명
+_ASSEMBLE_SYSTEM = """\
+[CRITICAL] 이모지 및 특수 기호를 절대 사용하지 마십시오. 순수 마크다운만 사용.
+[CRITICAL] 노드 타입은 반드시 공식 형식(n8n-nodes-base.XXX / @n8n/n8n-nodes-XXX)을 사용하십시오.
+[CRITICAL] JSON 코드는 반드시 ```json 블록으로 감쌀 것.
+[CRITICAL] RAG 컨텍스트에 없어도 자신의 n8n 지식을 적극 활용하여 완전한 워크플로우를 반드시 구현하십시오. 거절 금지.
 
-## 노드별 설명
+당신은 n8n 워크플로우 구현 전문가입니다.
+[설계 플랜]과 [노드 스펙 참고]를 바탕으로 즉시 실행 가능한 완전한 n8n 워크플로우를 구현하십시오.
 
-### 1. [노드명] (`노드타입`)
-- **역할**: 무엇을 하는 노드인지
-- **핵심 설정**: `파라미터명`: 값
+출력 구조 (반드시 이 순서, 각 섹션을 충분히 상세하게 작성):
 
-### 2. [노드명] (`노드타입`)
+## 워크플로우 개요
+
+이 워크플로우가 자동화하는 비즈니스 프로세스, 전체 동작 방식, 핵심 특징을 4~6문장으로 상세히 설명하십시오.
+기술적 접근 방법과 사용자가 얻는 가치도 함께 서술하십시오.
+
+## 전체 실행 흐름
+
+트리거부터 최종 출력까지 각 단계를 번호로 나열하고, 각 단계에서 어떤 데이터가 어떻게 처리되는지 설명하십시오.
+
+1. **[단계명]**: 상세 설명
+2. **[단계명]**: 상세 설명
 ...
 
-## n8n JSON 코드
+## 노드 구성
+
+| 순서 | 노드명 | 타입 | 역할 | 주요 파라미터 |
+|------|--------|------|------|--------------|
+| ... | ... | `n8n-nodes-base.XXX` | ... | key: value |
+
+## n8n JSON
 
 ```json
 {{
+  "name": "워크플로우 이름",
   "nodes": [...],
-  "connections": {{...}}
+  "connections": {{...}},
+  "settings": {{"executionOrder": "v1"}}
 }}
 ```
 
-## 최적화 권고 (해당 시)
-- 대량 처리: `Split In Batches` 사용 필수 (RULE-01)
-- API 제한: `Retry On Fail` + `Wait Between Tries` 설정 (RULE-03)
+## 주요 설정 가이드
 
-## 배포 체크리스트
-- [ ] 각 노드 인증 정보 설정
-- [ ] 에러 처리 노드 추가
-```
+각 핵심 노드의 설정 방법을 상세히 안내하십시오:
 
-**추가 규칙:**
-- 노드명/파라미터명은 영문 원문 + `백틱` 형식 유지
-- 코드는 반드시 ```json 블록으로 감쌀 것
-- 제품명은 **n8n** (nn 금지)
+### [노드명] 설정
+- **파라미터명**: 설정값과 이유
+- 주의사항이나 대안 설정이 있으면 함께 안내
 
-[RAG 컨텍스트]
+## 운영 고려사항 및 개선 포인트
+
+1. **에러 처리**: 실패 케이스와 대응 방법
+2. **성능 최적화**: 대량 데이터 처리 시 고려사항
+3. **보안**: 자격증명, API 키 관리 방법
+4. **확장 방향**: 추가로 구현할 수 있는 기능
+
+포맷 규칙: 노드명·파라미터명은 영문 원문 + 백틱(`). 제품명은 **n8n**.
+
+[설계 플랜]
+{plan}
+
+[노드 스펙 참고]
 {context}
 """
+
+
+def _extract_workflow_json(text: str) -> dict | None:
+    """LLM 마크다운 출력에서 n8n 워크플로우 JSON 객체를 추출."""
+    m = re.search(r"```json\s*([\s\S]*?)\s*```", text, re.IGNORECASE)
+    if not m:
+        return None
+    try:
+        obj = json.loads(m.group(1).strip())
+        if isinstance(obj, dict) and ("nodes" in obj or "connections" in obj):
+            return obj
+    except json.JSONDecodeError:
+        pass
+    return None
+
 
 class WorkflowBuildService:
     def __init__(self, engine, store: SessionStore):
         self.engine = engine
         self.store  = store
 
+    # ── Phase 1: 요청 분해 ────────────────────────────────────────
+    async def _decompose(self, ctx: dict) -> dict:
+        user = f"다음 자동화 요청을 분석해줘: {ctx['message']}"
+        raw = ""
+        async for token in _stream_llm(
+            _DECOMPOSE_SYSTEM, user, ctx["model"],
+            openai_api_key=ctx.get("openai_api_key"),
+        ):
+            raw += token
+        try:
+            clean = re.sub(r"```json?\s*|\s*```", "", raw).strip()
+            return json.loads(clean)
+        except (json.JSONDecodeError, ValueError):
+            return {
+                "goal": ctx["message"],
+                "trigger": {"type": "manual", "when": "수동 실행"},
+                "steps": [{"order": 1, "name": "처리", "purpose": ctx["message"], "node_keyword": "Code"}],
+                "output": {"type": "기타", "where": "결과 반환"},
+                "complexity": "simple",
+            }
+
+    # ── Phase 2: 노드별 RAG 병렬 검색 ────────────────────────────
+    async def _resolve_nodes(self, plan: dict) -> dict[str, list[dict]]:
+        import asyncio as _asyncio
+        queries: list[tuple[str, str]] = []  # (label, query)
+
+        trigger_type = plan.get("trigger", {}).get("type", "")
+        if trigger_type:
+            queries.append(("trigger", f"{trigger_type} trigger n8n node"))
+
+        for step in plan.get("steps", []):
+            kw = step.get("node_keyword") or step.get("name") or ""
+            if kw:
+                queries.append((f"step_{step.get('order', 0)}", f"{kw} n8n node parameters spec"))
+
+        output_type = plan.get("output", {}).get("type", "")
+        if output_type and output_type != "기타":
+            queries.append(("output", f"{output_type} n8n node"))
+
+        tasks = [
+            _rag_with_filter(self.engine, q, {"spec", "official_docs"}, 4)
+            for _, q in queries
+        ]
+        results = await _asyncio.gather(*tasks)
+        return {label: chunks for (label, _), chunks in zip(queries, results)}
+
+    def _build_assembly_context(self, ctx: dict, node_chunks: dict[str, list[dict]]) -> str:
+        parts = []
+        for label, chunks in node_chunks.items():
+            if chunks:
+                parts.append(f"[{label}]\n" + _build_context(chunks[:3]))
+        hints = ctx.get("ontology_hints") or []
+        if hints:
+            parts.append("[온톨로지 힌트]\n" + "\n".join(hints))
+        typos = ctx.get("typo_corrections") or []
+        if typos:
+            lines = "\n".join(f"  - '{o}' → {c}" for o, c in typos)
+            parts.append("[오타 교정]\n" + lines)
+        return "\n\n---\n\n".join(parts) if parts else "(컨텍스트 없음)"
+
+    @staticmethod
+    def _format_plan_summary(plan: dict) -> str:
+        lines: list[str] = []
+        if plan.get("goal"):
+            lines.append(f"**목표:** {plan['goal']}")
+        t = plan.get("trigger", {})
+        if t:
+            lines.append(f"**트리거:** `{t.get('type', '?')}` — {t.get('when', '')}")
+        steps = plan.get("steps", [])
+        if steps:
+            lines.append("**처리 단계:**")
+            for s in steps:
+                lines.append(f"  {s.get('order')}. **{s.get('name')}** — {s.get('purpose')} (`{s.get('node_keyword')}`)")
+        o = plan.get("output", {})
+        if o:
+            lines.append(f"**출력:** {o.get('type')} → {o.get('where')}")
+        c = plan.get("complexity", "")
+        if c:
+            _labels = {"simple": "단순", "moderate": "보통", "complex": "복잡"}
+            lines.append(f"**복잡도:** {_labels.get(c, c)}")
+        return "\n".join(lines)
+
+    # ── 메인 스트림 ───────────────────────────────────────────────
     async def stream(self, ctx: dict) -> AsyncGenerator[str, None]:
-        # Parent-Child 체이닝 활성화하여 child_json 코드 확보
-        chunks = await _rag_with_filter(
-            engine=self.engine,
-            query=ctx["message"],
-            filter_types=None,   # 전체 대상 (parent/child 체이닝 포함)
-            top_n=8,
+        # Phase 1: 분해
+        yield sse("token", "**요청 분석 중...**\n\n")
+        plan = await self._decompose(ctx)
+        yield sse("token", self._format_plan_summary(plan))
+        yield sse("token", "\n\n---\n\n")
+
+        # Phase 2: 노드 스펙 병렬 검색
+        node_chunks = await self._resolve_nodes(plan)
+
+        # Phase 3: 어셈블 (스트리밍)
+        context_str = self._build_assembly_context(ctx, node_chunks)
+        plan_str    = json.dumps(plan, ensure_ascii=False, indent=2)
+        system = _ASSEMBLE_SYSTEM.format(plan=plan_str, context=context_str)
+        user   = (
+            f"요청: {ctx['message']}\n\n"
+            "위 설계 플랜을 구현하는 완성된 n8n 워크플로우를 작성해줘."
         )
-        context_str = _build_context(chunks)
-        system = _WORKFLOW_BUILD_SYSTEM_PROMPT.format(context=context_str)
-        user   = f"다음 요청에 맞는 n8n 워크플로우를 설계하고 최적화 진단을 수행해줘: {ctx['message']}"
 
-        synthesized_json = ""
-        async for token in _stream_llm(system, user, ctx["model"]):
+        assembled = ""
+        async for token in _stream_llm(
+            system, user, ctx["model"],
+            history=ctx.get("history"),
+            openai_api_key=ctx.get("openai_api_key"),
+            image_urls=ctx.get("image_urls"),
+        ):
             yield sse("token", token)
-            synthesized_json += token
+            assembled += token
 
-        # 캔버스 주입 버튼 카드 발행
+        # JSON 추출 후 카드 발행
+        wf_json = _extract_workflow_json(assembled)
         yield sse("card", {
             "type": "workflow_inject",
-            "label": "캔버스에 바로 주입",
-            "description": "버튼 클릭 시 현재 n8n 에디터에 워크플로우가 삽입됩니다",
-            "workflow_payload": synthesized_json,
+            "workflow_json": wf_json,
+            "workflow_payload": assembled,
             "session_id": ctx["session_id"],
         })
+
+        all_chunks = [c for ch in node_chunks.values() for c in ch]
+        if all_chunks:
+            yield sse("rag_sources", {"sources": _build_rag_sources(all_chunks)})
 
 
 # =============================================================================
@@ -466,45 +693,242 @@ def _build_context(chunks: list[dict]) -> str:
     return "\n\n---\n\n".join(parts)
 
 
+def _build_rag_sources(chunks: list[dict]) -> list[dict]:
+    """청크 메타데이터를 rag_sources SSE 이벤트용 소스 목록으로 변환."""
+    sources = []
+    seen: set[str] = set()
+    for c in chunks:
+        title     = c.get("title") or c.get("node_name") or "문서"
+        source    = c.get("source") or c.get("file") or ""
+        data_type = c.get("data_type") or "docs"
+        text      = c.get("text") or ""
+        preview   = text[:120].replace("\n", " ").strip()
+        key = f"{title}::{source}"
+        if key in seen:
+            continue
+        seen.add(key)
+        sources.append({"title": title, "data_type": data_type,
+                        "source": source, "preview": preview})
+        if len(sources) >= 8:
+            break
+    return sources
+
+
+def _build_messages(system: str, history: list | None, user: str) -> list[dict]:
+    """Ollama multi-turn messages 배열 구성.
+    - 최근 10턴(5회 교환) 포함
+    - user 턴: 최대 400자 (짧고 명확)
+    - assistant 턴: 최대 4000자 (답변 전체를 최대한 보존)
+    - 마지막 assistant 턴: 무제한 (직전 답변은 완전히 포함)
+    """
+    msgs: list[dict] = [{"role": "system", "content": system}]
+    if history:
+        recent = history[-10:]
+        last_asst_idx = None
+        for i, t in enumerate(recent):
+            r = getattr(t, "role", None) or (t.get("role") if isinstance(t, dict) else None)
+            if r == "assistant":
+                last_asst_idx = i
+        for i, turn in enumerate(recent):
+            role = getattr(turn, "role", None) or (turn.get("role") if isinstance(turn, dict) else None)
+            content = getattr(turn, "content", None) or (turn.get("content") if isinstance(turn, dict) else None)
+            if role in ("user", "assistant") and content:
+                if role == "user":
+                    truncated = str(content)[:400]
+                elif i == last_asst_idx:
+                    truncated = str(content)  # 직전 assistant 응답은 전체 포함
+                else:
+                    truncated = str(content)[:4000]
+                msgs.append({"role": role, "content": truncated})
+    msgs.append({"role": "user", "content": user})
+    return msgs
+
+
+async def _stream_openai(
+    system: str,
+    user: str,
+    model_name: str,
+    history: list | None,
+    api_key: str,
+    image_urls: list[str] | None = None,
+) -> AsyncGenerator[str, None]:
+    """OpenAI Chat Completions 스트리밍 (사용자 BYOK). 이미지 URL/base64 vision 지원."""
+    try:
+        from openai import AsyncOpenAI
+    except ImportError:
+        yield "OpenAI 패키지가 설치되지 않았습니다. 관리자에게 문의해 주세요."
+        return
+
+    messages: list[dict] = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    if history:
+        for turn in history:
+            role = getattr(turn, "role", None) or (turn.get("role") if isinstance(turn, dict) else "")
+            content = getattr(turn, "content", None) or (turn.get("content") if isinstance(turn, dict) else "")
+            if role in ("user", "assistant") and content:
+                messages.append({"role": role, "content": str(content)})
+
+    # 이미지가 있으면 vision 형식으로 user content 구성
+    if image_urls:
+        user_content: str | list = [{"type": "text", "text": user}]
+        for url in image_urls:
+            user_content.append({
+                "type": "image_url",
+                "image_url": {"url": url, "detail": "high"},
+            })
+        messages.append({"role": "user", "content": user_content})
+    else:
+        messages.append({"role": "user", "content": user})
+
+    try:
+        client = AsyncOpenAI(api_key=api_key)
+        stream = await client.chat.completions.create(
+            model=model_name,
+            messages=messages,
+            stream=True,
+            temperature=0.1,
+            max_tokens=4096,
+        )
+        async for chunk in stream:
+            delta = chunk.choices[0].delta.content if chunk.choices else None
+            if delta:
+                yield delta
+    except Exception as e:
+        log.error("[OpenAI] 스트리밍 오류: %s", e)
+        err_msg = str(e)
+        if "401" in err_msg or "Incorrect API key" in err_msg:
+            yield "OpenAI API 키가 올바르지 않습니다. 설정에서 키를 확인해 주세요."
+        elif "429" in err_msg:
+            yield "OpenAI 요청 한도를 초과했습니다. 잠시 후 다시 시도해 주세요."
+        else:
+            yield f"OpenAI 오류: {err_msg[:200]}"
+
+
 async def _stream_llm(
-    system: str, user: str, model: str
+    system: str, user: str, model: str, history: list | None = None,
+    openai_api_key: str | None = None, image_urls: list[str] | None = None,
 ) -> AsyncGenerator[str, None]:
     """
     Ollama /api/chat (stream=true) 비동기 스트리밍.
-    각 청크에서 content 토큰을 yield.
+    model 이 'openai:' 로 시작하면 OpenAI API 로 라우팅 (사용자 BYOK).
+    history 가 있으면 multi-turn messages 배열로 전달.
+    image_urls 가 있으면 OpenAI vision API 로 이미지 포함 전송.
     """
+    # OpenAI 라우팅
+    if model.startswith("openai:") and openai_api_key:
+        model_name = model[len("openai:"):]
+        async for token in _stream_openai(system, user, model_name, history, openai_api_key, image_urls):
+            yield token
+        return
+
+    if model.startswith("openai:") and not openai_api_key:
+        yield "OpenAI 모델을 사용하려면 API 키를 입력해 주세요. 채팅창 하단 모델 선택 옆에 키를 입력하세요."
+        return
+
+    # 이미지가 있는데 OpenAI 모델이 아닌 경우 안내
+    if image_urls:
+        yield "이미지 분석은 OpenAI 모델에서만 지원됩니다. 설정에서 OpenAI 모델(gpt-4o 등)을 선택하고 API 키를 입력해 주세요."
+        return
+
     import httpx
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user",   "content": user},
-        ],
-        "stream": True,
-        "options": {"temperature": 0.1, "top_p": 0.9, "num_ctx": 8192},
-    }
+
+    overall_deadline = time.monotonic() + 300
+    per_attempt_timeout = 180
+    max_attempts = 2
+
+    candidate_models = [model]
+    if settings.llm_model and settings.llm_model != model:
+        candidate_models.append(settings.llm_model)
+
     try:
-        async with httpx.AsyncClient(timeout=300) as client:
-            async with client.stream(
-                "POST", f"{settings.ollama_base_url}/api/chat", json=payload
-            ) as resp:
-                resp.raise_for_status()
-                async for line in resp.aiter_lines():
-                    if not line.strip():
-                        continue
-                    try:
-                        data = json.loads(line)
-                        token = data.get("message", {}).get("content", "")
-                        if token:
-                            yield token
-                    except json.JSONDecodeError:
-                        continue
-    except httpx.ReadTimeout:
-        log.warning("[LLM] Ollama 응답 타임아웃(model=%s)", model)
-        yield "모델 응답이 지연되어 기본 분석 결과로 계속 진행합니다."
-    except httpx.HTTPError as e:
-        log.warning("[LLM] Ollama HTTP 오류(model=%s): %s", model, e)
-        yield "모델 응답에 일시적 문제가 있어 기본 분석 결과로 계속 진행합니다."
+        async with httpx.AsyncClient(timeout=5) as client:
+            tags_resp = await client.get(f"{settings.ollama_base_url}/api/tags")
+            tags_resp.raise_for_status()
+            tags_payload = tags_resp.json()
+            installed_models = [
+                m.get("name") for m in tags_payload.get("models", []) if m.get("name")
+            ]
+            if installed_models:
+                candidate_models.extend(installed_models[:2])
     except Exception as e:
-        log.warning("[LLM] 예기치 못한 오류(model=%s): %s", model, e)
-        yield "모델 연결 중 오류가 발생해 기본 분석 결과로 계속 진행합니다."
+        log.warning("[LLM] 모델 목록 조회 실패: %s", e)
+
+    # 순서 보존 중복 제거
+    seen = set()
+    candidate_models = [m for m in candidate_models if m and not (m in seen or seen.add(m))]
+
+    last_error: Exception | None = None
+
+    for candidate_model in candidate_models:
+        for attempt in range(1, max_attempts + 1):
+            if time.monotonic() >= overall_deadline:
+                log.warning("[LLM] 전체 응답 시간 초과로 중단(model=%s)", candidate_model)
+                yield "모델 응답이 지연되어 기본 분석 결과로 계속 진행합니다."
+                return
+
+            payload = {
+                "model": candidate_model,
+                "messages": _build_messages(system, history, user),
+                "stream": True,
+                "keep_alive": "1h",
+                "options": {"temperature": 0.1, "top_p": 0.9, "num_ctx": 8192},
+            }
+
+            emitted_any_token = False
+            try:
+                async with httpx.AsyncClient(timeout=per_attempt_timeout) as client:
+                    async with client.stream(
+                        "POST", f"{settings.ollama_base_url}/api/chat", json=payload
+                    ) as resp:
+                        resp.raise_for_status()
+                        async for line in resp.aiter_lines():
+                            if not line.strip():
+                                continue
+                            try:
+                                data = json.loads(line)
+                                token = data.get("message", {}).get("content", "")
+                                if token:
+                                    emitted_any_token = True
+                                    yield token
+                            except json.JSONDecodeError:
+                                continue
+
+                # 정상 종료 시 즉시 반환
+                return
+            except (httpx.ReadTimeout, httpx.HTTPError) as e:
+                last_error = e
+                log.warning(
+                    "[LLM] Ollama 오류(model=%s, attempt=%d/%d): %s",
+                    candidate_model,
+                    attempt,
+                    max_attempts,
+                    e,
+                )
+
+                # 이미 토큰을 일부 보낸 경우에는 중복 생성 방지를 위해 재시도 없이 종료
+                if emitted_any_token:
+                    return
+
+                if attempt < max_attempts and time.monotonic() < overall_deadline:
+                    await asyncio.sleep(0.6 * attempt)
+                    continue
+            except Exception as e:
+                last_error = e
+                log.warning(
+                    "[LLM] 예기치 못한 오류(model=%s, attempt=%d/%d): %s",
+                    candidate_model,
+                    attempt,
+                    max_attempts,
+                    e,
+                )
+
+                if emitted_any_token:
+                    return
+
+                if attempt < max_attempts and time.monotonic() < overall_deadline:
+                    await asyncio.sleep(0.6 * attempt)
+                    continue
+
+    log.warning("[LLM] 모든 재시도 실패(model=%s): %s", model, last_error)
+    yield "모델 응답에 일시적 문제가 있어 기본 분석 결과로 계속 진행합니다."

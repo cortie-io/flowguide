@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "nodi",
+  "name": "Naito",
   "version": "1.0.5",
-  "description": "Next-Gen Node Automation Tutor — nodi 인터랙티브 AI 교육 플랫폼",
+  "description": "Next-Gen Node Automation Tutor — Naito 인터랙티브 AI 교육 플랫폼",
   "icons": {
     "16": "icons/nodi-icon16.png",
     "48": "icons/nodi-icon48.png",
@@ -15,16 +15,18 @@
     "clipboardWrite",
     "clipboardRead",
     "storage",
-    "sidePanel"
+    "sidePanel",
+    "windows"
   ],
   "host_permissions": [
-    "http://localhost:8000/*",
+    "https://naito.chat/*",
+    "https://n8n.cortie.io/*",
     "http://localhost:5678/*",
     "http://*/*",
     "https://*/*"
   ],
   "action": {
-    "default_title": "nodi Tutor Agent",
+    "default_title": "Naito Tutor Agent",
     "default_icon": {
       "16": "icons/nodi-icon16.png",
       "48": "icons/nodi-icon48.png",
@@ -36,20 +38,26 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://localhost:5678/*"],
+      "matches": ["http://localhost:5678/*", "https://n8n.cortie.io/*"],
       "js": ["content.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://naito.chat/*", "http://localhost:3000/*"],
+      "js": ["content-bridge.js"],
+      "run_at": "document_idle",
+      "all_frames": true
     }
   ],
   "background": {
     "service_worker": "background.js"
   },
   "content_security_policy": {
-    "extension_pages": "default-src 'self'; frame-src http://localhost:3000; script-src 'self'; style-src 'self' 'unsafe-inline';"
+    "extension_pages": "default-src 'self'; frame-src https://naito.chat http://localhost:3000; script-src 'self'; style-src 'self' 'unsafe-inline';"
   },
   "web_accessible_resources": [
     {
-      "resources": ["sidepanel.html", "sidepanel.js", "assets/*"],
+      "resources": ["sidepanel.html", "sidepanel.js", "sidepanel-capture.js", "assets/*"],
       "matches": ["<all_urls>"]
     }
   ]

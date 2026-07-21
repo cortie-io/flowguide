@@ -19,7 +19,7 @@ import re
 from pathlib import Path
 from typing import Sequence
 
-log = logging.getLogger("nodi.reg_validator")
+log = logging.getLogger("naito.reg_validator")
 
 # ── 유효 속성명 세트 로드 ───────────────────────────────────────────────────
 

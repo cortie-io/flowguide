@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from credential_filter import get_credential_filter, CredentialFilter
 from session import get_session_store, SessionStore
 
-log = logging.getLogger("nodi.workflow")
+log = logging.getLogger("naito.workflow")
 router = APIRouter()
 
 

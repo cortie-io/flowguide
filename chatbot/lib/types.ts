@@ -45,7 +45,7 @@ export type CustomUIDataTypes = {
     label: string;
   };
   curriculum: {
-    cards: Array<Record<string, unknown>>;
+    cards: Record<string, unknown>[];
     description?: string;
   };
   expression: {
@@ -53,7 +53,7 @@ export type CustomUIDataTypes = {
     node_type?: string;
   };
   card: Record<string, unknown>;
-  "error_alert": {
+  error_alert: {
     type?: string;
     tokens?: string[];
     message: string;
@@ -62,13 +62,21 @@ export type CustomUIDataTypes = {
     title?: string;
     layer?: string;
     content?: string;
-    items?: Array<Record<string, unknown>>;
+    items?: Record<string, unknown>[];
   };
-  "reg_warning": {
+  reg_warning: {
     summary?: string;
-    corrections?: Array<Record<string, unknown>>;
+    corrections?: Record<string, unknown>[];
   };
-  "node_property_card": Record<string, unknown>;
+  node_property_card: Record<string, unknown>;
+  rag_sources: {
+    sources: Array<{
+      title: string;
+      data_type: string;
+      source: string;
+      preview: string;
+    }>;
+  };
 };
 
 export type ChatMessage = UIMessage<

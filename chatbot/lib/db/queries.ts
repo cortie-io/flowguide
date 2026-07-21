@@ -24,6 +24,8 @@ import {
   type DBMessage,
   document,
   message,
+  type RequestLog,
+  requestLog,
   type Suggestion,
   stream,
   suggestion,
@@ -47,32 +49,34 @@ export async function getUser(email: string): Promise<User[]> {
   }
 }
 
-export async function createUser(email: string, password: string) {
+export async function createUser(
+  email: string,
+  password: string,
+  options?: {
+    name?: string;
+    company?: string;
+    jobTitle?: string;
+    phone?: string;
+    useCase?: string;
+  }
+) {
   const hashedPassword = generateHashedPassword(password);
 
   try {
-    return await db.insert(user).values({ email, password: hashedPassword });
+    return await db.insert(user).values({
+      email,
+      password: hashedPassword,
+      name: options?.name,
+      company: options?.company,
+      jobTitle: options?.jobTitle,
+      phone: options?.phone,
+      useCase: options?.useCase,
+    });
   } catch (_error) {
     throw new ChatbotError("bad_request:database", "Failed to create user");
   }
 }
 
-export async function createGuestUser() {
-  const email = `guest-${Date.now()}`;
-  const password = generateHashedPassword(generateUUID());
-
-  try {
-    return await db.insert(user).values({ email, password }).returning({
-      id: user.id,
-      email: user.email,
-    });
-  } catch (_error) {
-    throw new ChatbotError(
-      "bad_request:database",
-      "Failed to create guest user"
-    );
-  }
-}
 
 export async function saveChat({
   id,
@@ -100,6 +104,7 @@ export async function saveChat({
 
 export async function deleteChatById({ id }: { id: string }) {
   try {
+    await db.delete(requestLog).where(eq(requestLog.chatId, id));
     await db.delete(vote).where(eq(vote.chatId, id));
     await db.delete(message).where(eq(message.chatId, id));
     await db.delete(stream).where(eq(stream.chatId, id));
@@ -131,6 +136,7 @@ export async function deleteAllChatsByUserId({ userId }: { userId: string }) {
     const chatIds = userChats.map((c) => c.id);
 
     await db.delete(vote).where(inArray(vote.chatId, chatIds));
+    await db.delete(requestLog).where(inArray(requestLog.chatId, chatIds));
     await db.delete(message).where(inArray(message.chatId, chatIds));
     await db.delete(stream).where(inArray(stream.chatId, chatIds));
 
@@ -610,6 +616,14 @@ export async function createStreamId({
       "bad_request:database",
       "Failed to create stream id"
     );
+  }
+}
+
+export async function saveRequestLog(data: Omit<RequestLog, "id">) {
+  try {
+    return await db.insert(requestLog).values(data).returning({ id: requestLog.id });
+  } catch (_error) {
+    // non-fatal: 로깅 실패가 채팅 응답에 영향을 주면 안 됨
   }
 }
 

@@ -60,7 +60,7 @@ class SessionStore:
             self._history[session_id] = self._history[session_id][-20:]
 
     def get_history(self, session_id: str) -> list[ConversationTurn]:
-        return self._history.get(session_id, [])
+        return list(self._history.get(session_id, []))
 
     def clear_history(self, session_id: str):
         self._history[session_id] = []

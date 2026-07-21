@@ -154,6 +154,27 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
     toast.success("Chat deleted");
   };
 
+  const handleRename = (chatId: string, newTitle: string) => {
+    mutate((chatHistories) => {
+      if (!chatHistories) return chatHistories;
+      return chatHistories.map((page) => ({
+        ...page,
+        chats: page.chats.map((c) =>
+          c.id === chatId ? { ...c, title: newTitle } : c
+        ),
+      }));
+    }, false);
+
+    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/api/chat`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: chatId, title: newTitle }),
+    }).catch(() => {
+      toast.error("Failed to rename chat");
+      mutate();
+    });
+  };
+
   if (!user) {
     return (
       <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -238,6 +259,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                             chat={chat}
                             isActive={chat.id === id}
                             key={chat.id}
+                            onRename={handleRename}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -258,6 +280,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                             chat={chat}
                             isActive={chat.id === id}
                             key={chat.id}
+                            onRename={handleRename}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -278,6 +301,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                             chat={chat}
                             isActive={chat.id === id}
                             key={chat.id}
+                            onRename={handleRename}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -298,6 +322,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                             chat={chat}
                             isActive={chat.id === id}
                             key={chat.id}
+                            onRename={handleRename}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -318,6 +343,7 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                             chat={chat}
                             isActive={chat.id === id}
                             key={chat.id}
+                            onRename={handleRename}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);

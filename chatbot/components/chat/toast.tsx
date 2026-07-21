@@ -10,9 +10,38 @@ const iconsByType: Record<"success" | "error", ReactNode> = {
   error: <WarningIcon />,
 };
 
+function normalizeToastDescription(
+  type: "success" | "error",
+  description: string
+) {
+  if (type !== "error") {
+    return description;
+  }
+
+  const raw = String(description || "");
+  const shouldHideInternalError =
+    raw.includes("importKey") ||
+    raw.includes("Cannot read properties of undefined") ||
+    raw.includes("TypeError") ||
+    raw.includes("Failed to fetch") ||
+    raw.includes("unexpected response") ||
+    raw.includes("NetworkError");
+
+  if (!shouldHideInternalError) {
+    return raw;
+  }
+
+  return "일시적인 연결 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+}
+
 export function toast(props: Omit<ToastProps, "id">) {
+  const normalizedDescription = normalizeToastDescription(
+    props.type,
+    props.description
+  );
+
   return sonnerToast.custom((id) => (
-    <Toast description={props.description} id={id} type={props.type} />
+    <Toast description={normalizedDescription} id={id} type={props.type} />
   ));
 }
 
