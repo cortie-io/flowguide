@@ -71,7 +71,7 @@ def _init_engine() -> "N8NQueryEngine":
     def _resolve_chroma_path() -> Path | None:
         candidates = [
             _root / "RAG_dataset" / "chroma_db_openai",
-            _root / "RAG Builder" / "final" / "chroma_db",
+            _root / "RAG_builder" / "final" / "chroma_db",
             _root / "RAG_dataset" / "chroma_db",
             _root / "chroma_db",
         ]

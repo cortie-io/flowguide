@@ -18,7 +18,7 @@
 ┌─────────────────────────────────────────────────────────────────────┐
 │  워크플로우 B — RAG 데이터셋 구축 파이프라인                          │
 │  (지식 소스가 바뀔 때만 수동 실행, 오프라인 배치 작업)                 │
-│  RAG Builder/ 원본 문서 → 청킹 → JSONL → 임베딩 → ChromaDB            │
+│  RAG_builder/ 원본 문서 → 청킹 → JSONL → 임베딩 → ChromaDB            │
 │  → RAG_dataset/ 로 반영                                              │
 └─────────────────────────────────────────────────────────────────────┘
                               ▲
@@ -134,7 +134,7 @@ Next.js 웹앱이 일반 채팅과 동일한 /api/chat 경로로 처리
 
 ## 2. 워크플로우 B — RAG 데이터셋 구축 파이프라인
 
-워크플로우 A가 검색하는 지식 베이스(`RAG_dataset/final_rag_chunks_v2.jsonl`, `RAG_dataset/chroma_db`)는 **자동으로 갱신되지 않습니다.** `RAG Builder/` 도구를 수동 실행해 새로 만들고, 결과물을 `RAG_dataset/`에 반영해야 서버가 사용합니다.
+워크플로우 A가 검색하는 지식 베이스(`RAG_dataset/final_rag_chunks_v2.jsonl`, `RAG_dataset/chroma_db`)는 **자동으로 갱신되지 않습니다.** `RAG_builder/` 도구를 수동 실행해 새로 만들고, 결과물을 `RAG_dataset/`에 반영해야 서버가 사용합니다.
 
 ### 2.1 소스 → 산출물 데이터 흐름
 
@@ -166,7 +166,7 @@ final/
                                               server/engine.py 가 기동 시 여기서 로드
 ```
 
-**중요:** `RAG Builder/final/`은 빌더의 작업 디렉터리이고, 서버가 실제로 읽는 곳은 저장소 루트의 `RAG_dataset/`입니다(`server/engine.py`의 `_root / "RAG_dataset" / "final_rag_chunks_v2.jsonl"` 참조). 새 데이터셋을 반영하려면 빌드 후 파일을 `RAG_dataset/`로 옮기고 서버(`naito-api`)를 재시작해야 합니다.
+**중요:** `RAG_builder/final/`은 빌더의 작업 디렉터리이고, 서버가 실제로 읽는 곳은 저장소 루트의 `RAG_dataset/`입니다(`server/engine.py`의 `_root / "RAG_dataset" / "final_rag_chunks_v2.jsonl"` 참조). 새 데이터셋을 반영하려면 빌드 후 파일을 `RAG_dataset/`로 옮기고 서버(`naito-api`)를 재시작해야 합니다.
 
 ### 2.2 청크 트랙 (Track A~E)
 
@@ -177,7 +177,7 @@ final/
 | D | `final/workflow_templates_text/` | 3 | 템플릿(parent/child 쌍) |
 | E | `final/book *.md` | 2 | 교재 |
 
-`RAG Builder/config.py`의 `CORE_STRATEGY`:
+`RAG_builder/config.py`의 `CORE_STRATEGY`:
 
 | 원본 파일 | data_type | 청크 구분자 |
 |---|---|---|
@@ -190,10 +190,10 @@ final/
 
 기본 청크 크기는 1100자/오버랩 170자(`DEFAULT_CHUNK_SIZE`, `DEFAULT_CHUNK_OVERLAP`), book만 1550/210으로 별도 설정됩니다.
 
-### 2.3 실행 단계 (`RAG Builder/main.py` — 4 Phase)
+### 2.3 실행 단계 (`RAG_builder/main.py` — 4 Phase)
 
 ```bash
-cd "RAG Builder"
+cd RAG_builder
 
 # Phase 1(선택) — 소스 갱신
 python main.py --refresh-templates --refresh-changelog
@@ -304,7 +304,7 @@ cp .env.example .env  →  값 채우기  →  make up
 
 ```
 [워크플로우 B로 지식 갱신]
-     RAG Builder/ 실행 → RAG_dataset/ 반영
+     RAG_builder/ 실행 → RAG_dataset/ 반영
              │
              ▼
 [워크플로우 C로 서버 기동/재시작]

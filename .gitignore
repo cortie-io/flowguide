@@ -40,8 +40,8 @@ RAG_dataset/workflow_template_sources/
 RAG_dataset/final_rag_chunks_v2.jsonl
 RAG_dataset/final_rag_stats_v2.json
 RAG_dataset/final_vector_db_stats_v2.json
-RAG Builder/final
-RAG Builder/origin/
+RAG_builder/final
+RAG_builder/origin/
 server/n9n.db
 
 # ── IDE ──────────────────────────────────────────────────────
