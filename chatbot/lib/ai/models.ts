@@ -1,9 +1,9 @@
-export const DEFAULT_CHAT_MODEL = "gemma4-e4b:latest";
+export const DEFAULT_CHAT_MODEL = "openai:gpt-4o-mini";
 
 export const titleModel = {
-  id: "gemma4-e4b:latest",
-  name: "Gemma 4",
-  provider: "google",
+  id: "openai:gpt-4o-mini",
+  name: "GPT-4o mini",
+  provider: "openai",
   description: "Fast model for title generation",
 };
 
@@ -24,34 +24,22 @@ export type ChatModel = {
 
 export const chatModels: ChatModel[] = [
   {
-    id: "gemma4-e4b:latest",
-    name: "Gemma 4",
-    provider: "google",
-    description: "Google Gemma 4 (default)",
-  },
-  {
-    id: "qwen3.6:35b-a3b",
-    name: "Qwen 3.6 35B",
-    provider: "alibaba",
-    description: "Alibaba Qwen 3.6 35B MoE model",
+    id: "openai:gpt-4o-mini",
+    name: "GPT-4o mini",
+    provider: "openai",
+    description: "OpenAI GPT-4o mini (default)",
   },
   {
     id: "openai:gpt-4o",
     name: "GPT-4o",
     provider: "openai",
-    description: "OpenAI GPT-4o (API 키 필요)",
-  },
-  {
-    id: "openai:gpt-4o-mini",
-    name: "GPT-4o mini",
-    provider: "openai",
-    description: "OpenAI GPT-4o mini (API 키 필요)",
+    description: "OpenAI GPT-4o",
   },
   {
     id: "openai:gpt-4.1",
     name: "GPT-4.1",
     provider: "openai",
-    description: "OpenAI GPT-4.1 (API 키 필요)",
+    description: "OpenAI GPT-4.1",
   },
 ];
 

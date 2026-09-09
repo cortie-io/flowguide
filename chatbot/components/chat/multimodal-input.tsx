@@ -72,24 +72,41 @@ function setCookie(name: string, value: string) {
 }
 
 // ── Chrome Extension 캔버스 자동 fetch ──────────────────────────
-async function fetchCanvasJson(): Promise<string | null> {
+// naito.chat 페이지 자신의 JS는 chrome.runtime에 직접 접근할 수 없다
+// (익스텐션이 externally_connectable을 선언하지 않았고, window.chrome은
+// 페이지 컨텍스트에서 runtime 없이 빈 스텁만 노출됨). 대신 격리된 world에서
+// 실행되는 content-bridge.js(nodi 확장)가 window.postMessage 요청을 대신
+// chrome.runtime.sendMessage로 릴레이해준다. 익스텐션이 설치돼 있지 않으면
+// 응답이 오지 않으므로 타임아웃 후 null로 정상 폴백한다.
+function fetchCanvasJson(): Promise<string | null> {
   return new Promise((resolve) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const chromeApi = typeof window !== "undefined" ? (window as any).chrome : undefined;
-    if (typeof chromeApi?.runtime?.sendMessage !== "function") {
+    if (typeof window === "undefined") {
       resolve(null);
       return;
     }
-    chromeApi.runtime.sendMessage(
-      { type: "GET_CANVAS_JSON" },
-      (resp: { success?: boolean; data?: string } | null) => {
-        if (chromeApi.runtime?.lastError || !resp?.success || !resp.data) {
-          resolve(null);
-          return;
-        }
-        resolve(resp.data);
-      }
-    );
+    const requestId = `canvas-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    let settled = false;
+
+    const timeout = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      window.removeEventListener("message", handler);
+      resolve(null);
+    }, 2500);
+
+    function handler(event: MessageEvent) {
+      if (event.source !== window) return;
+      if (event.data?.type !== "NAITO_CANVAS_JSON_RESPONSE") return;
+      if (event.data.requestId !== requestId) return;
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      window.removeEventListener("message", handler);
+      resolve(event.data.success && event.data.data ? event.data.data : null);
+    }
+
+    window.addEventListener("message", handler);
+    window.postMessage({ type: "NAITO_GET_CANVAS_JSON", requestId }, "*");
   });
 }
 

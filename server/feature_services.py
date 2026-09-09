@@ -145,11 +145,17 @@ class ErrorPatchService:
         )
         user = f"이 에러를 진단하고 즉시 적용 가능한 패치 방법을 알려줘:\n{error_log[:500]}"
 
+        # 진단 내용을 실시간으로 채팅창에 스트리밍한다.
+        # (이전에는 patch_code를 로컬 변수에만 쌓아뒀다가 맨 마지막에 카드
+        # payload로만 던졌는데, 프론트엔드가 그 카드 타입을 렌더링하지 않아
+        # 사용자에게는 진단 내용이 하나도 안 보이고 화면이 비어있는 것처럼
+        # 보이는 문제가 있었음)
         patch_code = ""
         async for token in _stream_llm(system, user, ctx["model"], history=ctx.get("history"), openai_api_key=ctx.get("openai_api_key")):
             patch_code += token
+            yield sse("token", token)
 
-        # 원격 수술 버튼 카드 발행
+        # 원격 수술 버튼 카드 발행 (캔버스 패치 적용용 — 텍스트는 위에서 이미 표시됨)
         yield sse("card", {
             "type": "error_patch_apply",
             "label": "캔버스에 패치 적용",

@@ -11,16 +11,12 @@ import logging
 import re
 import asyncio
 import time
-from concurrent.futures import ProcessPoolExecutor
 from typing import AsyncGenerator, Any
 
 from config import settings
 from session import SessionStore
 
 log = logging.getLogger("naito.services")
-
-# BM25 연산 전용 ProcessPoolExecutor (CPU 바운드 격리)
-_bm25_executor = ProcessPoolExecutor(max_workers=2)
 
 
 def sse(event: str, data: dict | str) -> str:
@@ -642,26 +638,21 @@ async def _rag_with_filter(engine, query: str,
                             filter_types: set | None,
                             top_n: int) -> list[dict]:
     """
-    HybridRetriever(BM25)를 ProcessPoolExecutor에서 비동기 실행.
-    CPU 바운드 BM25 연산을 메인 이벤트 루프와 격리한다.
+    HybridRetriever(BM25)를 스레드풀에서 비동기 실행해 메인 이벤트 루프와 격리한다.
+
+    별도 프로세스(ProcessPoolExecutor)로 격리하는 방안도 시도했었으나, engine이
+    들고 있는 ChromaDB/토크나이저 네이티브 바인딩(`builtins.Bindings`)이 원천적으로
+    피클링이 불가능해 매 호출마다 100% 실패하고 스레드풀로 재시도하는 구조였음 —
+    항상 실패하는 시도를 매번 반복하며 지연만 유발했으므로 제거하고 스레드풀만 사용.
     """
     import asyncio
     from functools import partial
 
     loop = asyncio.get_running_loop()
-    try:
-        result_chunks = await loop.run_in_executor(
-            _bm25_executor,
-            partial(_sync_retrieve, engine, query, filter_types, top_n),
-        )
-    except Exception as e:
-        # ProcessPool 실패 시 일반 ThreadPoolExecutor로 폴백
-        log.warning("[RAG] ProcessPool 실패(%s), ThreadPool 폴백", e)
-        result_chunks = await loop.run_in_executor(
-            None,
-            partial(_sync_retrieve, engine, query, filter_types, top_n),
-        )
-    return result_chunks
+    return await loop.run_in_executor(
+        None,
+        partial(_sync_retrieve, engine, query, filter_types, top_n),
+    )
 
 
 def _sync_retrieve(engine, query: str,
@@ -712,36 +703,6 @@ def _build_rag_sources(chunks: list[dict]) -> list[dict]:
         if len(sources) >= 8:
             break
     return sources
-
-
-def _build_messages(system: str, history: list | None, user: str) -> list[dict]:
-    """Ollama multi-turn messages 배열 구성.
-    - 최근 10턴(5회 교환) 포함
-    - user 턴: 최대 400자 (짧고 명확)
-    - assistant 턴: 최대 4000자 (답변 전체를 최대한 보존)
-    - 마지막 assistant 턴: 무제한 (직전 답변은 완전히 포함)
-    """
-    msgs: list[dict] = [{"role": "system", "content": system}]
-    if history:
-        recent = history[-10:]
-        last_asst_idx = None
-        for i, t in enumerate(recent):
-            r = getattr(t, "role", None) or (t.get("role") if isinstance(t, dict) else None)
-            if r == "assistant":
-                last_asst_idx = i
-        for i, turn in enumerate(recent):
-            role = getattr(turn, "role", None) or (turn.get("role") if isinstance(turn, dict) else None)
-            content = getattr(turn, "content", None) or (turn.get("content") if isinstance(turn, dict) else None)
-            if role in ("user", "assistant") and content:
-                if role == "user":
-                    truncated = str(content)[:400]
-                elif i == last_asst_idx:
-                    truncated = str(content)  # 직전 assistant 응답은 전체 포함
-                else:
-                    truncated = str(content)[:4000]
-                msgs.append({"role": role, "content": truncated})
-    msgs.append({"role": "user", "content": user})
-    return msgs
 
 
 async def _stream_openai(
@@ -810,125 +771,18 @@ async def _stream_llm(
     openai_api_key: str | None = None, image_urls: list[str] | None = None,
 ) -> AsyncGenerator[str, None]:
     """
-    Ollama /api/chat (stream=true) 비동기 스트리밍.
-    model 이 'openai:' 로 시작하면 OpenAI API 로 라우팅 (사용자 BYOK).
+    OpenAI Chat Completions (stream=true) 비동기 스트리밍.
+    model 이 'openai:'로 시작하면 그 모델명을, 아니면 서버 기본 모델(settings.llm_model)을 사용.
+    openai_api_key 가 없으면 서버 기본 키(settings.openai_api_key, BYOK 미지정 시)를 사용.
     history 가 있으면 multi-turn messages 배열로 전달.
     image_urls 가 있으면 OpenAI vision API 로 이미지 포함 전송.
     """
-    # OpenAI 라우팅
-    if model.startswith("openai:") and openai_api_key:
-        model_name = model[len("openai:"):]
-        async for token in _stream_openai(system, user, model_name, history, openai_api_key, image_urls):
-            yield token
+    model_name = model[len("openai:"):] if model.startswith("openai:") else settings.llm_model
+    api_key = openai_api_key or settings.openai_api_key
+
+    if not api_key:
+        yield "OpenAI API 키가 설정되어 있지 않습니다. 관리자에게 문의해 주세요."
         return
 
-    if model.startswith("openai:") and not openai_api_key:
-        yield "OpenAI 모델을 사용하려면 API 키를 입력해 주세요. 채팅창 하단 모델 선택 옆에 키를 입력하세요."
-        return
-
-    # 이미지가 있는데 OpenAI 모델이 아닌 경우 안내
-    if image_urls:
-        yield "이미지 분석은 OpenAI 모델에서만 지원됩니다. 설정에서 OpenAI 모델(gpt-4o 등)을 선택하고 API 키를 입력해 주세요."
-        return
-
-    import httpx
-
-    overall_deadline = time.monotonic() + 300
-    per_attempt_timeout = 180
-    max_attempts = 2
-
-    candidate_models = [model]
-    if settings.llm_model and settings.llm_model != model:
-        candidate_models.append(settings.llm_model)
-
-    try:
-        async with httpx.AsyncClient(timeout=5) as client:
-            tags_resp = await client.get(f"{settings.ollama_base_url}/api/tags")
-            tags_resp.raise_for_status()
-            tags_payload = tags_resp.json()
-            installed_models = [
-                m.get("name") for m in tags_payload.get("models", []) if m.get("name")
-            ]
-            if installed_models:
-                candidate_models.extend(installed_models[:2])
-    except Exception as e:
-        log.warning("[LLM] 모델 목록 조회 실패: %s", e)
-
-    # 순서 보존 중복 제거
-    seen = set()
-    candidate_models = [m for m in candidate_models if m and not (m in seen or seen.add(m))]
-
-    last_error: Exception | None = None
-
-    for candidate_model in candidate_models:
-        for attempt in range(1, max_attempts + 1):
-            if time.monotonic() >= overall_deadline:
-                log.warning("[LLM] 전체 응답 시간 초과로 중단(model=%s)", candidate_model)
-                yield "모델 응답이 지연되어 기본 분석 결과로 계속 진행합니다."
-                return
-
-            payload = {
-                "model": candidate_model,
-                "messages": _build_messages(system, history, user),
-                "stream": True,
-                "keep_alive": "1h",
-                "options": {"temperature": 0.1, "top_p": 0.9, "num_ctx": 8192},
-            }
-
-            emitted_any_token = False
-            try:
-                async with httpx.AsyncClient(timeout=per_attempt_timeout) as client:
-                    async with client.stream(
-                        "POST", f"{settings.ollama_base_url}/api/chat", json=payload
-                    ) as resp:
-                        resp.raise_for_status()
-                        async for line in resp.aiter_lines():
-                            if not line.strip():
-                                continue
-                            try:
-                                data = json.loads(line)
-                                token = data.get("message", {}).get("content", "")
-                                if token:
-                                    emitted_any_token = True
-                                    yield token
-                            except json.JSONDecodeError:
-                                continue
-
-                # 정상 종료 시 즉시 반환
-                return
-            except (httpx.ReadTimeout, httpx.HTTPError) as e:
-                last_error = e
-                log.warning(
-                    "[LLM] Ollama 오류(model=%s, attempt=%d/%d): %s",
-                    candidate_model,
-                    attempt,
-                    max_attempts,
-                    e,
-                )
-
-                # 이미 토큰을 일부 보낸 경우에는 중복 생성 방지를 위해 재시도 없이 종료
-                if emitted_any_token:
-                    return
-
-                if attempt < max_attempts and time.monotonic() < overall_deadline:
-                    await asyncio.sleep(0.6 * attempt)
-                    continue
-            except Exception as e:
-                last_error = e
-                log.warning(
-                    "[LLM] 예기치 못한 오류(model=%s, attempt=%d/%d): %s",
-                    candidate_model,
-                    attempt,
-                    max_attempts,
-                    e,
-                )
-
-                if emitted_any_token:
-                    return
-
-                if attempt < max_attempts and time.monotonic() < overall_deadline:
-                    await asyncio.sleep(0.6 * attempt)
-                    continue
-
-    log.warning("[LLM] 모든 재시도 실패(model=%s): %s", model, last_error)
-    yield "모델 응답에 일시적 문제가 있어 기본 분석 결과로 계속 진행합니다."
+    async for token in _stream_openai(system, user, model_name, history, api_key, image_urls):
+        yield token

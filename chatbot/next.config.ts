@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_BASE_PATH: basePath,
   },
   devIndicators: false,
-  cacheComponents: true,
+  cacheComponents: false,
   poweredByHeader: false,
   logging: {
     fetches: {
@@ -46,7 +46,6 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["naito.chat"],
   experimental: {
     prefetchInlining: true,
-    cachedNavigations: true,
     appNewScrollHandler: true,
     inlineCss: true,
     turbopackFileSystemCacheForDev: true,

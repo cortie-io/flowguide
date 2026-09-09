@@ -68,6 +68,21 @@ export type CustomUIDataTypes = {
     summary?: string;
     corrections?: Record<string, unknown>[];
   };
+  validation_report: {
+    is_valid?: boolean;
+    error_count?: number;
+    warning_count?: number;
+    issues?: Array<{
+      stage: string;
+      severity: string;
+      node?: string | null;
+      property?: string | null;
+      message: string;
+      suggestion?: string;
+    }>;
+    pattern?: string | null;
+    best_practices?: string[];
+  };
   node_property_card: Record<string, unknown>;
   rag_sources: {
     sources: Array<{

@@ -646,6 +646,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 
   // ── Inject workflow JSON into canvas ─────────────────────────
+  // n8n's canvas imports nodes on a genuine `paste` ClipboardEvent (the same
+  // path used when a user copies node JSON and presses Ctrl/Cmd+V). A
+  // synthetic Ctrl+V *keydown* does NOT trigger this — n8n never sees a
+  // native paste, so nothing happens. Verified empirically: dispatching a
+  // real ClipboardEvent('paste') with a populated DataTransfer reliably
+  // imports the nodes, while the old keydown-simulation silently no-ops.
   if (msg.type === 'INJECT_WORKFLOW') {
     findN8nTab((tab) => {
       if (!tab) {
@@ -655,21 +661,34 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: (jsonStr) => {
-          return navigator.clipboard.writeText(jsonStr).then(() => {
-            const isMac = /Mac|iPhone|iPad|iPod/i.test(navigator.platform || '');
-            const el = document.activeElement || document.body;
-            ['keydown', 'keyup'].forEach(type => {
-              el.dispatchEvent(new KeyboardEvent(type, {
-                key: 'v',
-                code: 'KeyV',
-                ctrlKey: !isMac,
-                metaKey: isMac,
-                bubbles: true,
-                cancelable: true,
-              }));
+          try {
+            const target =
+              document.querySelector('[data-test-id="canvas"]') ||
+              document.querySelector('.vue-flow__pane') ||
+              document.body;
+
+            const dt = new DataTransfer();
+            dt.setData('text/plain', jsonStr);
+            const pasteEvent = new ClipboardEvent('paste', {
+              bubbles: true,
+              cancelable: true,
+              clipboardData: dt,
             });
-            return { success: true };
-          }).catch(e => ({ success: false, error: e.message }));
+
+            // Some builds bind the listener on document/window rather than
+            // the canvas node itself — dispatch on all three to be safe.
+            target.dispatchEvent(pasteEvent);
+            document.dispatchEvent(pasteEvent);
+            window.dispatchEvent(pasteEvent);
+
+            // Best-effort: also mirror the payload onto the OS clipboard so
+            // a manual Ctrl/Cmd+V by the user works as a fallback.
+            navigator.clipboard?.writeText?.(jsonStr).catch(() => {});
+
+            return { success: true, method: 'paste_event' };
+          } catch (e) {
+            return { success: false, error: e.message };
+          }
         },
         args: [msg.payload]
       }).then(r => sendResponse(r?.[0]?.result || { success: false }))

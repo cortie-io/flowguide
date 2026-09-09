@@ -76,50 +76,36 @@ _CLASSIFY_SYSTEM = """\
 
 
 async def _call_llm_classify(message: str, context_block: str, model: str, openai_api_key: str | None) -> str:
-    """Ollama 또는 OpenAI로 인텐트 분류 요청 (non-streaming)."""
+    """OpenAI로 인텐트 분류 요청 (non-streaming).
+
+    model/openai_api_key는 클라이언트가 자기 키를 쓰고 싶을 때의 오버라이드용
+    (예: "openai:gpt-4o-mini"). 지정하지 않으면 서버 기본 설정(.env)을 사용한다.
+    """
     from config import settings
 
     system = _CLASSIFY_SYSTEM.format(context_block=context_block, message=message)
 
-    # OpenAI 경로
-    if model.startswith("openai:") and openai_api_key:
-        try:
-            from openai import AsyncOpenAI
-            client = AsyncOpenAI(api_key=openai_api_key)
-            resp = await client.chat.completions.create(
-                model=model[len("openai:"):],
-                messages=[
-                    {"role": "system", "content": system},
-                    {"role": "user", "content": message},
-                ],
-                max_tokens=10,
-                temperature=0,
-            )
-            return resp.choices[0].message.content.strip()
-        except Exception as e:
-            log.warning("[IntentRouter] OpenAI 분류 실패: %s", e)
-            return ""
+    target_model = model[len("openai:"):] if model.startswith("openai:") else settings.llm_model
+    api_key = openai_api_key or settings.openai_api_key
+    if not api_key:
+        log.warning("[IntentRouter] OpenAI API 키가 설정되어 있지 않음")
+        return ""
 
-    # Ollama 경로
-    import httpx
-    target_model = model if model and not model.startswith("openai:") else settings.llm_model
-    payload = {
-        "model": target_model,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user", "content": message},
-        ],
-        "stream": False,
-        "options": {"temperature": 0, "num_predict": 10},
-    }
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            resp = await client.post(f"{settings.ollama_base_url}/api/chat", json=payload)
-            resp.raise_for_status()
-            data = resp.json()
-            return data.get("message", {}).get("content", "").strip()
+        from openai import AsyncOpenAI
+        client = AsyncOpenAI(api_key=api_key)
+        resp = await client.chat.completions.create(
+            model=target_model,
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": message},
+            ],
+            max_tokens=10,
+            temperature=0,
+        )
+        return resp.choices[0].message.content.strip()
     except Exception as e:
-        log.warning("[IntentRouter] Ollama 분류 실패: %s", e)
+        log.warning("[IntentRouter] OpenAI 분류 실패: %s", e)
         return ""
 
 

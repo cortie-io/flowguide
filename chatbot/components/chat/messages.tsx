@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useMessages } from "@/hooks/use-messages";
 import { useN8nConnection } from "@/hooks/use-n8n-connection";
 import type { Vote } from "@/lib/db/schema";
+import { getNodeIconByType } from "@/lib/node-icons";
 import type { ChatMessage, CustomUIDataTypes } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useDataStream } from "./data-stream-provider";
@@ -154,11 +155,17 @@ function EventPanel({ event }: { event: DataUIPart<CustomUIDataTypes> }) {
 
     case "data-card": {
       const payload = event.data;
-      if (payload.type === "workflow_inject") {
+      // 백엔드는 카드의 서브타입(workflow_inject/error_patch_apply 등)을
+      // "kind"로 보낸다 — "type"과 이름이 같으면 최상위 이벤트 종류("card")를
+      // 덮어써버려서 여기까지 라우팅되지 못하는 문제가 있었기 때문.
+      if (payload.kind === "workflow_inject") {
         return <WorkflowInjectCard payload={payload} />;
       }
       const entries = Object.entries(payload).filter(
-        ([k]) => !["type", "workflow_json", "workflow_payload", "session_id"].includes(k)
+        ([k]) =>
+          !["type", "kind", "workflow_json", "workflow_payload", "patch_payload", "session_id"].includes(
+            k
+          )
       );
       return (
         <section className="space-y-3 rounded-2xl border border-border/50 bg-background/70 px-4 py-4">
@@ -198,7 +205,9 @@ function EventPanel({ event }: { event: DataUIPart<CustomUIDataTypes> }) {
         json: "text-cyan-400 bg-cyan-400/10 border-cyan-500/30",
         notice: "text-slate-400 bg-slate-400/10 border-slate-500/30",
       };
-      const nodeType = String(p.node_type ?? p.nodeType ?? "").replace(/^n8n-nodes-base\./, "");
+      const rawNodeType = String(p.node_type ?? p.nodeType ?? "");
+      const nodeType = rawNodeType.replace(/^n8n-nodes-base\./, "");
+      const nodeIcon = getNodeIconByType(rawNodeType);
       const props = Array.isArray(p.properties) ? p.properties as Record<string, unknown>[] : [];
       const badgeFor = (type: string) => {
         const cls = TYPE_COLORS[type] ?? "text-slate-400 bg-slate-400/10 border-slate-500/30";
@@ -211,6 +220,10 @@ function EventPanel({ event }: { event: DataUIPart<CustomUIDataTypes> }) {
       return (
         <section className="rounded-2xl border border-indigo-500/20 bg-indigo-950/20 px-4 py-4">
           <div className="mb-3 flex items-center gap-2">
+            {nodeIcon && (
+              // biome-ignore lint/performance/noImgElement: 외부 n8n 아이콘 SVG를 그대로 표시
+              <img src={nodeIcon} alt="" className="size-4 rounded object-contain" />
+            )}
             <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300/80">
               Node Properties
             </span>
@@ -343,20 +356,97 @@ function EventPanel({ event }: { event: DataUIPart<CustomUIDataTypes> }) {
         </section>
       );
 
-    case "data-expression":
+    case "data-validation_report": {
+      const d = event.data;
+      const issues = Array.isArray(d.issues) ? d.issues : [];
+      if (issues.length === 0) return null;
+      const SEVERITY_STYLE: Record<string, string> = {
+        error: "border-red-500/30 bg-red-500/8 text-red-400",
+        warning: "border-amber-500/30 bg-amber-500/8 text-amber-400",
+        info: "border-sky-500/30 bg-sky-500/8 text-sky-400",
+      };
+      return (
+        <section className="rounded-2xl border border-border/50 bg-background/70 px-4 py-4">
+          <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            <span>Validation Report</span>
+            {typeof d.error_count === "number" && d.error_count > 0 && (
+              <span className="rounded border border-red-500/30 bg-red-500/10 px-1.5 py-0.5 text-[9px] text-red-400">
+                오류 {d.error_count}
+              </span>
+            )}
+            {typeof d.warning_count === "number" && d.warning_count > 0 && (
+              <span className="rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[9px] text-amber-400">
+                경고 {d.warning_count}
+              </span>
+            )}
+          </div>
+          <div className="space-y-2">
+            {issues.map((issue, index) => (
+              <div
+                className={`rounded-xl border px-3 py-2 text-xs leading-5 ${
+                  SEVERITY_STYLE[issue.severity] ??
+                  "border-border/40 bg-background/50 text-muted-foreground"
+                }`}
+                key={`issue-${index}`}
+              >
+                <div className="mb-0.5 flex flex-wrap items-center gap-1.5 font-medium">
+                  {issue.node && (
+                    <code className="rounded bg-background/60 px-1 py-0.5 text-[10px]">
+                      {issue.node}
+                    </code>
+                  )}
+                  {issue.property && (
+                    <code className="rounded bg-background/60 px-1 py-0.5 text-[10px]">
+                      {issue.property}
+                    </code>
+                  )}
+                </div>
+                <p>{issue.message}</p>
+                {issue.suggestion && (
+                  <p className="mt-1 text-muted-foreground/80">
+                    → {issue.suggestion}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+          {Array.isArray(d.best_practices) && d.best_practices.length > 0 && (
+            <div className="mt-3 border-t border-border/30 pt-3">
+              <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                모범 사례
+              </div>
+              <ul className="list-disc space-y-1 pl-4 text-xs text-muted-foreground">
+                {d.best_practices.map((bp, i) => (
+                  <li key={`bp-${i}`}>{bp}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+      );
+    }
+
+    case "data-expression": {
+      const exprNodeType = event.data.node_type ?? "";
+      const exprIcon = getNodeIconByType(exprNodeType);
       return (
         <section className="rounded-2xl border border-border/50 bg-background/70 px-4 py-4">
           <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-violet-300/80">
             Expression
           </div>
-          <div className="mb-2 text-sm text-muted-foreground">
-            {String(event.data.node_type ?? "")}
+          <div className="mb-2 flex items-center gap-1.5 text-sm text-muted-foreground">
+            {exprIcon && (
+              // biome-ignore lint/performance/noImgElement: 외부 n8n 아이콘 SVG를 그대로 표시
+              <img src={exprIcon} alt="" className="size-4 rounded object-contain" />
+            )}
+            {String(exprNodeType)}
           </div>
           <pre className="whitespace-pre-wrap break-words rounded-xl border border-border/40 bg-background px-3 py-3 text-xs leading-6 text-foreground">
             {String(event.data.raw_expression ?? "")}
           </pre>
         </section>
       );
+    }
 
     case "data-report": {
       const items = Array.isArray(event.data.items) ? event.data.items : [];

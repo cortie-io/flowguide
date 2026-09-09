@@ -31,6 +31,7 @@ import {
   useState,
 } from "react";
 import { Streamdown } from "streamdown";
+import { findNodeIconInText } from "@/lib/node-icons";
 
 // Lucide icon SVG paths — 외부 API 없이 인라인으로 렌더링
 const LUCIDE_PATHS: Record<string, string> = {
@@ -418,11 +419,22 @@ export const MessageResponse = memo(
 
       const headers = containerRef.current.querySelectorAll("h2, h3");
       headers.forEach((header) => {
-        if (header.querySelector(":scope > .n9n-heading-icon")) {
+        if (header.querySelector(":scope > .n9n-heading-icon, :scope > .n9n-node-icon")) {
           return;
         }
 
         const text = (header.textContent ?? "").trim();
+        const nodeMatch = findNodeIconInText(text);
+        if (nodeMatch) {
+          const img = document.createElement("img");
+          img.className = "n9n-node-icon";
+          img.src = nodeMatch.icon;
+          img.alt = "";
+          img.setAttribute("aria-hidden", "true");
+          header.prepend(img);
+          return;
+        }
+
         const matched = Object.entries(HEADER_ICON_MAP).find(([key]) =>
           text.includes(key)
         )?.[1] ?? { name: "sparkles", color: "#94a3b8" };
@@ -432,6 +444,27 @@ export const MessageResponse = memo(
         icon.setAttribute("aria-hidden", "true");
         icon.style.backgroundImage = `url("${makeSvgUri(matched.name, matched.color)}")`;
         header.prepend(icon);
+      });
+
+      // 굵은 글씨(**노드 이름**)로 언급된 n8n 노드에도 아이콘을 붙인다.
+      // 같은 노드가 메시지 안에서 여러 번 언급될 수 있으므로, 각 노드 이름당
+      // 처음 등장하는 곳에만 아이콘을 붙여 시각적으로 과하지 않게 한다.
+      const seenNodeNames = new Set<string>();
+      const strongEls = containerRef.current.querySelectorAll("strong");
+      strongEls.forEach((strong) => {
+        if (strong.querySelector(":scope > .n9n-node-icon")) return;
+        const text = (strong.textContent ?? "").trim();
+        if (!text) return;
+        const nodeMatch = findNodeIconInText(text);
+        if (!nodeMatch || seenNodeNames.has(nodeMatch.name)) return;
+        seenNodeNames.add(nodeMatch.name);
+
+        const img = document.createElement("img");
+        img.className = "n9n-node-icon n9n-node-icon--inline";
+        img.src = nodeMatch.icon;
+        img.alt = "";
+        img.setAttribute("aria-hidden", "true");
+        strong.prepend(img);
       });
     }, [children]);
 
@@ -459,6 +492,27 @@ export const MessageResponse = memo(
           .message-markdown h3 .n9n-heading-icon {
             width: 0.92rem;
             height: 0.92rem;
+          }
+
+          .message-markdown .n9n-node-icon {
+            display: inline-block;
+            flex: 0 0 auto;
+            width: 1.05rem;
+            height: 1.05rem;
+            border-radius: 0.2rem;
+            object-fit: contain;
+            vertical-align: -0.2rem;
+          }
+
+          .message-markdown h3 .n9n-node-icon {
+            width: 0.92rem;
+            height: 0.92rem;
+          }
+
+          .message-markdown .n9n-node-icon--inline {
+            width: 0.95rem;
+            height: 0.95rem;
+            margin-right: 0.3rem;
           }
         `}</style>
         <div ref={containerRef}>

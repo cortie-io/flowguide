@@ -1,0 +1,1814 @@
+{
+  "n8n-nodes-base.actionNetwork": {
+    "displayName": "Action Network",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ActionNetwork/actionNetwork.svg"
+  },
+  "n8n-nodes-base.activeCampaign": {
+    "displayName": "Active Campaign",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ActiveCampaign/activeCampaign.svg"
+  },
+  "n8n-nodes-base.activeCampaignTrigger": {
+    "displayName": "Active Campaign Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ActiveCampaign/activeCampaign.svg"
+  },
+  "n8n-nodes-base.acuitySchedulingTrigger": {
+    "displayName": "Acuity Scheduling Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.adalo": {
+    "displayName": "Adalo",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Adalo/adalo.svg"
+  },
+  "n8n-nodes-base.affinity": {
+    "displayName": "Affinity",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Affinity/affinity.svg"
+  },
+  "n8n-nodes-base.affinityTrigger": {
+    "displayName": "Affinity Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Affinity/affinity.svg"
+  },
+  "n8n-nodes-base.aggregate": {
+    "displayName": "Aggregate",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Transform/Aggregate/aggregate.svg"
+  },
+  "n8n-nodes-base.agilecrm": {
+    "displayName": "Agilecrm",
+    "icon": null
+  },
+  "n8n-nodes-base.aiTransform": {
+    "displayName": "Ai Transform",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/AiTransform/aitransform.svg"
+  },
+  "n8n-nodes-base.airtable": {
+    "displayName": "Airtable",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Airtable/airtable.svg"
+  },
+  "n8n-nodes-base.amqp": {
+    "displayName": "Amqp",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Amqp/amqp.svg"
+  },
+  "n8n-nodes-base.amqpTrigger": {
+    "displayName": "Amqp Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Amqp/amqp.svg"
+  },
+  "n8n-nodes-base.apiTemplateIo": {
+    "displayName": "Api Template Io",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ApiTemplateIo/apiTemplateIo.svg"
+  },
+  "n8n-nodes-base.asana": {
+    "displayName": "Asana",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Asana/asana.svg"
+  },
+  "n8n-nodes-base.asanaTrigger": {
+    "displayName": "Asana Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Asana/asana.svg"
+  },
+  "n8n-nodes-base.automizy": {
+    "displayName": "Automizy",
+    "icon": null
+  },
+  "n8n-nodes-base.autopilot": {
+    "displayName": "Autopilot",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Autopilot/autopilot.svg"
+  },
+  "n8n-nodes-base.autopilotTrigger": {
+    "displayName": "Autopilot Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Autopilot/autopilot.svg"
+  },
+  "n8n-nodes-base.awsCertificateManager": {
+    "displayName": "Aws Certificate Manager",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/CertificateManager/acm.svg"
+  },
+  "n8n-nodes-base.awsCognito": {
+    "displayName": "Aws Cognito",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/Cognito/cognito.svg"
+  },
+  "n8n-nodes-base.awsComprehend": {
+    "displayName": "Aws Comprehend",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/Comprehend/comprehend.svg"
+  },
+  "n8n-nodes-base.awsDynamodb": {
+    "displayName": "Aws Dynamodb",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/DynamoDB/dynamodb.svg"
+  },
+  "n8n-nodes-base.awsElb": {
+    "displayName": "Aws Elb",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/ELB/elb.svg"
+  },
+  "n8n-nodes-base.awsIam": {
+    "displayName": "Aws Iam",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/IAM/AwsIam.svg"
+  },
+  "n8n-nodes-base.awsLambda": {
+    "displayName": "Aws Lambda",
+    "icon": null
+  },
+  "n8n-nodes-base.awsRekognition": {
+    "displayName": "Aws Rekognition",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/Rekognition/rekognition.svg"
+  },
+  "n8n-nodes-base.awsS3": {
+    "displayName": "AWS S3",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/S3/s3.svg"
+  },
+  "n8n-nodes-base.awsSes": {
+    "displayName": "AWS SES",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/SES/ses.svg"
+  },
+  "n8n-nodes-base.awsSns": {
+    "displayName": "Aws Sns",
+    "icon": null
+  },
+  "n8n-nodes-base.awsSnsTrigger": {
+    "displayName": "Aws Sns Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.awsSqs": {
+    "displayName": "Aws Sqs",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/SQS/sqs.svg"
+  },
+  "n8n-nodes-base.awsTextract": {
+    "displayName": "Aws Textract",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/Textract/textract.svg"
+  },
+  "n8n-nodes-base.awsTranscribe": {
+    "displayName": "Aws Transcribe",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/Transcribe/transcribe.svg"
+  },
+  "n8n-nodes-base.azureCosmosDb": {
+    "displayName": "Azure Cosmos Db",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/AzureCosmosDb/AzureCosmosDb.svg"
+  },
+  "n8n-nodes-base.azureStorage": {
+    "displayName": "Azure Storage",
+    "icon": null
+  },
+  "n8n-nodes-base.bambooHr": {
+    "displayName": "BambooHR",
+    "icon": null
+  },
+  "n8n-nodes-base.bannerbear": {
+    "displayName": "Bannerbear",
+    "icon": null
+  },
+  "n8n-nodes-base.baserow": {
+    "displayName": "Baserow",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Baserow/baserow.svg"
+  },
+  "n8n-nodes-base.baserowTool": {
+    "displayName": "Baserow Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Baserow/baserow.svg"
+  },
+  "n8n-nodes-base.beeminder": {
+    "displayName": "Beeminder",
+    "icon": null
+  },
+  "n8n-nodes-base.bitbucketTrigger": {
+    "displayName": "Bitbucket Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Bitbucket/bitbucket.svg"
+  },
+  "n8n-nodes-base.bitly": {
+    "displayName": "Bitly",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Bitly/bitly.svg"
+  },
+  "n8n-nodes-base.bitwarden": {
+    "displayName": "Bitwarden",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Bitwarden/bitwarden.svg"
+  },
+  "n8n-nodes-base.box": {
+    "displayName": "Box",
+    "icon": null
+  },
+  "n8n-nodes-base.boxTrigger": {
+    "displayName": "Box Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.brandfetch": {
+    "displayName": "Brandfetch",
+    "icon": null
+  },
+  "n8n-nodes-base.brevo": {
+    "displayName": "Brevo",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Brevo/brevo.svg"
+  },
+  "n8n-nodes-base.brevoTrigger": {
+    "displayName": "Brevo Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Brevo/brevo.svg"
+  },
+  "n8n-nodes-base.bubble": {
+    "displayName": "Bubble",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Bubble/bubble.svg"
+  },
+  "n8n-nodes-base.calTrigger": {
+    "displayName": "Cal Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Cal/cal.svg"
+  },
+  "n8n-nodes-base.calendlyTrigger": {
+    "displayName": "Calendly Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Calendly/calendly.svg"
+  },
+  "n8n-nodes-base.chargebee": {
+    "displayName": "Chargebee",
+    "icon": null
+  },
+  "n8n-nodes-base.chargebeeTrigger": {
+    "displayName": "Chargebee Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.circleci": {
+    "displayName": "Circleci",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/CircleCi/circleCi.svg"
+  },
+  "n8n-nodes-base.ciscoWebex": {
+    "displayName": "Cisco Webex",
+    "icon": null
+  },
+  "n8n-nodes-base.ciscoWebexTrigger": {
+    "displayName": "Cisco Webex Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.clearbit": {
+    "displayName": "Clearbit",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Clearbit/clearbit.svg"
+  },
+  "n8n-nodes-base.clickUp": {
+    "displayName": "ClickUp",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ClickUp/clickup.svg"
+  },
+  "n8n-nodes-base.clickUpTrigger": {
+    "displayName": "Click Up Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ClickUp/clickup.svg"
+  },
+  "n8n-nodes-base.clockify": {
+    "displayName": "Clockify",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Clockify/clockify.svg"
+  },
+  "n8n-nodes-base.clockifyTrigger": {
+    "displayName": "Clockify Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Clockify/clockify.svg"
+  },
+  "n8n-nodes-base.cloudflare": {
+    "displayName": "Cloudflare",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Cloudflare/cloudflare.svg"
+  },
+  "n8n-nodes-base.cockpit": {
+    "displayName": "Cockpit",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Cockpit/cockpit.svg"
+  },
+  "n8n-nodes-base.coda": {
+    "displayName": "Coda",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Coda/coda.svg"
+  },
+  "n8n-nodes-base.code": {
+    "displayName": "Code",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Code/code.svg"
+  },
+  "n8n-nodes-base.coinGecko": {
+    "displayName": "Coin Gecko",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/CoinGecko/coinGecko.svg"
+  },
+  "n8n-nodes-base.compareDatasets": {
+    "displayName": "Compare Datasets",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/CompareDatasets/compare.svg"
+  },
+  "n8n-nodes-base.compression": {
+    "displayName": "Compression",
+    "icon": null
+  },
+  "n8n-nodes-base.contentful": {
+    "displayName": "Contentful",
+    "icon": null
+  },
+  "n8n-nodes-base.convertKit": {
+    "displayName": "Convert Kit",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ConvertKit/convertKit.svg"
+  },
+  "n8n-nodes-base.convertKitTrigger": {
+    "displayName": "Convert Kit Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ConvertKit/convertKit.svg"
+  },
+  "n8n-nodes-base.convertToFile": {
+    "displayName": "Convert to File",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Files/ConvertToFile/convertToFile.svg"
+  },
+  "n8n-nodes-base.copper": {
+    "displayName": "Copper",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Copper/copper.svg"
+  },
+  "n8n-nodes-base.copperTrigger": {
+    "displayName": "Copper Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Copper/copper.svg"
+  },
+  "n8n-nodes-base.cortex": {
+    "displayName": "Cortex",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Cortex/cortex.svg"
+  },
+  "n8n-nodes-base.crateDb": {
+    "displayName": "Crate Db",
+    "icon": null
+  },
+  "n8n-nodes-base.cron": {
+    "displayName": "Cron",
+    "icon": null
+  },
+  "n8n-nodes-base.crowdDev": {
+    "displayName": "Crowd Dev",
+    "icon": null
+  },
+  "n8n-nodes-base.crowdDevTrigger": {
+    "displayName": "Crowd Dev Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.crypto": {
+    "displayName": "Crypto",
+    "icon": null
+  },
+  "n8n-nodes-base.customerIo": {
+    "displayName": "Customer Io",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/CustomerIo/customerio.svg"
+  },
+  "n8n-nodes-base.customerIoTrigger": {
+    "displayName": "Customer Io Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/CustomerIo/customerio.svg"
+  },
+  "n8n-nodes-base.databricks": {
+    "displayName": "Databricks",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Databricks/databricks.svg"
+  },
+  "n8n-nodes-base.datatable": {
+    "displayName": "Datatable",
+    "icon": null
+  },
+  "n8n-nodes-base.dateTime": {
+    "displayName": "Date & Time",
+    "icon": null
+  },
+  "n8n-nodes-base.debugHelper": {
+    "displayName": "Debug Helper",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/DebugHelper/DebugHelper.svg"
+  },
+  "n8n-nodes-base.deepl": {
+    "displayName": "Deepl",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/DeepL/deepl.svg"
+  },
+  "n8n-nodes-base.demio": {
+    "displayName": "Demio",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Demio/demio.svg"
+  },
+  "n8n-nodes-base.dhl": {
+    "displayName": "Dhl",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Dhl/dhl.svg"
+  },
+  "n8n-nodes-base.discord": {
+    "displayName": "Discord",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Discord/discord.svg"
+  },
+  "n8n-nodes-base.discordTool": {
+    "displayName": "Discord Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Discord/discord.svg"
+  },
+  "n8n-nodes-base.discourse": {
+    "displayName": "Discourse",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Discourse/discourse.svg"
+  },
+  "n8n-nodes-base.disqus": {
+    "displayName": "Disqus",
+    "icon": null
+  },
+  "n8n-nodes-base.drift": {
+    "displayName": "Drift",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Drift/drift.svg"
+  },
+  "n8n-nodes-base.dropbox": {
+    "displayName": "Dropbox",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Dropbox/dropbox.svg"
+  },
+  "n8n-nodes-base.dropcontact": {
+    "displayName": "Dropcontact",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Dropcontact/dropcontact.svg"
+  },
+  "n8n-nodes-base.editImage": {
+    "displayName": "Edit Image",
+    "icon": null
+  },
+  "n8n-nodes-base.egoi": {
+    "displayName": "Egoi",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Egoi/egoi.svg"
+  },
+  "n8n-nodes-base.elasticSearch": {
+    "displayName": "Elastic Search",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Elastic/Elasticsearch/elasticsearch.svg"
+  },
+  "n8n-nodes-base.elasticSecurity": {
+    "displayName": "Elastic Security",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Elastic/ElasticSecurity/elasticSecurity.svg"
+  },
+  "n8n-nodes-base.emailImap": {
+    "displayName": "Email Imap",
+    "icon": null
+  },
+  "n8n-nodes-base.emailReadImap": {
+    "displayName": "Email (IMAP)",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Gmail/gmail.svg"
+  },
+  "n8n-nodes-base.emailSend": {
+    "displayName": "Send Email",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Gmail/gmail.svg"
+  },
+  "n8n-nodes-base.emelia": {
+    "displayName": "Emelia",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Emelia/emelia.svg"
+  },
+  "n8n-nodes-base.emeliatrigger": {
+    "displayName": "Emeliatrigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Emelia/emelia.svg"
+  },
+  "n8n-nodes-base.erpNext": {
+    "displayName": "ERPNext",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ERPNext/erpnext.svg"
+  },
+  "n8n-nodes-base.errorTrigger": {
+    "displayName": "Error Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.evaluation": {
+    "displayName": "Evaluation",
+    "icon": null
+  },
+  "n8n-nodes-base.evaluationTrigger": {
+    "displayName": "Evaluation Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.eventbriteTrigger": {
+    "displayName": "Eventbrite Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.executeCommand": {
+    "displayName": "Execute Command",
+    "icon": null
+  },
+  "n8n-nodes-base.executeCommandTool": {
+    "displayName": "Execute Command Tool",
+    "icon": null
+  },
+  "n8n-nodes-base.executeWorkflow": {
+    "displayName": "Execute Workflow",
+    "icon": null
+  },
+  "n8n-nodes-base.executeWorkflowTrigger": {
+    "displayName": "Execute Workflow Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.executionData": {
+    "displayName": "Execution Data",
+    "icon": null
+  },
+  "n8n-nodes-base.extractFromFile": {
+    "displayName": "Extract From File",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Files/ExtractFromFile/extractFromFile.svg"
+  },
+  "n8n-nodes-base.facebookGraphApi": {
+    "displayName": "Facebook Graph API",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Facebook/facebook.svg"
+  },
+  "n8n-nodes-base.facebookLeadAdsTrigger": {
+    "displayName": "Facebook Lead Ads Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/FacebookLeadAds/facebook.svg"
+  },
+  "n8n-nodes-base.facebookTrigger": {
+    "displayName": "Facebook Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Facebook/facebook.svg"
+  },
+  "n8n-nodes-base.figmaTrigger": {
+    "displayName": "Figma Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Figma/figma.svg"
+  },
+  "n8n-nodes-base.filemaker": {
+    "displayName": "Filemaker",
+    "icon": null
+  },
+  "n8n-nodes-base.filesReadWrite": {
+    "displayName": "Files Read Write",
+    "icon": null
+  },
+  "n8n-nodes-base.filter": {
+    "displayName": "Filter",
+    "icon": null
+  },
+  "n8n-nodes-base.flow": {
+    "displayName": "Flow",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Flow/flow.svg"
+  },
+  "n8n-nodes-base.flowTrigger": {
+    "displayName": "Flow Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Flow/flow.svg"
+  },
+  "n8n-nodes-base.form": {
+    "displayName": "n8n Form",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Form/form.svg"
+  },
+  "n8n-nodes-base.formIoTrigger": {
+    "displayName": "Form Io Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/FormIo/formio.svg"
+  },
+  "n8n-nodes-base.formTrigger": {
+    "displayName": "n8n Form Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Form/form.svg"
+  },
+  "n8n-nodes-base.formstackTrigger": {
+    "displayName": "Formstack Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Formstack/formstack.svg"
+  },
+  "n8n-nodes-base.freshdesk": {
+    "displayName": "Freshdesk",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Freshdesk/freshdesk.svg"
+  },
+  "n8n-nodes-base.freshservice": {
+    "displayName": "Freshservice",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Freshservice/freshservice.svg"
+  },
+  "n8n-nodes-base.freshworksCrm": {
+    "displayName": "Freshworks Crm",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/FreshworksCrm/freshworksCrm.svg"
+  },
+  "n8n-nodes-base.ftp": {
+    "displayName": "FTP",
+    "icon": null
+  },
+  "n8n-nodes-base.function": {
+    "displayName": "Function",
+    "icon": null
+  },
+  "n8n-nodes-base.functionItem": {
+    "displayName": "Function Item",
+    "icon": null
+  },
+  "n8n-nodes-base.gSuiteAdmin": {
+    "displayName": "G Suite Admin",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/GSuiteAdmin/gSuiteAdmin.svg"
+  },
+  "n8n-nodes-base.getResponse": {
+    "displayName": "Get Response",
+    "icon": null
+  },
+  "n8n-nodes-base.getResponseTrigger": {
+    "displayName": "Get Response Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.ghost": {
+    "displayName": "Ghost",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Ghost/ghost.svg"
+  },
+  "n8n-nodes-base.git": {
+    "displayName": "Git",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Git/git.svg"
+  },
+  "n8n-nodes-base.gitLab": {
+    "displayName": "GitLab",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Gitlab/gitlab.svg"
+  },
+  "n8n-nodes-base.gitLabTrigger": {
+    "displayName": "Git Lab Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Gitlab/gitlab.svg"
+  },
+  "n8n-nodes-base.github": {
+    "displayName": "GitHub",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Github/github.svg"
+  },
+  "n8n-nodes-base.githubTrigger": {
+    "displayName": "GitHub Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Github/github.svg"
+  },
+  "n8n-nodes-base.gmail": {
+    "displayName": "Gmail",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Gmail/gmail.svg"
+  },
+  "n8n-nodes-base.gmailTool": {
+    "displayName": "Gmail Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Gmail/gmail.svg"
+  },
+  "n8n-nodes-base.gmailTrigger": {
+    "displayName": "Gmail Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Gmail/gmail.svg"
+  },
+  "n8n-nodes-base.goToWebinar": {
+    "displayName": "Go To Webinar",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/GoToWebinar/gotowebinar.svg"
+  },
+  "n8n-nodes-base.gong": {
+    "displayName": "Gong",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Gong/gong.svg"
+  },
+  "n8n-nodes-base.googleAds": {
+    "displayName": "Google Ads",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Ads/googleAds.svg"
+  },
+  "n8n-nodes-base.googleAnalytics": {
+    "displayName": "Google Analytics",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Analytics/analytics.svg"
+  },
+  "n8n-nodes-base.googleAnalyticsTool": {
+    "displayName": "Google Analytics Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Analytics/analytics.svg"
+  },
+  "n8n-nodes-base.googleBigQuery": {
+    "displayName": "Google Big Query",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/BigQuery/googleBigQuery.svg"
+  },
+  "n8n-nodes-base.googleBooks": {
+    "displayName": "Google Books",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Books/googlebooks.svg"
+  },
+  "n8n-nodes-base.googleBusinessProfile": {
+    "displayName": "Google Business Profile",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/BusinessProfile/googleBusinessProfile.svg"
+  },
+  "n8n-nodes-base.googleBusinessProfileTrigger": {
+    "displayName": "Google Business Profile Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/BusinessProfile/googleBusinessProfile.svg"
+  },
+  "n8n-nodes-base.googleCalendar": {
+    "displayName": "Google Calendar",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Calendar/googleCalendar.svg"
+  },
+  "n8n-nodes-base.googleCalendarTool": {
+    "displayName": "Google Calendar Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Calendar/googleCalendar.svg"
+  },
+  "n8n-nodes-base.googleCalendarTrigger": {
+    "displayName": "Google Calendar Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Calendar/googleCalendar.svg"
+  },
+  "n8n-nodes-base.googleChat": {
+    "displayName": "Google Chat",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Chat/googleChat.svg"
+  },
+  "n8n-nodes-base.googleCloudFirestore": {
+    "displayName": "Google Cloud Firestore",
+    "icon": null
+  },
+  "n8n-nodes-base.googleCloudNaturalLanguage": {
+    "displayName": "Google Cloud Natural Language",
+    "icon": null
+  },
+  "n8n-nodes-base.googleCloudRealtimeDatabase": {
+    "displayName": "Google Cloud Realtime Database",
+    "icon": null
+  },
+  "n8n-nodes-base.googleCloudStorage": {
+    "displayName": "Google Cloud Storage",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/CloudStorage/googleCloudStorage.svg"
+  },
+  "n8n-nodes-base.googleContacts": {
+    "displayName": "Google Contacts",
+    "icon": null
+  },
+  "n8n-nodes-base.googleDocs": {
+    "displayName": "Google Docs",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Docs/googleDocs.svg"
+  },
+  "n8n-nodes-base.googleDocsTool": {
+    "displayName": "Google Docs Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Docs/googleDocs.svg"
+  },
+  "n8n-nodes-base.googleDrive": {
+    "displayName": "Google Drive",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Drive/googleDrive.svg"
+  },
+  "n8n-nodes-base.googleDriveTool": {
+    "displayName": "Google Drive Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Drive/googleDrive.svg"
+  },
+  "n8n-nodes-base.googleDriveTrigger": {
+    "displayName": "Google Drive Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Drive/googleDrive.svg"
+  },
+  "n8n-nodes-base.googleFirebaseCloudFirestore": {
+    "displayName": "Google Firebase Cloud Firestore",
+    "icon": null
+  },
+  "n8n-nodes-base.googleFirebaseRealtimeDatabase": {
+    "displayName": "Google Firebase Realtime Database",
+    "icon": null
+  },
+  "n8n-nodes-base.googlePerspective": {
+    "displayName": "Google Perspective",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Perspective/googlePerspective.svg"
+  },
+  "n8n-nodes-base.googleSheets": {
+    "displayName": "Google Sheets",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Sheet/googleSheets.svg"
+  },
+  "n8n-nodes-base.googleSheetsTool": {
+    "displayName": "Google Sheets Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Sheet/googleSheets.svg"
+  },
+  "n8n-nodes-base.googleSheetsTrigger": {
+    "displayName": "Google Sheets Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Sheet/googleSheets.svg"
+  },
+  "n8n-nodes-base.googleSlides": {
+    "displayName": "Google Slides",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Slides/googleslides.svg"
+  },
+  "n8n-nodes-base.googleTasks": {
+    "displayName": "Google Tasks",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Task/googleTasks.svg"
+  },
+  "n8n-nodes-base.googleTasksTool": {
+    "displayName": "Google Tasks Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Google/Task/googleTasks.svg"
+  },
+  "n8n-nodes-base.googleTranslate": {
+    "displayName": "Google Translate",
+    "icon": null
+  },
+  "n8n-nodes-base.gotify": {
+    "displayName": "Gotify",
+    "icon": null
+  },
+  "n8n-nodes-base.grafana": {
+    "displayName": "Grafana",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Grafana/grafana.svg"
+  },
+  "n8n-nodes-base.graphql": {
+    "displayName": "GraphQL",
+    "icon": null
+  },
+  "n8n-nodes-base.grist": {
+    "displayName": "Grist",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Grist/grist.svg"
+  },
+  "n8n-nodes-base.gumroadTrigger": {
+    "displayName": "Gumroad Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.hackerNews": {
+    "displayName": "Hacker News",
+    "icon": null
+  },
+  "n8n-nodes-base.halopsa": {
+    "displayName": "Halopsa",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HaloPSA/halopsa.svg"
+  },
+  "n8n-nodes-base.harvest": {
+    "displayName": "Harvest",
+    "icon": null
+  },
+  "n8n-nodes-base.helpScout": {
+    "displayName": "Help Scout",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HelpScout/helpScout.svg"
+  },
+  "n8n-nodes-base.helpScoutTrigger": {
+    "displayName": "Help Scout Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HelpScout/helpScout.svg"
+  },
+  "n8n-nodes-base.highLevel": {
+    "displayName": "High Level",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HighLevel/highLevel.svg"
+  },
+  "n8n-nodes-base.homeAssistant": {
+    "displayName": "Home Assistant",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HomeAssistant/homeAssistant.svg"
+  },
+  "n8n-nodes-base.html": {
+    "displayName": "HTML",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Html/html.svg"
+  },
+  "n8n-nodes-base.htmlExtract": {
+    "displayName": "HTML Extract",
+    "icon": null
+  },
+  "n8n-nodes-base.httpRequest": {
+    "displayName": "HTTP Request",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HttpRequest/httprequest.svg"
+  },
+  "n8n-nodes-base.hubspot": {
+    "displayName": "HubSpot",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Hubspot/hubspot.svg"
+  },
+  "n8n-nodes-base.hubspotTrigger": {
+    "displayName": "HubSpot Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Hubspot/hubspot.svg"
+  },
+  "n8n-nodes-base.humanticAi": {
+    "displayName": "Humantic AI",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/HumanticAI/humanticai.svg"
+  },
+  "n8n-nodes-base.hunter": {
+    "displayName": "Hunter",
+    "icon": null
+  },
+  "n8n-nodes-base.iCal": {
+    "displayName": "I Cal",
+    "icon": null
+  },
+  "n8n-nodes-base.if": {
+    "displayName": "IF",
+    "icon": null
+  },
+  "n8n-nodes-base.informationExtractor": {
+    "displayName": "Information Extractor",
+    "icon": null
+  },
+  "n8n-nodes-base.intercom": {
+    "displayName": "Intercom",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Intercom/intercom.svg"
+  },
+  "n8n-nodes-base.interval": {
+    "displayName": "Interval",
+    "icon": null
+  },
+  "n8n-nodes-base.invoiceNinja": {
+    "displayName": "Invoice Ninja",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/InvoiceNinja/invoiceNinja.svg"
+  },
+  "n8n-nodes-base.invoiceNinjaTrigger": {
+    "displayName": "Invoice Ninja Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/InvoiceNinja/invoiceNinja.svg"
+  },
+  "n8n-nodes-base.itemLists": {
+    "displayName": "Item Lists",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ItemLists/itemLists.svg"
+  },
+  "n8n-nodes-base.iterable": {
+    "displayName": "Iterable",
+    "icon": null
+  },
+  "n8n-nodes-base.jenkins": {
+    "displayName": "Jenkins",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Jenkins/jenkins.svg"
+  },
+  "n8n-nodes-base.jinaAi": {
+    "displayName": "Jina Ai",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/JinaAI/jinaAi.svg"
+  },
+  "n8n-nodes-base.jira": {
+    "displayName": "Jira",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Jira/jira.svg"
+  },
+  "n8n-nodes-base.jiraTool": {
+    "displayName": "Jira Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Jira/jira.svg"
+  },
+  "n8n-nodes-base.jiraTrigger": {
+    "displayName": "Jira Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Jira/jira.svg"
+  },
+  "n8n-nodes-base.jotformTrigger": {
+    "displayName": "Jotform Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/JotForm/jotform.svg"
+  },
+  "n8n-nodes-base.jwt": {
+    "displayName": "Jwt",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Jwt/jwt.svg"
+  },
+  "n8n-nodes-base.kafka": {
+    "displayName": "Kafka",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Kafka/kafka.svg"
+  },
+  "n8n-nodes-base.kafkaTrigger": {
+    "displayName": "Kafka Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Kafka/kafka.svg"
+  },
+  "n8n-nodes-base.keap": {
+    "displayName": "Keap",
+    "icon": null
+  },
+  "n8n-nodes-base.keapTrigger": {
+    "displayName": "Keap Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.kitemaker": {
+    "displayName": "Kitemaker",
+    "icon": null
+  },
+  "n8n-nodes-base.kobotoolbox": {
+    "displayName": "Kobotoolbox",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/KoBoToolbox/koBoToolbox.svg"
+  },
+  "n8n-nodes-base.kobotoolboxTrigger": {
+    "displayName": "Kobotoolbox Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/KoBoToolbox/koBoToolbox.svg"
+  },
+  "n8n-nodes-base.ldap": {
+    "displayName": "Ldap",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Ldap/ldap.svg"
+  },
+  "n8n-nodes-base.lemlist": {
+    "displayName": "Lemlist",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Lemlist/lemlist.svg"
+  },
+  "n8n-nodes-base.lemlistTrigger": {
+    "displayName": "Lemlist Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Lemlist/lemlist.svg"
+  },
+  "n8n-nodes-base.limit": {
+    "displayName": "Limit",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Transform/Limit/limit.svg"
+  },
+  "n8n-nodes-base.line": {
+    "displayName": "Line",
+    "icon": null
+  },
+  "n8n-nodes-base.linear": {
+    "displayName": "Linear",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Linear/linear.svg"
+  },
+  "n8n-nodes-base.linearTrigger": {
+    "displayName": "Linear Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Linear/linear.svg"
+  },
+  "n8n-nodes-base.lingvaNex": {
+    "displayName": "Lingva Nex",
+    "icon": null
+  },
+  "n8n-nodes-base.linkedIn": {
+    "displayName": "LinkedIn",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/LinkedIn/linkedin.svg"
+  },
+  "n8n-nodes-base.localFileTrigger": {
+    "displayName": "Local File Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.lonescale": {
+    "displayName": "Lonescale",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/LoneScale/loneScale.svg"
+  },
+  "n8n-nodes-base.lonescaleTrigger": {
+    "displayName": "Lonescale Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/LoneScale/loneScale.svg"
+  },
+  "n8n-nodes-base.mailGun": {
+    "displayName": "Mail Gun",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mailgun/mailgun.svg"
+  },
+  "n8n-nodes-base.mailchimp": {
+    "displayName": "Mailchimp",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mailchimp/mailchimp.svg"
+  },
+  "n8n-nodes-base.mailchimpTrigger": {
+    "displayName": "Mailchimp Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mailchimp/mailchimp.svg"
+  },
+  "n8n-nodes-base.mailerLite": {
+    "displayName": "Mailer Lite",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MailerLite/MailerLite.svg"
+  },
+  "n8n-nodes-base.mailerLiteTrigger": {
+    "displayName": "Mailer Lite Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MailerLite/MailerLite.svg"
+  },
+  "n8n-nodes-base.mailjet": {
+    "displayName": "Mailjet",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mailjet/mailjet.svg"
+  },
+  "n8n-nodes-base.mailjetTrigger": {
+    "displayName": "Mailjet Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mailjet/mailjet.svg"
+  },
+  "n8n-nodes-base.mandrill": {
+    "displayName": "Mandrill",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mandrill/mandrill.svg"
+  },
+  "n8n-nodes-base.manualTrigger": {
+    "displayName": "Manual Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.markdown": {
+    "displayName": "Markdown",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Markdown/markdown.svg"
+  },
+  "n8n-nodes-base.matrix": {
+    "displayName": "Matrix",
+    "icon": null
+  },
+  "n8n-nodes-base.mattermost": {
+    "displayName": "Mattermost",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mattermost/mattermost.svg"
+  },
+  "n8n-nodes-base.mautic": {
+    "displayName": "Mautic",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mautic/mautic.svg"
+  },
+  "n8n-nodes-base.mauticTrigger": {
+    "displayName": "Mautic Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mautic/mautic.svg"
+  },
+  "n8n-nodes-base.medium": {
+    "displayName": "Medium",
+    "icon": null
+  },
+  "n8n-nodes-base.merge": {
+    "displayName": "Merge",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Merge/merge.svg"
+  },
+  "n8n-nodes-base.messagebird": {
+    "displayName": "Messagebird",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MessageBird/messagebird.svg"
+  },
+  "n8n-nodes-base.metabase": {
+    "displayName": "Metabase",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Metabase/metabase.svg"
+  },
+  "n8n-nodes-base.microsoftDynamicsCrm": {
+    "displayName": "Microsoft Dynamics Crm",
+    "icon": null
+  },
+  "n8n-nodes-base.microsoftEntra": {
+    "displayName": "Microsoft Entra",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Entra/microsoftEntra.svg"
+  },
+  "n8n-nodes-base.microsoftExcel": {
+    "displayName": "Microsoft Excel",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Excel/excel.svg"
+  },
+  "n8n-nodes-base.microsoftGraphSecurity": {
+    "displayName": "Microsoft Graph Security",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/GraphSecurity/microsoftGraph.svg"
+  },
+  "n8n-nodes-base.microsoftOneDrive": {
+    "displayName": "Microsoft OneDrive",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/OneDrive/oneDrive.svg"
+  },
+  "n8n-nodes-base.microsoftOneDriveTrigger": {
+    "displayName": "Microsoft One Drive Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/OneDrive/oneDrive.svg"
+  },
+  "n8n-nodes-base.microsoftOutlook": {
+    "displayName": "Microsoft Outlook",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Outlook/outlook.svg"
+  },
+  "n8n-nodes-base.microsoftOutlookTool": {
+    "displayName": "Microsoft Outlook Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Outlook/outlook.svg"
+  },
+  "n8n-nodes-base.microsoftOutlookTrigger": {
+    "displayName": "Microsoft Outlook Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Outlook/outlook.svg"
+  },
+  "n8n-nodes-base.microsoftSharePoint": {
+    "displayName": "Microsoft Share Point",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/SharePoint/microsoftSharePoint.svg"
+  },
+  "n8n-nodes-base.microsoftSql": {
+    "displayName": "Microsoft Sql",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Oracle/Sql/oracle.svg"
+  },
+  "n8n-nodes-base.microsoftTeams": {
+    "displayName": "Microsoft Teams",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Teams/teams.svg"
+  },
+  "n8n-nodes-base.microsoftTeamsTrigger": {
+    "displayName": "Microsoft Teams Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/Teams/teams.svg"
+  },
+  "n8n-nodes-base.microsoftToDo": {
+    "displayName": "Microsoft To Do",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Microsoft/ToDo/todo.svg"
+  },
+  "n8n-nodes-base.mindee": {
+    "displayName": "Mindee",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mindee/mindee.svg"
+  },
+  "n8n-nodes-base.misp": {
+    "displayName": "Misp",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Misp/misp.svg"
+  },
+  "n8n-nodes-base.mistralAi": {
+    "displayName": "Mistral Ai",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MistralAI/mistralAi.svg"
+  },
+  "n8n-nodes-base.mocean": {
+    "displayName": "Mocean",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Mocean/mocean.svg"
+  },
+  "n8n-nodes-base.mondayCom": {
+    "displayName": "Monday.com",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MondayCom/mondayCom.svg"
+  },
+  "n8n-nodes-base.mongoDb": {
+    "displayName": "MongoDB",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MongoDb/mongodb.svg"
+  },
+  "n8n-nodes-base.mongoDbTool": {
+    "displayName": "Mongo Db Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MongoDb/mongodb.svg"
+  },
+  "n8n-nodes-base.monicaCrm": {
+    "displayName": "Monica Crm",
+    "icon": null
+  },
+  "n8n-nodes-base.moveBinaryData": {
+    "displayName": "Move Binary Data",
+    "icon": null
+  },
+  "n8n-nodes-base.mqtt": {
+    "displayName": "MQTT",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MQTT/mqtt.svg"
+  },
+  "n8n-nodes-base.mqttTrigger": {
+    "displayName": "Mqtt Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MQTT/mqtt.svg"
+  },
+  "n8n-nodes-base.msg": {
+    "displayName": "Msg",
+    "icon": null
+  },
+  "n8n-nodes-base.mySql": {
+    "displayName": "MySQL",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/MySql/mysql.svg"
+  },
+  "n8n-nodes-base.nasa": {
+    "displayName": "Nasa",
+    "icon": null
+  },
+  "n8n-nodes-base.netlify": {
+    "displayName": "Netlify",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Netlify/netlify.svg"
+  },
+  "n8n-nodes-base.netlifyTrigger": {
+    "displayName": "Netlify Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Netlify/netlify.svg"
+  },
+  "n8n-nodes-base.netscalerAdc": {
+    "displayName": "Netscaler Adc",
+    "icon": null
+  },
+  "n8n-nodes-base.nextCloud": {
+    "displayName": "Nextcloud",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/NextCloud/nextcloud.svg"
+  },
+  "n8n-nodes-base.noOp": {
+    "displayName": "No Operation",
+    "icon": null
+  },
+  "n8n-nodes-base.nocoDb": {
+    "displayName": "NocoDB",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/NocoDB/nocodb.svg"
+  },
+  "n8n-nodes-base.notion": {
+    "displayName": "Notion",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Notion/notion.svg"
+  },
+  "n8n-nodes-base.notionTrigger": {
+    "displayName": "Notion Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Notion/notion.svg"
+  },
+  "n8n-nodes-base.notiontool": {
+    "displayName": "Notiontool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Notion/notion.svg"
+  },
+  "n8n-nodes-base.npm": {
+    "displayName": "Npm",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Npm/npm.svg"
+  },
+  "n8n-nodes-base.odoo": {
+    "displayName": "Odoo",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Odoo/odoo.svg"
+  },
+  "n8n-nodes-base.okta": {
+    "displayName": "Okta",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Okta/Okta.svg"
+  },
+  "n8n-nodes-base.oneSimpleApi": {
+    "displayName": "One Simple Api",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/OneSimpleApi/onesimpleapi.svg"
+  },
+  "n8n-nodes-base.onfleet": {
+    "displayName": "Onfleet",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Onfleet/Onfleet.svg"
+  },
+  "n8n-nodes-base.onfleetTrigger": {
+    "displayName": "Onfleet Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Onfleet/Onfleet.svg"
+  },
+  "n8n-nodes-base.openAi": {
+    "displayName": "OpenAI",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/OpenAi/openAi.svg"
+  },
+  "n8n-nodes-base.openThesaurus": {
+    "displayName": "Open Thesaurus",
+    "icon": null
+  },
+  "n8n-nodes-base.openWeatherMap": {
+    "displayName": "OpenWeatherMap",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/OpenWeatherMap/openWeatherMap.svg"
+  },
+  "n8n-nodes-base.oracleDb": {
+    "displayName": "Oracle Db",
+    "icon": null
+  },
+  "n8n-nodes-base.orbit": {
+    "displayName": "Orbit",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Orbit/orbit.svg"
+  },
+  "n8n-nodes-base.oura": {
+    "displayName": "Oura",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Oura/oura.svg"
+  },
+  "n8n-nodes-base.paddle": {
+    "displayName": "Paddle",
+    "icon": null
+  },
+  "n8n-nodes-base.pagerDuty": {
+    "displayName": "PagerDuty",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/PagerDuty/pagerDuty.svg"
+  },
+  "n8n-nodes-base.paypal": {
+    "displayName": "Paypal",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/PayPal/paypal.svg"
+  },
+  "n8n-nodes-base.paypalTrigger": {
+    "displayName": "Paypal Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/PayPal/paypal.svg"
+  },
+  "n8n-nodes-base.peekalink": {
+    "displayName": "Peekalink",
+    "icon": null
+  },
+  "n8n-nodes-base.phantombuster": {
+    "displayName": "Phantombuster",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Phantombuster/phantombuster.svg"
+  },
+  "n8n-nodes-base.philipsHue": {
+    "displayName": "Philips Hue",
+    "icon": null
+  },
+  "n8n-nodes-base.pipedrive": {
+    "displayName": "Pipedrive",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Pipedrive/pipedrive.svg"
+  },
+  "n8n-nodes-base.pipedriveTrigger": {
+    "displayName": "Pipedrive Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Pipedrive/pipedrive.svg"
+  },
+  "n8n-nodes-base.plivo": {
+    "displayName": "Plivo",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Plivo/plivo.svg"
+  },
+  "n8n-nodes-base.postBin": {
+    "displayName": "Post Bin",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/PostBin/postbin.svg"
+  },
+  "n8n-nodes-base.postgres": {
+    "displayName": "Postgres",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Postgres/postgres.svg"
+  },
+  "n8n-nodes-base.postgresTool": {
+    "displayName": "Postgres (Tool)",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Postgres/postgres.svg"
+  },
+  "n8n-nodes-base.postgresTrigger": {
+    "displayName": "Postgres Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Postgres/postgres.svg"
+  },
+  "n8n-nodes-base.posthog": {
+    "displayName": "Posthog",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/PostHog/postHog.svg"
+  },
+  "n8n-nodes-base.postmarkTrigger": {
+    "displayName": "Postmark Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.profitwell": {
+    "displayName": "Profitwell",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ProfitWell/profitwell.svg"
+  },
+  "n8n-nodes-base.pushbullet": {
+    "displayName": "Pushbullet",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Pushbullet/pushbullet.svg"
+  },
+  "n8n-nodes-base.pushcut": {
+    "displayName": "Pushcut",
+    "icon": null
+  },
+  "n8n-nodes-base.pushcutTrigger": {
+    "displayName": "Pushcut Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.pushover": {
+    "displayName": "Pushover",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Pushover/pushover.svg"
+  },
+  "n8n-nodes-base.questDb": {
+    "displayName": "Quest Db",
+    "icon": null
+  },
+  "n8n-nodes-base.quickChart": {
+    "displayName": "Quick Chart",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/QuickChart/quickChart.svg"
+  },
+  "n8n-nodes-base.quickbase": {
+    "displayName": "Quickbase",
+    "icon": null
+  },
+  "n8n-nodes-base.quickbooks": {
+    "displayName": "QuickBooks",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/QuickBooks/quickbooks.svg"
+  },
+  "n8n-nodes-base.rabbitmq": {
+    "displayName": "RabbitMQ",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/RabbitMQ/rabbitmq.svg"
+  },
+  "n8n-nodes-base.rabbitmqTrigger": {
+    "displayName": "Rabbitmq Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/RabbitMQ/rabbitmq.svg"
+  },
+  "n8n-nodes-base.raindrop": {
+    "displayName": "Raindrop",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Raindrop/raindrop.svg"
+  },
+  "n8n-nodes-base.readBinaryFile": {
+    "displayName": "Read Binary File",
+    "icon": null
+  },
+  "n8n-nodes-base.readBinaryFiles": {
+    "displayName": "Read Binary Files",
+    "icon": null
+  },
+  "n8n-nodes-base.readPDF": {
+    "displayName": "Read PDF",
+    "icon": null
+  },
+  "n8n-nodes-base.readWriteFile": {
+    "displayName": "Read/Write Files from Disk",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Files/ReadWriteFile/readWriteFile.svg"
+  },
+  "n8n-nodes-base.reddit": {
+    "displayName": "Reddit",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Reddit/reddit.svg"
+  },
+  "n8n-nodes-base.redis": {
+    "displayName": "Redis",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Redis/redis.svg"
+  },
+  "n8n-nodes-base.redistool": {
+    "displayName": "Redistool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Redis/redis.svg"
+  },
+  "n8n-nodes-base.redistrigger": {
+    "displayName": "Redistrigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Redis/redis.svg"
+  },
+  "n8n-nodes-base.removeDuplicates": {
+    "displayName": "Remove Duplicates",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Transform/RemoveDuplicates/removeDuplicates.svg"
+  },
+  "n8n-nodes-base.renameKeys": {
+    "displayName": "Rename Keys",
+    "icon": null
+  },
+  "n8n-nodes-base.respondToWebhook": {
+    "displayName": "Respond to Webhook",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/RespondToWebhook/webhook.svg"
+  },
+  "n8n-nodes-base.rocketchat": {
+    "displayName": "Rocket.Chat",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Rocketchat/rocketchat.svg"
+  },
+  "n8n-nodes-base.rssFeedRead": {
+    "displayName": "RSS Feed Read",
+    "icon": null
+  },
+  "n8n-nodes-base.rssFeedReadTrigger": {
+    "displayName": "Rss Feed Read Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.rundeck": {
+    "displayName": "Rundeck",
+    "icon": null
+  },
+  "n8n-nodes-base.s3": {
+    "displayName": "S3 (Generic)",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Aws/S3/s3.svg"
+  },
+  "n8n-nodes-base.salesforce": {
+    "displayName": "Salesforce",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Salesforce/salesforce.svg"
+  },
+  "n8n-nodes-base.salesforceTrigger": {
+    "displayName": "Salesforce Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Salesforce/salesforce.svg"
+  },
+  "n8n-nodes-base.salesmate": {
+    "displayName": "Salesmate",
+    "icon": null
+  },
+  "n8n-nodes-base.scheduleTrigger": {
+    "displayName": "Schedule Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.seatable": {
+    "displayName": "Seatable",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/SeaTable/seaTable.svg"
+  },
+  "n8n-nodes-base.seatableTrigger": {
+    "displayName": "Seatable Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/SeaTable/seaTable.svg"
+  },
+  "n8n-nodes-base.securityScorecard": {
+    "displayName": "Security Scorecard",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/SecurityScorecard/securityScorecard.svg"
+  },
+  "n8n-nodes-base.segment": {
+    "displayName": "Segment",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Segment/segment.svg"
+  },
+  "n8n-nodes-base.sendEmail": {
+    "displayName": "Send Email",
+    "icon": null
+  },
+  "n8n-nodes-base.sendGrid": {
+    "displayName": "SendGrid",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/SendGrid/sendGrid.svg"
+  },
+  "n8n-nodes-base.sendInBlue": {
+    "displayName": "Send In Blue",
+    "icon": null
+  },
+  "n8n-nodes-base.sendy": {
+    "displayName": "Sendy",
+    "icon": null
+  },
+  "n8n-nodes-base.sentryIo": {
+    "displayName": "Sentry Io",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/SentryIo/sentryio.svg"
+  },
+  "n8n-nodes-base.serviceNow": {
+    "displayName": "Service Now",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/ServiceNow/servicenow.svg"
+  },
+  "n8n-nodes-base.set": {
+    "displayName": "Set",
+    "icon": null
+  },
+  "n8n-nodes-base.shopify": {
+    "displayName": "Shopify",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Shopify/shopify.svg"
+  },
+  "n8n-nodes-base.shopifyTrigger": {
+    "displayName": "Shopify Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Shopify/shopify.svg"
+  },
+  "n8n-nodes-base.signl4": {
+    "displayName": "SIGNL4",
+    "icon": null
+  },
+  "n8n-nodes-base.slack": {
+    "displayName": "Slack",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Slack/slack.svg"
+  },
+  "n8n-nodes-base.slackTrigger": {
+    "displayName": "Slack Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Slack/slack.svg"
+  },
+  "n8n-nodes-base.snowflake": {
+    "displayName": "Snowflake",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Snowflake/snowflake.svg"
+  },
+  "n8n-nodes-base.sort": {
+    "displayName": "Sort",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Transform/Sort/sort.svg"
+  },
+  "n8n-nodes-base.splitInBatches": {
+    "displayName": "Split In Batches",
+    "icon": null
+  },
+  "n8n-nodes-base.splitOut": {
+    "displayName": "Split Out",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Transform/SplitOut/splitOut.svg"
+  },
+  "n8n-nodes-base.splunk": {
+    "displayName": "Splunk",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Splunk/splunk.svg"
+  },
+  "n8n-nodes-base.spontit": {
+    "displayName": "Spontit",
+    "icon": null
+  },
+  "n8n-nodes-base.spotify": {
+    "displayName": "Spotify",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Spotify/spotify.svg"
+  },
+  "n8n-nodes-base.spreadsheetFile": {
+    "displayName": "Spreadsheet File",
+    "icon": null
+  },
+  "n8n-nodes-base.sseTrigger": {
+    "displayName": "Sse Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.ssh": {
+    "displayName": "SSH",
+    "icon": null
+  },
+  "n8n-nodes-base.stackby": {
+    "displayName": "Stackby",
+    "icon": null
+  },
+  "n8n-nodes-base.start": {
+    "displayName": "Start",
+    "icon": null
+  },
+  "n8n-nodes-base.stickyNote": {
+    "displayName": "Sticky Note",
+    "icon": null
+  },
+  "n8n-nodes-base.stopAndError": {
+    "displayName": "Stop and Error",
+    "icon": null
+  },
+  "n8n-nodes-base.storyblok": {
+    "displayName": "Storyblok",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Storyblok/storyblok.svg"
+  },
+  "n8n-nodes-base.strapi": {
+    "displayName": "Strapi",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Strapi/strapi.svg"
+  },
+  "n8n-nodes-base.strava": {
+    "displayName": "Strava",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Strava/strava.svg"
+  },
+  "n8n-nodes-base.stravaTrigger": {
+    "displayName": "Strava Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Strava/strava.svg"
+  },
+  "n8n-nodes-base.stripe": {
+    "displayName": "Stripe",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Stripe/stripe.svg"
+  },
+  "n8n-nodes-base.stripeTrigger": {
+    "displayName": "Stripe Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Stripe/stripe.svg"
+  },
+  "n8n-nodes-base.summarize": {
+    "displayName": "Summarize",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Transform/Summarize/summarize.svg"
+  },
+  "n8n-nodes-base.supabase": {
+    "displayName": "Supabase",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Supabase/supabase.svg"
+  },
+  "n8n-nodes-base.supabaseTool": {
+    "displayName": "Supabase (Tool)",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Supabase/supabase.svg"
+  },
+  "n8n-nodes-base.surveyMonkeyTrigger": {
+    "displayName": "Survey Monkey Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/SurveyMonkey/surveyMonkey.svg"
+  },
+  "n8n-nodes-base.switch": {
+    "displayName": "Switch",
+    "icon": null
+  },
+  "n8n-nodes-base.syncroMsp": {
+    "displayName": "Syncro Msp",
+    "icon": null
+  },
+  "n8n-nodes-base.taiga": {
+    "displayName": "Taiga",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Taiga/taiga.svg"
+  },
+  "n8n-nodes-base.taigaTrigger": {
+    "displayName": "Taiga Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Taiga/taiga.svg"
+  },
+  "n8n-nodes-base.tapfiliate": {
+    "displayName": "Tapfiliate",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Tapfiliate/tapfiliate.svg"
+  },
+  "n8n-nodes-base.telegram": {
+    "displayName": "Telegram",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Telegram/telegram.svg"
+  },
+  "n8n-nodes-base.telegramTool": {
+    "displayName": "Telegram Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Telegram/telegram.svg"
+  },
+  "n8n-nodes-base.telegramTrigger": {
+    "displayName": "Telegram Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Telegram/telegram.svg"
+  },
+  "n8n-nodes-base.theHive": {
+    "displayName": "TheHive",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/TheHive/thehive.svg"
+  },
+  "n8n-nodes-base.theHiveProject": {
+    "displayName": "TheHive 5",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/TheHiveProject/thehiveproject.svg"
+  },
+  "n8n-nodes-base.theHiveProjectTrigger": {
+    "displayName": "The Hive Project Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/TheHiveProject/thehiveproject.svg"
+  },
+  "n8n-nodes-base.theHiveTrigger": {
+    "displayName": "The Hive Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/TheHive/thehive.svg"
+  },
+  "n8n-nodes-base.timescaleDb": {
+    "displayName": "Timescale Db",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/TimescaleDb/timescaleDb.svg"
+  },
+  "n8n-nodes-base.todoist": {
+    "displayName": "Todoist",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Todoist/todoist.svg"
+  },
+  "n8n-nodes-base.togglTrigger": {
+    "displayName": "Toggl Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.totp": {
+    "displayName": "Totp",
+    "icon": null
+  },
+  "n8n-nodes-base.travisci": {
+    "displayName": "Travisci",
+    "icon": null
+  },
+  "n8n-nodes-base.trello": {
+    "displayName": "Trello",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Trello/trello.svg"
+  },
+  "n8n-nodes-base.trelloTrigger": {
+    "displayName": "Trello Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Trello/trello.svg"
+  },
+  "n8n-nodes-base.twake": {
+    "displayName": "Twake",
+    "icon": null
+  },
+  "n8n-nodes-base.twilio": {
+    "displayName": "Twilio",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Twilio/twilio.svg"
+  },
+  "n8n-nodes-base.twilioTrigger": {
+    "displayName": "Twilio Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Twilio/twilio.svg"
+  },
+  "n8n-nodes-base.twist": {
+    "displayName": "Twist",
+    "icon": null
+  },
+  "n8n-nodes-base.twitter": {
+    "displayName": "X (Twitter)",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Twitter/x.svg"
+  },
+  "n8n-nodes-base.twitterTool": {
+    "displayName": "Twitter Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Twitter/x.svg"
+  },
+  "n8n-nodes-base.typeformTrigger": {
+    "displayName": "Typeform Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Typeform/typeform.svg"
+  },
+  "n8n-nodes-base.unleashedSoftware": {
+    "displayName": "Unleashed Software",
+    "icon": null
+  },
+  "n8n-nodes-base.uplead": {
+    "displayName": "Uplead",
+    "icon": null
+  },
+  "n8n-nodes-base.uproc": {
+    "displayName": "uProc",
+    "icon": null
+  },
+  "n8n-nodes-base.uptimeRobot": {
+    "displayName": "Uptime Robot",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/UptimeRobot/uptimerobot.svg"
+  },
+  "n8n-nodes-base.urlscanIo": {
+    "displayName": "Urlscan Io",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/UrlScanIo/urlScanIo.svg"
+  },
+  "n8n-nodes-base.venafiTlsProtectCloud": {
+    "displayName": "Venafi Tls Protect Cloud",
+    "icon": null
+  },
+  "n8n-nodes-base.venafiTlsProtectCloudTrigger": {
+    "displayName": "Venafi Tls Protect Cloud Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.venafiTlsProtectDatacenter": {
+    "displayName": "Venafi Tls Protect Datacenter",
+    "icon": null
+  },
+  "n8n-nodes-base.vero": {
+    "displayName": "Vero",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Vero/vero.svg"
+  },
+  "n8n-nodes-base.vonage": {
+    "displayName": "Vonage",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Vonage/vonage.svg"
+  },
+  "n8n-nodes-base.wait": {
+    "displayName": "Wait",
+    "icon": null
+  },
+  "n8n-nodes-base.webflow": {
+    "displayName": "Webflow",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Webflow/webflow.svg"
+  },
+  "n8n-nodes-base.webflowTrigger": {
+    "displayName": "Webflow Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Webflow/webflow.svg"
+  },
+  "n8n-nodes-base.webhook": {
+    "displayName": "Webhook",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Webhook/webhook.svg"
+  },
+  "n8n-nodes-base.wekan": {
+    "displayName": "Wekan",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Wekan/wekan.svg"
+  },
+  "n8n-nodes-base.whatsApp": {
+    "displayName": "WhatsApp",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/WhatsApp/whatsapp.svg"
+  },
+  "n8n-nodes-base.whatsAppTrigger": {
+    "displayName": "WhatsApp Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/WhatsApp/whatsapp.svg"
+  },
+  "n8n-nodes-base.wise": {
+    "displayName": "Wise",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Wise/wise.svg"
+  },
+  "n8n-nodes-base.wiseTrigger": {
+    "displayName": "Wise Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Wise/wise.svg"
+  },
+  "n8n-nodes-base.wooCommerce": {
+    "displayName": "WooCommerce",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/WooCommerce/wooCommerce.svg"
+  },
+  "n8n-nodes-base.wooCommerceTool": {
+    "displayName": "Woo Commerce Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/WooCommerce/wooCommerce.svg"
+  },
+  "n8n-nodes-base.wooCommerceTrigger": {
+    "displayName": "WooCommerce Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/WooCommerce/wooCommerce.svg"
+  },
+  "n8n-nodes-base.wordpress": {
+    "displayName": "WordPress",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Wordpress/wordpress.svg"
+  },
+  "n8n-nodes-base.wordpressTool": {
+    "displayName": "Wordpress Tool",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Wordpress/wordpress.svg"
+  },
+  "n8n-nodes-base.workableTrigger": {
+    "displayName": "Workable Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.writeBinaryFile": {
+    "displayName": "Write Binary File",
+    "icon": null
+  },
+  "n8n-nodes-base.wufooTrigger": {
+    "displayName": "Wufoo Trigger",
+    "icon": null
+  },
+  "n8n-nodes-base.xero": {
+    "displayName": "Xero",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Xero/xero.svg"
+  },
+  "n8n-nodes-base.xml": {
+    "displayName": "XML",
+    "icon": null
+  },
+  "n8n-nodes-base.youTube": {
+    "displayName": "YouTube",
+    "icon": null
+  },
+  "n8n-nodes-base.yourls": {
+    "displayName": "Yourls",
+    "icon": null
+  },
+  "n8n-nodes-base.zammad": {
+    "displayName": "Zammad",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Zammad/zammad.svg"
+  },
+  "n8n-nodes-base.zendesk": {
+    "displayName": "Zendesk",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Zendesk/zendesk.svg"
+  },
+  "n8n-nodes-base.zendeskTrigger": {
+    "displayName": "Zendesk Trigger",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Zendesk/zendesk.svg"
+  },
+  "n8n-nodes-base.zoHoCrm": {
+    "displayName": "Zo Ho Crm",
+    "icon": null
+  },
+  "n8n-nodes-base.zoom": {
+    "displayName": "Zoom",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Zoom/zoom.svg"
+  },
+  "n8n-nodes-base.zulip": {
+    "displayName": "Zulip",
+    "icon": "https://raw.githubusercontent.com/n8n-io/n8n/master/packages/nodes-base/nodes/Zulip/zulip.svg"
+  }
+}

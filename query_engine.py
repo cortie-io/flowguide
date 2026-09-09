@@ -77,8 +77,8 @@ class HybridRetriever:
         self,
         chunks_path: str | Path,
         chroma_db_path: str | Path | None = None,
-        ollama_base_url: str = "http://localhost:11434",
-        embed_model: str = "bge-m3:latest",
+        openai_api_key: str = "",
+        embed_model: str = "text-embedding-3-small",
     ):
         self.chunks_path = Path(chunks_path)
         self.chunks = self._load_chunks(self.chunks_path)
@@ -116,7 +116,7 @@ class HybridRetriever:
 
         # ChromaDB 벡터 검색
         self._collection = None
-        self._ollama_base_url = ollama_base_url.rstrip("/")
+        self._openai_api_key = openai_api_key
         self._embed_model = embed_model
         if chroma_db_path and _chromadb:
             try:
@@ -313,16 +313,17 @@ class HybridRetriever:
     # ── 벡터 검색 ───────────────────────────────────────────────────────────────
 
     def _get_embedding(self, text: str) -> list[float] | None:
-        if _httpx is None:
+        if _httpx is None or not self._openai_api_key:
             return None
         try:
             resp = _httpx.post(
-                f"{self._ollama_base_url}/api/embed",
-                json={"model": self._embed_model, "input": [text]},
+                "https://api.openai.com/v1/embeddings",
+                json={"model": self._embed_model, "input": text},
+                headers={"Authorization": f"Bearer {self._openai_api_key}"},
                 timeout=30.0,
             )
             resp.raise_for_status()
-            return resp.json()["embeddings"][0]
+            return resp.json()["data"][0]["embedding"]
         except Exception as e:
             log.warning("[HybridRetriever] 임베딩 실패: %s", e)
             return None
@@ -419,13 +420,13 @@ class N8NQueryEngine:
         self,
         chunks_path: str | Path,
         chroma_db_path: str | Path | None = None,
-        ollama_base_url: str = "http://localhost:11434",
-        embed_model: str = "bge-m3:latest",
+        openai_api_key: str = "",
+        embed_model: str = "text-embedding-3-small",
     ):
         self.retriever = HybridRetriever(
             chunks_path=chunks_path,
             chroma_db_path=chroma_db_path,
-            ollama_base_url=ollama_base_url,
+            openai_api_key=openai_api_key,
             embed_model=embed_model,
         )
         self.all_chunks = self.retriever.chunks

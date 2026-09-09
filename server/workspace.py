@@ -118,7 +118,18 @@ def _sse_to_ai(chunk: str) -> str | None:
         obj = data_raw
 
     if isinstance(obj, dict):
-        parts = [{"type": event_type, **obj}]
+        if "type" in obj:
+            # obj가 자체 서브타입을 갖는 경우(예: card 이벤트의
+            # workflow_inject/error_patch_apply) — 그대로 {"type": event_type, **obj}로
+            # 병합하면 obj["type"]이 event_type을 덮어써서, 프론트엔드가 라우팅에
+            # 쓰는 최상위 이벤트 종류(예: "card")가 사라지고 서브타입만 남는 문제가
+            # 있었음. obj 고유의 서브타입은 "kind"로 옮겨서 둘 다 보존한다.
+            merged = {"type": event_type}
+            for k, v in obj.items():
+                merged["kind" if k == "type" else k] = v
+            parts = [merged]
+        else:
+            parts = [{"type": event_type, **obj}]
     else:
         parts = [{"type": event_type, "data": obj}]
 
@@ -135,31 +146,26 @@ class TitleRequest(BaseModel):
 @router.post("/generate-title")
 async def generate_title(req: TitleRequest):
     """첫 메시지로 채팅 제목 생성 (LLM 단일 호출, 스트리밍 없음)."""
-    import httpx as _httpx
-    model = req.model or settings.llm_model
+    model = req.model[len("openai:"):] if req.model.startswith("openai:") else settings.llm_model
     system = (
         "Summarize the user's message into a short chat title. "
         "3–6 words, no quotes, no punctuation at the end. "
         "Reply with the title only, in the same language as the message."
     )
     try:
-        async with _httpx.AsyncClient(timeout=15.0) as client:
-            resp = await client.post(
-                f"{settings.ollama_base_url}/api/chat",
-                json={
-                    "model": model,
-                    "messages": [
-                        {"role": "system", "content": system},
-                        {"role": "user",   "content": req.message[:500]},
-                    ],
-                    "stream": False,
-                    "options": {"num_predict": 30},
-                },
-            )
-            resp.raise_for_status()
-            title = resp.json().get("message", {}).get("content", "").strip()
-            title = title.replace('"', "").replace("#", "").strip()
-            return {"title": title or req.message[:60]}
+        from openai import AsyncOpenAI
+        client = AsyncOpenAI(api_key=settings.openai_api_key)
+        resp = await client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user",   "content": req.message[:500]},
+            ],
+            max_tokens=30,
+        )
+        title = (resp.choices[0].message.content or "").strip()
+        title = title.replace('"', "").replace("#", "").strip()
+        return {"title": title or req.message[:60]}
     except Exception:
         return {"title": req.message[:60]}
 
@@ -247,6 +253,16 @@ async def workspace_stream(
             openai_api_key=req.openai_api_key or None,
         )
         log.info("[%s] Intent → %s", session_id, intent)
+
+        # 크롬 확장 없이 웹 채팅에 에러 로그를 직접 붙여넣은 경우 대비:
+        # req.error_log 구조화 필드(확장 프로그램 전용)가 비어 있어도, 의도
+        # 분류기가 이미 메시지 본문을 보고 ERROR_PATCH로 판단했다면 메시지 자체를
+        # 에러 로그로 사용한다. (없으면 ErrorPatchService가 "에러 로그가
+        # 없습니다"로 즉시 종료돼, 채팅창에 에러를 붙여넣는 가장 자연스러운
+        # 사용법이 항상 실패하는 문제가 있었음)
+        if intent == Intent.ERROR_PATCH and not sanitized_error_log:
+            sanitized_error_log = cf.filter_string(message)
+
         yield ai_data([{
             "type": "intent",
             "intent": str(intent),

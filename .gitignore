@@ -33,6 +33,7 @@ docker-data/
 
 # ── RAG / DB (대용량 — 별도 보관) ───────────────────────────
 RAG_dataset/chroma_db/
+RAG_dataset/chroma_db_openai/
 RAG_dataset/docs/
 RAG_dataset/workflow_templates_text/
 RAG_dataset/workflow_template_sources/

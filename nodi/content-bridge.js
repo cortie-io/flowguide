@@ -1,7 +1,42 @@
 // Naito content-bridge — naito.chat ↔ localhost n8n CORS 우회 브릿지
 // 웹페이지는 CORS 때문에 localhost에 직접 접근 불가 → 익스텐션이 대신 fetch
+//
+// 이 파일은 콘텐츠 스크립트로 격리된 world에서 실행되므로 chrome.runtime에
+// 접근할 수 있다. naito.chat 페이지 자신의 JS(window.chrome)는 이 API에
+// 접근할 수 없으므로 (익스텐션이 externally_connectable을 선언하지 않음),
+// 페이지가 window.postMessage로 요청을 보내면 이 스크립트가 대신
+// chrome.runtime.sendMessage로 background.js를 호출하고 결과를 다시
+// postMessage로 페이지에 돌려준다.
 (function () {
   'use strict';
+
+  window.addEventListener('message', (event) => {
+    if (event.source !== window) return;
+
+    if (event.data?.type === 'NAITO_GET_CANVAS_JSON') {
+      const { requestId } = event.data;
+      if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
+        window.postMessage({ type: 'NAITO_CANVAS_JSON_RESPONSE', requestId, success: false, error: 'extension unavailable' }, '*');
+        return;
+      }
+      chrome.runtime.sendMessage({ type: 'GET_CANVAS_JSON' }, (resp) => {
+        window.postMessage({ type: 'NAITO_CANVAS_JSON_RESPONSE', requestId, ...(resp || { success: false, error: 'no response' }) }, '*');
+      });
+      return;
+    }
+
+    if (event.data?.type === 'NAITO_INJECT_CANVAS') {
+      const { requestId, payload } = event.data;
+      if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
+        window.postMessage({ type: 'NAITO_INJECT_CANVAS_RESPONSE', requestId, success: false, error: 'extension unavailable' }, '*');
+        return;
+      }
+      chrome.runtime.sendMessage({ type: 'INJECT_WORKFLOW', payload }, (resp) => {
+        window.postMessage({ type: 'NAITO_INJECT_CANVAS_RESPONSE', requestId, ...(resp || { success: false, error: 'no response' }) }, '*');
+      });
+      return;
+    }
+  });
 
   window.addEventListener('message', async (event) => {
     if (event.source !== window) return;

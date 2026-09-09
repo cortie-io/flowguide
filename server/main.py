@@ -49,23 +49,21 @@ from extension_hub import ExtensionHub
 log = logging.getLogger("naito.main")
 
 async def _warmup_llm() -> None:
-    """서버 기동 시 Ollama 모델을 메모리에 미리 로드해 첫 요청 지연을 없앤다."""
-    import httpx
+    """서버 기동 시 OpenAI API 키가 유효한지 가볍게 확인한다."""
+    if not settings.openai_api_key:
+        log.warning("[LLM] OPENAI_API_KEY가 설정되어 있지 않음")
+        return
     try:
-        async with httpx.AsyncClient(timeout=180) as client:
-            await client.post(
-                f"{settings.ollama_base_url}/api/chat",
-                json={
-                    "model": settings.llm_model,
-                    "messages": [{"role": "user", "content": "hi"}],
-                    "stream": False,
-                    "keep_alive": "1h",
-                    "options": {"num_predict": 1},
-                },
-            )
-        log.info("[LLM] 모델 워밍업 완료: %s", settings.llm_model)
+        from openai import AsyncOpenAI
+        client = AsyncOpenAI(api_key=settings.openai_api_key)
+        await client.chat.completions.create(
+            model=settings.llm_model,
+            messages=[{"role": "user", "content": "hi"}],
+            max_tokens=1,
+        )
+        log.info("[LLM] OpenAI 연결 확인 완료: %s", settings.llm_model)
     except Exception as e:
-        log.warning("[LLM] 모델 워밍업 실패(무시): %s", e)
+        log.warning("[LLM] OpenAI 연결 확인 실패(무시): %s", e)
 
 
 # ── 앱 라이프사이클 ────────────────────────────────────────────────────────────

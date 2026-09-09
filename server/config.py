@@ -11,11 +11,14 @@ from pathlib import Path
 
 
 class Settings(BaseSettings):
-    # Ollama 인프라 — 환경변수 OLLAMA_BASE_URL / LLM_MODEL 등으로 오버라이드 가능
-    ollama_base_url:    str  = "http://localhost:11434"
-    embed_model:        str  = "bge-m3:latest"
+    # OpenAI 인프라 — 환경변수 OPENAI_API_KEY / LLM_MODEL 등으로 오버라이드 가능
+    openai_api_key:     str  = ""
+    embed_model:        str  = "text-embedding-3-small"
     reranker_model:     str  = "bge-reranker-v2-m3"
-    llm_model:          str  = "gemma3:latest"
+    llm_model:          str  = "gpt-4o-mini"
+
+    # Ollama 인프라 (레거시, 더 이상 기본 경로로 사용되지 않음)
+    ollama_base_url:    str  = "http://localhost:11434"
 
     # RAG 인프라
     chunks_jsonl_path:  Path = Path("final_rag_chunks_v2.jsonl")

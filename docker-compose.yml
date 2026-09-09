@@ -18,7 +18,7 @@ services:
     container_name: n9n-postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-n9n}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
@@ -61,12 +61,14 @@ services:
       - "8000:8000"
     environment:
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
-      LLM_MODEL: ${LLM_MODEL:-gemma4-e4b:latest}
-      EMBED_MODEL: ${EMBED_MODEL:-bge-m3:latest}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-gpt-4o-mini}
+      EMBED_MODEL: ${EMBED_MODEL:-text-embedding-3-small}
       RERANKER_MODEL: ${RERANKER_MODEL:-bge-reranker-v2-m3}
     volumes:
-      # RAG 데이터 읽기전용 마운트 (대용량 파일 이미지 미포함)
-      - ./RAG_dataset:/app/RAG_dataset:ro
+      # RAG 데이터 마운트 (대용량 파일 이미지 미포함). ChromaDB가 sqlite 파일에
+      # 쓰기 잠금을 걸기 때문에 :ro로 마운트하면 벡터 검색이 BM25로 축소됨
+      - ./RAG_dataset:/app/RAG_dataset
     extra_hosts:
       - "host.docker.internal:host-gateway"   # Ollama 별도 서버 접근용
     healthcheck:
@@ -84,7 +86,7 @@ services:
     container_name: n9n-chatbot
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3010:3000"
     environment:
       POSTGRES_URL: ${POSTGRES_URL:-postgresql://n9n:changeme@postgres:5432/chatbot}
       AUTH_SECRET: ${AUTH_SECRET}
