@@ -24,6 +24,7 @@ from config import settings
 from credential_filter import get_credential_filter, CredentialFilter
 from engine import get_engine, N8NQueryEngine
 from intent_router import IntentRouter, Intent
+from url_guard import PublicUrl
 from reg_validator import get_reg_validator
 from session import get_session_store, SessionStore
 from workflow_services import CurriculumService, ExpressionService, WorkflowBuildService
@@ -64,7 +65,7 @@ class WorkspaceRequest(BaseModel):
     # 이미지 처리: Vercel Blob URL 또는 base64 data URL (vision 모델 전용)
     image_urls: list[str] | None = None
     # 웹 유저의 n8n 인스턴스 연결 정보 (자동 워크플로우 가져오기용)
-    n8n_url: str | None = None
+    n8n_url: PublicUrl | None = None
     n8n_api_key: str | None = None
 
 
@@ -176,7 +177,7 @@ class IntentCheckRequest(BaseModel):
     message: str = Field(default="")
     session_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     model: str = Field(default="")
-    n8n_url: str | None = Field(default=None)
+    n8n_url: PublicUrl | None = Field(default=None)
     openai_api_key: str | None = Field(default=None)
 
 
@@ -187,13 +188,14 @@ async def check_intent(
 ):
     """LLM으로 Intent 판별. 클라이언트가 n8n prefetch 여부 결정에 사용."""
     history = store.get_history(req.session_id)
-    intent = await _intent_router.route(
+    route_result = await _intent_router.route(
         message=req.message,
         model=req.model or "",
         history=history,
         n8n_url=req.n8n_url or None,
         openai_api_key=req.openai_api_key or None,
     )
+    intent = route_result.intent
     return {"intent": intent, "needs_canvas": intent == Intent.REVERSE}
 
 
@@ -242,7 +244,7 @@ async def workspace_stream(
 
         # Intent 분기 (꼬리 물기 감지를 위해 history 먼저 로드)
         prior_history = store.get_history(session_id)
-        intent = await _intent_router.route(
+        route_result = await _intent_router.route(
             message=message,
             model=req.model or "",
             node_data=sanitized_node_data,
@@ -252,7 +254,11 @@ async def workspace_stream(
             n8n_url=req.n8n_url or None,
             openai_api_key=req.openai_api_key or None,
         )
-        log.info("[%s] Intent → %s", session_id, intent)
+        intent = route_result.intent
+        log.info(
+            "[%s] Intent → %s (사전 확장 힌트: %r)",
+            session_id, intent, route_result.expansion_hint,
+        )
 
         # 크롬 확장 없이 웹 채팅에 에러 로그를 직접 붙여넣은 경우 대비:
         # req.error_log 구조화 필드(확장 프로그램 전용)가 비어 있어도, 의도
@@ -288,13 +294,21 @@ async def workspace_stream(
                 log.info("[%s] RAG 쿼리 강화: %s", session_id, rag_query[:80])
 
         # ── 온톨로지 기반 쿼리 확장 (OntologyEnhancer) ────────────────────
+        # route_result.expansion_hint: 의도 분류와 같은 LLM 호출에서 함께 받은
+        # 사전 맥락 확장 힌트. 원본 쿼리에 노드명이 없어도 목적 서술만으로
+        # 필요 노드를 추정해 감지 범위를 넓힌다(§3.1).
         enhancer = get_ontology_enhancer()
-        eq = enhancer.enhance(query=rag_query, intent=str(intent))
+        eq = enhancer.enhance(
+            query=rag_query,
+            intent=str(intent),
+            expansion_hint=route_result.expansion_hint,
+        )
         if eq.expanded_query != rag_query:
             log.info(
-                "[%s] 온톨로지 확장: 노드=%s, 용어+%d개",
+                "[%s] 온톨로지 확장: 노드=%s (힌트로 추가된 노드=%s), 용어+%d개",
                 session_id,
                 [n.short_type for n in eq.detected_nodes],
+                [n.short_type for n in eq.expansion_detected_nodes],
                 len(eq.related_node_terms),
             )
 
@@ -303,6 +317,7 @@ async def workspace_stream(
             yield ai_data([{
                 "type": "ontology_context",
                 "detected_nodes": [n.display_name for n in eq.detected_nodes],
+                "expansion_detected_nodes": [n.display_name for n in eq.expansion_detected_nodes],
                 "pattern": eq.pattern.name if eq.pattern else None,
                 "hints_count": len(eq.ontology_hints),
             }])

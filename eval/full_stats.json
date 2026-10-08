@@ -1,0 +1,150 @@
+{
+  "summary": {
+    "n_queries": 330,
+    "pcr_tier1_mean": 0.8027894356182212,
+    "pcr_tier2_raw_mean": 0.8078213806034636,
+    "pcr_tier3_final_mean": 0.8287410291638941,
+    "sa_tier1_mean": 0.9636363636363636,
+    "sa_tier23_mean": 0.9981818181818181,
+    "wis_tier1_mean": 0.2727272727272727,
+    "wis_tier3_mean": 0.18787878787878787,
+    "efr_tier1_rate": 0.9060402684563759,
+    "efr_tier2_raw_rate": 0.9104938271604939,
+    "efr_tier3_corrected_rate": 0.9135802469135802,
+    "rcr_mean": 0.11953781512605041
+  },
+  "tests": {
+    "H1_pcr_wilcoxon_tier1_vs_tier3final": {
+      "n": 310,
+      "statistic": 11057.5,
+      "p_value": 0.0011450304898880462,
+      "mean_x": 0.8021532725073123,
+      "mean_y": 0.8278953883428067,
+      "mean_diff_y_minus_x": 0.02574211583549446,
+      "bootstrap_95ci": [
+        0.0045790488719835605,
+        0.04664021104516893
+      ],
+      "rank_biserial_r": 0.24162408696546758,
+      "holm_bonferroni_corrected_p": 0.0034350914696641387,
+      "reject_at_alpha_0.05_after_correction": true
+    },
+    "H1_pcr_mcnemar_fullconform_tier1_vs_tier3final": {
+      "n": 310,
+      "table_[[both_pass,x_only],[y_only,both_fail]]": [
+        [
+          45,
+          30
+        ],
+        [
+          57,
+          178
+        ]
+      ],
+      "p_value": 0.005311766895653355,
+      "rate_x": 0.24193548387096775,
+      "rate_y": 0.32903225806451614,
+      "cohens_h": 0.19334954360895784
+    },
+    "H2_wis_wilcoxon_tier1_vs_tier3": {
+      "n": 330,
+      "statistic": 209.5,
+      "p_value": 0.6326310576161397,
+      "mean_x": 0.2727272727272727,
+      "mean_y": 0.18787878787878787,
+      "mean_diff_y_minus_x": -0.08484848484848484,
+      "bootstrap_95ci": [
+        -0.2667424242424242,
+        0.07272727272727272
+      ],
+      "rank_biserial_r": -0.0989247311827957,
+      "holm_bonferroni_corrected_p": 1.0,
+      "reject_at_alpha_0.05_after_correction": false
+    },
+    "H3_efr_mcnemar_tier2raw_vs_tier3corrected": {
+      "n": 324,
+      "table_[[both_pass,x_only],[y_only,both_fail]]": [
+        [
+          295,
+          0
+        ],
+        [
+          1,
+          28
+        ]
+      ],
+      "p_value": 1.0,
+      "rate_x": 0.9104938271604939,
+      "rate_y": 0.9135802469135802,
+      "cohens_h": 0.010897192406600809,
+      "holm_bonferroni_corrected_p": 1.0,
+      "reject_at_alpha_0.05_after_correction": false
+    },
+    "extra_sa_wilcoxon_tier1_vs_tier23": {
+      "n": 330,
+      "statistic": 10.5,
+      "p_value": 7.8043991594809e-05,
+      "mean_x": 0.9636363636363636,
+      "mean_y": 0.9981818181818181,
+      "mean_diff_y_minus_x": 0.034545454545454435,
+      "bootstrap_95ci": [
+        0.01939393939393952,
+        0.051515151515151514
+      ],
+      "rank_biserial_r": 0.9090909090909091
+    },
+    "extra_efr_mcnemar_tier1_vs_tier3corrected": {
+      "n": 292,
+      "table_[[both_pass,x_only],[y_only,both_fail]]": [
+        [
+          246,
+          18
+        ],
+        [
+          19,
+          9
+        ]
+      ],
+      "p_value": 1.0,
+      "rate_x": 0.9041095890410958,
+      "rate_y": 0.9075342465753424,
+      "cohens_h": 0.011725671232966306
+    },
+    "H5_rcr_vs_length_spearman": {
+      "n": 238,
+      "rho": -0.6003497222620798,
+      "p_value": 1.0691813696079472e-24,
+      "note": "질의 단위 근사(평균 파라미터명 길이 vs RCR) — 토큰 단위 원자료는 본실험에서 저장 예정"
+    }
+  },
+  "glmm": {
+    "pcr_gee": {
+      "n_obs": 4609,
+      "coef_log_odds": 0.27268579083907335,
+      "se": 0.06198401270605632,
+      "p_value": 1.0860445586940192e-05,
+      "odds_ratio": 1.3134874701834545,
+      "odds_ratio_95ci": [
+        1.1632259374833982,
+        1.4831592717588915
+      ]
+    },
+    "wis_lmm": {
+      "n_obs": 660,
+      "coef": -0.08484848484848452,
+      "se": 0.08720386551210792,
+      "p_value": 0.3305582964271142,
+      "ci_95": [
+        -0.255768061252216,
+        0.08607109155524699
+      ]
+    },
+    "efr_gee": {
+      "n_obs": 648,
+      "coef_log_odds": 0.03847541779551144,
+      "se": 0.03841836586834783,
+      "p_value": 0.3165923801867311
+    }
+  },
+  "n": 330
+}

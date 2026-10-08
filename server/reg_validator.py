@@ -139,6 +139,13 @@ _JSON_KEY_RE = re.compile(r'"([a-zA-Z_][a-zA-Z0-9_]{2,})"(?:\s*:)')
 _SKIP_TOKENS: set[str] = {
     "id", "type", "name", "text", "url", "key", "mode", "data", "body",
     "true", "false", "null", "json", "node", "item", "value", "field",
+    # n8n 워크플로우 JSON의 구조적 래퍼 키 — 특정 노드의 파라미터가 아니라
+    # connections/nodes 배열 자체의 스키마를 구성하는 고정 키이므로, 파라미터명
+    # 오타 후보로 취급하면 안 된다. 발견 경위: 파일럿 평가 스크립트(eval/) 실행 중
+    # connections 객체의 "main" 키가 valid_properties의 "mail"과 편집거리 1이라는
+    # 이유로 오탐지되어 "main" → "mail"로 잘못 교정 제안된 사례를 실제로 확인함.
+    "main", "index", "connections", "parameters", "position",
+    "credentials", "settings", "staticdata", "pindata", "typeversion",
 }
 
 

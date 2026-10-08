@@ -1,15 +1,20 @@
+# 운영 위치: beta (172.26.4.90). 소스와 빌드는 alpha에서, 배포는 alpha에서 `deploy flowguide`.
+# beta에만 있는 실행 데이터(DB 파일, 비밀 파일 등)는 같은 경로에 그대로 두고 배포가 건드리지 않는다.
 # ============================================================
 # n9n docker-compose.yml
 #
 # 서비스 구성:
 #   postgres  — chatbot 인증 DB
-#   n8n       — 워크플로우 자동화
 #   backend   — FastAPI RAG 추론 서버 (포트 8000)
 #   chatbot   — Next.js 프론트엔드 (포트 3000)
+#
+# n8n(워크플로우 자동화)은 ~/projects/n8n/ 로 분리됨 — 여기와 무관
 #
 # 사용법:
 #   cp .env.example .env  →  값 입력  →  make up
 # ============================================================
+
+name: naito
 
 services:
   # ── PostgreSQL ─────────────────────────────────────────────
@@ -18,7 +23,7 @@ services:
     container_name: n9n-postgres
     restart: unless-stopped
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-n9n}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
@@ -31,37 +36,21 @@ services:
       timeout: 5s
       retries: 5
 
-  # ── n8n ────────────────────────────────────────────────────
-  n8n:
-    image: n8nio/n8n:latest
-    container_name: n8n
-    restart: unless-stopped
-    ports:
-      - "5678:5678"
-    environment:
-      TZ: Asia/Seoul
-      GENERIC_TIMEZONE: Asia/Seoul
-      N8N_HOST: ${N8N_HOST:-localhost}
-      N8N_PORT: ${N8N_PORT:-5678}
-      N8N_PROTOCOL: ${N8N_PROTOCOL:-http}
-      N8N_EDITOR_BASE_URL: http://${N8N_HOST:-localhost}:5678/
-      WEBHOOK_URL: http://${N8N_HOST:-localhost}:5678/
-      N8N_SECURE_COOKIE: "false"
-    volumes:
-      - n8n_data:/home/node/.n8n
-
   # ── FastAPI 백엔드 ─────────────────────────────────────────
   backend:
     build:
       context: .                  # 프로젝트 루트 (query_engine.py 포함)
       dockerfile: server/Dockerfile
+    image: cortie/naito-backend:latest
     container_name: n9n-backend
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
+      - "172.26.4.90:8000:8000"   # gate 전용 (사설망)
     environment:
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       LLM_MODEL: ${LLM_MODEL:-gpt-4o-mini}
       EMBED_MODEL: ${EMBED_MODEL:-text-embedding-3-small}
       RERANKER_MODEL: ${RERANKER_MODEL:-bge-reranker-v2-m3}
@@ -83,10 +72,12 @@ services:
     build:
       context: chatbot
       dockerfile: Dockerfile
+    image: cortie/naito-chatbot:latest
     container_name: n9n-chatbot
     restart: unless-stopped
     ports:
-      - "3010:3000"
+      - "127.0.0.1:3010:3000"
+      - "172.26.4.90:3010:3000"   # gate 전용 (사설망)
     environment:
       POSTGRES_URL: ${POSTGRES_URL:-postgresql://n9n:changeme@postgres:5432/chatbot}
       AUTH_SECRET: ${AUTH_SECRET}
@@ -101,5 +92,4 @@ services:
         condition: service_healthy
 
 volumes:
-  n8n_data:
   postgres_data:

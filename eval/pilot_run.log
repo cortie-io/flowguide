@@ -1,0 +1,369 @@
+2026-09-17 08:45:08,846 [INFO] [REG] spec 로드 완료: 2224 개 유효 속성명
+2026-09-17 08:45:08,870 [INFO] [wb01] 시작 (tier=simple): 웹훅으로 데이터 받으면 그대로 응답 돌려주는 워크플로우 만들어줘
+2026-09-17 08:45:15,486 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:45:15,590 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:45:26,670 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:45:26,671 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=2, infos=0
+2026-09-17 08:45:28,728 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:45:29,015 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/i2sdtK5iXPFz0dgO "HTTP/1.1 200 OK"
+2026-09-17 08:45:38,502 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:45:38,698 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/UpNgQdSXWiWESETX "HTTP/1.1 200 OK"
+2026-09-17 08:45:48,280 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:45:48,398 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/FKvmhpVIGPXpmxmE "HTTP/1.1 200 OK"
+2026-09-17 08:45:48,400 [INFO] [wb01] 완료 — Tier1 PCR=1.0 SA=1.00 WIS=0 EFR=executed | Tier3 PCR_final=1.0 SA=1.00 WIS=4 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:45:48,401 [INFO] [wb02] 시작 (tier=simple): 매일 아침 9시에 실행되는 스케줄 트리거 워크플로우 만들어줘
+2026-09-17 08:45:51,857 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:45:51,899 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:46:02,565 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:46:02,566 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:46:02,774 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:46:02,885 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/QeVNppNadf8066rq "HTTP/1.1 200 OK"
+2026-09-17 08:46:03,096 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:46:03,210 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/nocLVXM3OPuTCNal "HTTP/1.1 200 OK"
+2026-09-17 08:46:03,336 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:46:03,452 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/V7E7q2eKooJ1ZF5K "HTTP/1.1 200 OK"
+2026-09-17 08:46:03,453 [INFO] [wb02] 완료 — Tier1 PCR=0.0 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.5 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:46:03,454 [INFO] [wb03] 시작 (tier=simple): 구글시트에 새 행 추가하는 워크플로우 만들어줘
+2026-09-17 08:46:09,625 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:46:09,669 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:46:20,126 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:46:20,126 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:46:20,396 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:46:20,606 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/VImgYPK1J3DRX4Vt "HTTP/1.1 200 OK"
+2026-09-17 08:46:20,713 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:46:20,804 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/JvFk01XVXkTjHiXL "HTTP/1.1 200 OK"
+2026-09-17 08:46:20,956 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:46:21,058 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/xQqF1pkk2Qfi5eb3 "HTTP/1.1 200 OK"
+2026-09-17 08:46:21,059 [INFO] [wb03] 완료 — Tier1 PCR=0.8571428571428571 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:46:21,059 [INFO] [wb04] 시작 (tier=simple): Slack 채널에 메시지 보내는 간단한 워크플로우 만들어줘
+2026-09-17 08:46:33,169 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:46:33,217 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:46:44,358 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:46:44,358 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:46:46,378 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:46:46,527 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/dVfI9auCiyqAeNXV "HTTP/1.1 200 OK"
+2026-09-17 08:46:46,666 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:46:46,799 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/bky0H0wRFr8FfFYJ "HTTP/1.1 200 OK"
+2026-09-17 08:46:46,926 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:46:47,045 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/LZgWKJ28gPyraMKJ "HTTP/1.1 200 OK"
+2026-09-17 08:46:47,046 [INFO] [wb04] 완료 — Tier1 PCR=1.0 SA=1.00 WIS=0 EFR=executed | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:46:47,047 [INFO] [wb05] 시작 (tier=simple): HTTP GET 요청 보내고 결과를 Set 노드로 정리하는 워크플로우 만들어줘
+2026-09-17 08:46:54,409 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:46:54,475 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:47:08,103 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:47:08,103 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:47:08,257 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:47:08,400 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/1ZBbC7XNIiwFV8pQ "HTTP/1.1 200 OK"
+2026-09-17 08:47:08,646 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:47:08,748 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/11L4JQXx6UH3fURJ "HTTP/1.1 200 OK"
+2026-09-17 08:47:08,948 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:47:09,052 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/CQ7V2VVzXonY01rz "HTTP/1.1 200 OK"
+2026-09-17 08:47:09,053 [INFO] [wb05] 완료 — Tier1 PCR=1.0 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:47:09,054 [INFO] [wb06] 시작 (tier=simple): 텔레그램 봇으로 메시지 받으면 그대로 답장하는 워크플로우 만들어줘
+2026-09-17 08:47:16,562 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:47:16,611 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:47:28,982 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:47:28,983 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:47:29,124 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:47:29,222 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/rYTdXonmISJsazZW "HTTP/1.1 200 OK"
+2026-09-17 08:47:29,422 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:47:29,581 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/usVgwsbgkb1Z2bKa "HTTP/1.1 200 OK"
+2026-09-17 08:47:29,885 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:47:30,162 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/4WTAAanFGGfQEBsp "HTTP/1.1 200 OK"
+2026-09-17 08:47:30,163 [INFO] [wb06] 완료 — Tier1 PCR=0.75 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:47:30,164 [INFO] [wb07] 시작 (tier=simple): 이메일 발송하는 간단한 워크플로우 만들어줘
+2026-09-17 08:47:36,253 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:47:36,292 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:47:46,108 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:47:46,108 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:47:46,260 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:47:46,358 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/lB52JCiubSWLBI3w "HTTP/1.1 200 OK"
+2026-09-17 08:47:46,485 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:47:46,575 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/r27QTid8Oaetfvhm "HTTP/1.1 200 OK"
+2026-09-17 08:47:46,693 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:47:46,802 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/HIgPZhWK9qq69PmF "HTTP/1.1 200 OK"
+2026-09-17 08:47:46,804 [INFO] [wb07] 완료 — Tier1 PCR=0.8 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:47:46,804 [INFO] [wb08] 시작 (tier=simple): 폼 제출받아서 구글시트에 저장하는 워크플로우 만들어줘
+2026-09-17 08:47:55,822 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:47:55,870 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:48:08,411 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:48:08,412 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:48:08,646 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:48:08,758 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/mrVEni9FlpbhrMn8 "HTTP/1.1 200 OK"
+2026-09-17 08:48:08,909 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:48:09,044 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/Gqg2wAQzeIWJWitG "HTTP/1.1 200 OK"
+2026-09-17 08:48:09,187 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:48:09,286 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/viZace0eaAQFQwJU "HTTP/1.1 200 OK"
+2026-09-17 08:48:09,287 [INFO] [wb08] 완료 — Tier1 PCR=1.0 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.8333333333333334 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:48:09,287 [INFO] [wb09] 시작 (tier=simple): Github 이슈가 새로 생성되면 알림 받는 워크플로우 만들어줘
+2026-09-17 08:48:16,529 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:48:16,571 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:48:30,246 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:48:30,247 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:48:30,418 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:48:30,531 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/Ho1mgsSyEcIvya6I "HTTP/1.1 200 OK"
+2026-09-17 08:48:30,769 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:48:30,861 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/z8sz5GQ1y602mklL "HTTP/1.1 200 OK"
+2026-09-17 08:48:31,083 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:48:31,174 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/cmX0olWZqa0AK9hs "HTTP/1.1 200 OK"
+2026-09-17 08:48:31,175 [INFO] [wb09] 완료 — Tier1 PCR=1.0 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:48:31,176 [INFO] [wb10] 시작 (tier=simple): 정해진 시간마다 API를 호출해서 상태를 확인하는 워크플로우 만들어줘
+2026-09-17 08:48:36,801 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:48:36,844 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:48:50,231 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:48:50,232 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:48:50,440 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:48:50,585 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/dnDkN9rAlbt41r3B "HTTP/1.1 200 OK"
+2026-09-17 08:48:50,762 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:48:51,009 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/68poFeAgacXBbaoZ "HTTP/1.1 200 OK"
+2026-09-17 08:48:51,179 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:48:51,382 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/LKjrNiFM4n4nxZNN "HTTP/1.1 200 OK"
+2026-09-17 08:48:51,383 [INFO] [wb10] 완료 — Tier1 PCR=0.75 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.8571428571428571 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:48:51,383 [INFO] [wb11] 시작 (tier=moderate): 매일 아침 외부 API에서 데이터 가져와서 조건에 따라 Slack으로 알림 보내는 워크플로우 만들어줘
+2026-09-17 08:48:58,095 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:48:58,133 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:49:13,332 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:49:13,332 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:49:13,502 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:49:13,725 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/j6V9EtZuM3Cwx7K0 "HTTP/1.1 200 OK"
+2026-09-17 08:49:13,978 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:49:14,090 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/wcyNWEmg1w6xK1sv "HTTP/1.1 200 OK"
+2026-09-17 08:49:14,292 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:49:14,461 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/debH9uYmlMfYJgT1 "HTTP/1.1 200 OK"
+2026-09-17 08:49:14,462 [INFO] [wb11] 완료 — Tier1 PCR=0.8333333333333334 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.8888888888888888 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:49:14,462 [INFO] [wb12] 시작 (tier=moderate): 웹훅으로 주문 데이터 받아서 정제한 뒤 구글시트에 저장하고 응답을 돌려주는 워크플로우 만들어줘
+2026-09-17 08:49:22,354 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:49:22,391 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:49:37,668 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:49:37,669 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:49:38,078 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:49:38,184 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/UmP0xQbf5bRyBuib "HTTP/1.1 200 OK"
+2026-09-17 08:49:38,334 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:49:38,425 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/C8NPtxVK4Wldv0La "HTTP/1.1 200 OK"
+2026-09-17 08:49:38,599 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:49:38,701 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/f4Q9SrsA3x1v9l5S "HTTP/1.1 200 OK"
+2026-09-17 08:49:38,702 [INFO] [wb12] 완료 — Tier1 PCR=0.8461538461538461 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.8888888888888888 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:49:38,703 [INFO] [wb13] 시작 (tier=moderate): 대량의 아이템을 배치로 나눠서 API 호출하고 결과를 집계하는 워크플로우 만들어줘
+2026-09-17 08:49:44,845 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:49:44,898 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:50:02,127 [INFO] [SemanticValidator] 검증 완료: errors=1, warnings=0, infos=0
+2026-09-17 08:50:02,127 [INFO] [SemanticValidator] 검증 완료: errors=1, warnings=0, infos=0
+2026-09-17 08:50:02,394 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:50:02,492 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/1GQcA83ZHsBu9Hxp "HTTP/1.1 200 OK"
+2026-09-17 08:50:02,667 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:50:02,801 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/FZpiDNwouzkSi41q "HTTP/1.1 200 OK"
+2026-09-17 08:50:02,958 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:50:03,101 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/RDmHYotOJ10rh47F "HTTP/1.1 200 OK"
+2026-09-17 08:50:03,103 [INFO] [wb13] 완료 — Tier1 PCR=1.0 SA=1.00 WIS=3 EFR=schema_valid_only | Tier3 PCR_final=0.875 SA=1.00 WIS=3 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:50:03,104 [INFO] [wb14] 시작 (tier=moderate): 매일 외부 API에서 데이터 수집해서 구글시트에 적재하는 ETL 파이프라인 만들어줘
+2026-09-17 08:50:08,242 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:50:08,289 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:50:22,374 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:50:22,374 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:50:22,583 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:50:22,707 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/vAzWfCgtArzTA9tQ "HTTP/1.1 200 OK"
+2026-09-17 08:50:22,824 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:50:22,924 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/Z0dtCPuhHO8qDwlr "HTTP/1.1 200 OK"
+2026-09-17 08:50:23,033 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:50:23,124 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/LSIrtqLRbKjm8Ks8 "HTTP/1.1 200 OK"
+2026-09-17 08:50:23,125 [INFO] [wb14] 완료 — Tier1 PCR=0.8888888888888888 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.7777777777777778 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:50:23,125 [INFO] [wb15] 시작 (tier=moderate): 배열 데이터를 분리해서 각각 API 호출한 뒤 다시 병합하는 워크플로우 만들어줘
+2026-09-17 08:50:31,142 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:50:31,187 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:50:46,781 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:50:46,781 [INFO] [SemanticValidator] 검증 완료: errors=1, warnings=0, infos=0
+2026-09-17 08:50:46,938 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:50:47,074 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/fMDjU4Ltnb30I8My "HTTP/1.1 200 OK"
+2026-09-17 08:50:47,189 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:50:47,387 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/uIls0hBrcKl4BhFI "HTTP/1.1 200 OK"
+2026-09-17 08:50:47,685 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:50:47,818 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/nv6ZBuCLHcE4fxAy "HTTP/1.1 200 OK"
+2026-09-17 08:50:47,819 [INFO] [wb15] 완료 — Tier1 PCR=0.7142857142857143 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=1.0 SA=1.00 WIS=3 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:50:47,820 [INFO] [wb16] 시작 (tier=moderate): 텔레그램으로 명령어 받으면 조건에 따라 분기해서 답장하는 봇 워크플로우 만들어줘
+2026-09-17 08:50:56,427 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:50:56,466 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:51:13,219 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:51:13,220 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:51:13,373 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:51:13,508 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/PlDDq9UFtRzTf9kJ "HTTP/1.1 200 OK"
+2026-09-17 08:51:13,637 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:51:13,771 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/HGFM6mzLCdAukDNL "HTTP/1.1 200 OK"
+2026-09-17 08:51:13,881 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:51:14,015 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/hubicfWTPdje9suj "HTTP/1.1 200 OK"
+2026-09-17 08:51:14,016 [INFO] [wb16] 완료 — Tier1 PCR=0.9285714285714286 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:51:14,017 [INFO] [wb17] 시작 (tier=moderate): 폼 제출 데이터를 구글시트에 저장하고 이메일로도 발송하는 워크플로우 만들어줘
+2026-09-17 08:51:21,619 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:51:21,683 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:51:35,339 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:51:35,339 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:51:35,523 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:51:35,627 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/c0VE3s0E5kmeSUVq "HTTP/1.1 200 OK"
+2026-09-17 08:51:35,772 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:51:35,960 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/FEupthUrBTuf0xRT "HTTP/1.1 200 OK"
+2026-09-17 08:51:36,096 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:51:36,180 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/z4gQ84NZplPaFRSz "HTTP/1.1 200 OK"
+2026-09-17 08:51:36,181 [INFO] [wb17] 완료 — Tier1 PCR=1.0 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:51:36,181 [INFO] [wb18] 시작 (tier=moderate): 구글드라이브에 파일이 업로드되면 내용을 추출해서 구글시트에 정리하는 워크플로우 만들어줘
+2026-09-17 08:51:42,958 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:51:43,003 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:51:56,776 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:51:56,776 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:51:56,977 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:51:57,063 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/NbFcLUbEIUaGxpGk "HTTP/1.1 200 OK"
+2026-09-17 08:51:57,205 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:51:57,331 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/ZkgsrfvjPBwRpWLU "HTTP/1.1 200 OK"
+2026-09-17 08:51:57,476 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:51:57,558 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/VNAkhH6yUEerV5tG "HTTP/1.1 200 OK"
+2026-09-17 08:51:57,559 [INFO] [wb18] 완료 — Tier1 PCR=0.8181818181818182 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:51:57,559 [INFO] [wb19] 시작 (tier=moderate): Github에 PR이 생성되면 Slack과 Jira에 동시에 알리는 워크플로우 만들어줘
+2026-09-17 08:52:04,962 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:52:05,007 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:52:18,821 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:52:18,821 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:52:19,014 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:52:19,163 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/lpxUCxWFLQeYzVXh "HTTP/1.1 200 OK"
+2026-09-17 08:52:19,321 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:52:19,434 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/dQK9I39kSOxB1YGJ "HTTP/1.1 200 OK"
+2026-09-17 08:52:19,730 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:52:20,038 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/jc990HayvgTdYkXa "HTTP/1.1 200 OK"
+2026-09-17 08:52:20,039 [INFO] [wb19] 완료 — Tier1 PCR=0.8181818181818182 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.8571428571428571 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:52:20,040 [INFO] [wb20] 시작 (tier=moderate): 서브 워크플로우를 호출해서 모듈화된 자동화를 구성하는 워크플로우 만들어줘
+2026-09-17 08:52:27,110 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:52:27,153 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:52:39,561 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:52:39,562 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:52:39,757 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:52:39,880 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/x1LnpaDgPGHFZnOh "HTTP/1.1 200 OK"
+2026-09-17 08:52:39,999 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:52:40,089 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/nDjhWul1I1jBtd2e "HTTP/1.1 200 OK"
+2026-09-17 08:52:40,210 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:52:40,298 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/jGnIbVaJNEaEHp63 "HTTP/1.1 200 OK"
+2026-09-17 08:52:40,299 [INFO] [wb20] 완료 — Tier1 PCR=1.0 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.5 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:52:40,300 [INFO] [wb21] 시작 (tier=complex): 에러 발생 시 Slack으로 알림 보내되, 에러 종류에 따라 다른 채널로 분기하는 에러 모니터링 워크플로우 
+2026-09-17 08:52:50,916 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:52:50,961 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:53:06,729 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:53:06,730 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:53:06,855 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:53:06,941 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/HO7MkQEUwORuLWNr "HTTP/1.1 200 OK"
+2026-09-17 08:53:07,108 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:53:07,223 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/6apvhIlHmzTU7eVU "HTTP/1.1 200 OK"
+2026-09-17 08:53:07,375 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:53:07,492 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/k1tw5GGNOTwT0aiS "HTTP/1.1 200 OK"
+2026-09-17 08:53:07,493 [INFO] [wb21] 완료 — Tier1 PCR=0.8571428571428571 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:53:07,494 [INFO] [wb22] 시작 (tier=complex): AWS Lambda 함수를 호출해서 그 결과를 DynamoDB에 저장하고, 실패하면 SNS로 알림을 보내는 
+2026-09-17 08:53:14,191 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:53:14,233 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:53:30,481 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:53:30,482 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:53:30,692 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:53:30,788 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/56ixx5TN1IBHM4Xf "HTTP/1.1 200 OK"
+2026-09-17 08:53:30,902 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:53:30,999 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/laWHWdYkbmKe0Q3G "HTTP/1.1 200 OK"
+2026-09-17 08:53:31,145 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:53:31,233 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/cRhSXnZDR51OrIh7 "HTTP/1.1 200 OK"
+2026-09-17 08:53:31,234 [INFO] [wb22] 완료 — Tier1 PCR=0.5 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.42857142857142855 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:53:31,234 [INFO] [wb23] 시작 (tier=complex): Perplexity API로 최신 뉴스를 검색해서 요약한 뒤 Confluence 페이지에 게시하는 워크플로우
+2026-09-17 08:53:38,548 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:53:38,589 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:53:56,220 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:53:56,220 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:53:56,585 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:53:56,673 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/28RccSPLiyYgykNp "HTTP/1.1 200 OK"
+2026-09-17 08:53:56,777 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:53:56,865 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/qtOhlU3MBtE0qBvA "HTTP/1.1 200 OK"
+2026-09-17 08:53:56,968 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:53:57,070 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/B2NVJcgHy4I5J4Dv "HTTP/1.1 200 OK"
+2026-09-17 08:53:57,071 [INFO] [wb23] 완료 — Tier1 PCR=0.8333333333333334 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.5714285714285714 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:53:57,072 [INFO] [wb24] 시작 (tier=complex): 여러 CRM(HubSpot, Salesforce)에서 데이터를 수집해서 BigQuery에 적재하는 ETL 워
+2026-09-17 08:54:05,241 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:54:05,308 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:54:25,485 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:54:25,485 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:54:25,843 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:54:26,016 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/AUDQofI4HrygHWFR "HTTP/1.1 200 OK"
+2026-09-17 08:54:26,329 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:54:26,415 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/aQYBoP7J399BbhiD "HTTP/1.1 200 OK"
+2026-09-17 08:54:26,525 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:54:26,615 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/unhxoMAzjxKRRW4I "HTTP/1.1 200 OK"
+2026-09-17 08:54:26,616 [INFO] [wb24] 완료 — Tier1 PCR=0.9 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.75 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:54:26,617 [INFO] [wb25] 시작 (tier=complex): 웹훅으로 결제 이벤트를 받으면 금액에 따라 PayPal과 Stripe로 분기 처리하고, 결과를 이메일과 Sl
+2026-09-17 08:54:35,425 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:54:35,513 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:54:56,166 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:54:56,167 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:54:56,436 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:54:56,550 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/K2UZGAAd3MWlih2H "HTTP/1.1 200 OK"
+2026-09-17 08:54:56,731 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:54:56,832 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/yDegBNkBcJ6tshpO "HTTP/1.1 200 OK"
+2026-09-17 08:54:56,982 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:54:57,077 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/EEmQzP9ZJcpSiuYZ "HTTP/1.1 200 OK"
+2026-09-17 08:54:57,078 [INFO] [wb25] 완료 — Tier1 PCR=0.8666666666666667 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:54:57,078 [INFO] [wb26] 시작 (tier=adversarial): 웹훅으로 데이터 받아서 retryOnFai 파라미터로 재시도 설정하고 실패하면 에러 처리하는 워크플로우 만들
+2026-09-17 08:55:02,915 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:55:02,975 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:55:15,748 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:55:15,748 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:55:17,908 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:55:18,032 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/9SKs6lM91pi1LeWf "HTTP/1.1 200 OK"
+2026-09-17 08:55:26,755 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:55:26,874 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/CK62ortusNJeqFWk "HTTP/1.1 200 OK"
+2026-09-17 08:55:35,582 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:55:35,688 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/BtwkpKRItSWzALSa "HTTP/1.1 200 OK"
+2026-09-17 08:55:35,689 [INFO] [wb26] 완료 — Tier1 PCR=0.8 SA=1.00 WIS=0 EFR=executed | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:55:35,690 [INFO] [wb27] 시작 (tier=adversarial): 매일 메일로 리포트 보내는 자동화 만들어줘
+2026-09-17 08:55:40,779 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:55:40,816 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:55:54,420 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:55:54,420 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:55:54,641 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:55:54,734 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/Uo0FpMX2ky0UlNV8 "HTTP/1.1 200 OK"
+2026-09-17 08:55:54,869 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:55:54,977 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/MKduGE3Ny32519jb "HTTP/1.1 200 OK"
+2026-09-17 08:55:55,107 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:55:55,206 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/1cUT6vTpmNY4EoOH "HTTP/1.1 200 OK"
+2026-09-17 08:55:55,207 [INFO] [wb27] 완료 — Tier1 PCR=0.6666666666666666 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.75 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:55:55,207 [INFO] [wb28] 시작 (tier=adversarial): Code 노드에서 구버전 Function 노드 문법(functionCode)으로 커스텀 코드 작성해서 데이터
+2026-09-17 08:56:00,656 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:56:00,699 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:56:12,861 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:56:12,861 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:56:13,023 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:56:13,116 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/J5mrJ0YmxDQEvMs9 "HTTP/1.1 200 OK"
+2026-09-17 08:56:13,359 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:56:13,604 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/NDW34fhGONDUfibF "HTTP/1.1 200 OK"
+2026-09-17 08:56:13,732 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:56:13,835 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/bH1yr3XIC0xNEjia "HTTP/1.1 200 OK"
+2026-09-17 08:56:13,836 [INFO] [wb28] 완료 — Tier1 PCR=0.5 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.6666666666666666 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:56:13,836 [INFO] [wb29] 시작 (tier=adversarial): 노드 실행을 한 번만 하도록 excecuteOnce 파라미터를 설정하는 워크플로우 만들어줘
+2026-09-17 08:56:34,076 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:56:34,115 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:56:44,683 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:56:44,683 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:56:44,805 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:56:44,893 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/flhonkjumj0tb63M "HTTP/1.1 200 OK"
+2026-09-17 08:56:45,016 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:56:45,116 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/Fml2OBER0OY8DpsD "HTTP/1.1 200 OK"
+2026-09-17 08:56:45,246 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:56:45,351 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/CbGLn05ZTm7BaK5T "HTTP/1.1 200 OK"
+2026-09-17 08:56:45,352 [INFO] [wb29] 완료 — Tier1 PCR=0.75 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=1.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:56:45,352 [INFO] [wb30] 시작 (tier=adversarial): $itmes[0] 같은 표현식으로 첫 번째 아이템 데이터를 처리하는 워크플로우 만들어줘
+2026-09-17 08:56:51,107 [INFO] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-17 08:56:51,163 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-17 08:57:03,160 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:57:03,160 [INFO] [SemanticValidator] 검증 완료: errors=0, warnings=0, infos=0
+2026-09-17 08:57:03,349 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:57:03,437 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/syxhfDcWObxi2xod "HTTP/1.1 200 OK"
+2026-09-17 08:57:03,555 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:57:03,672 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/glvFg82DV74iK79W "HTTP/1.1 200 OK"
+2026-09-17 08:57:03,788 [INFO] HTTP Request: POST http://localhost:8000/api/workflow/remote-inject "HTTP/1.1 200 OK"
+2026-09-17 08:57:03,879 [INFO] HTTP Request: DELETE https://n8n.cortie.io/api/v1/workflows/VaatE6uBuSRg7whF "HTTP/1.1 200 OK"
+2026-09-17 08:57:03,880 [INFO] [wb30] 완료 — Tier1 PCR=0.8571428571428571 SA=1.00 WIS=0 EFR=schema_valid_only | Tier3 PCR_final=0.0 SA=1.00 WIS=0 EFR_raw=schema_valid_only EFR_corrected=schema_valid_only
+2026-09-17 08:57:03,880 [INFO] 전체 벤치마크 실행 완료. 통계 분석 시작.
+2026-09-17 08:57:07,885 [INFO] 완료. 리포트: /home/ubuntu/flowguide/eval/pilot_report.md
+2026-09-18 00:24:26,138 [INFO] [REG] spec 로드 완료: 2224 개 유효 속성명
+2026-09-18 00:24:26,291 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-18 00:25:04,764 [INFO] [REG] spec 로드 완료: 2224 개 유효 속성명
+2026-09-18 00:25:04,914 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"
+2026-09-18 00:31:59,796 [INFO] [REG] spec 로드 완료: 2224 개 유효 속성명
+2026-09-18 00:31:59,973 [INFO] HTTP Request: POST http://localhost:8000/api/workspace/stream "HTTP/1.1 200 OK"

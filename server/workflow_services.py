@@ -15,6 +15,8 @@ from typing import AsyncGenerator, Any
 
 from config import settings
 from session import SessionStore
+from domain_ontology import LEARNING_NODES, get_learning_prerequisites, LearningNode
+from ontology_enhancer import get_ontology_enhancer
 
 log = logging.getLogger("naito.services")
 
@@ -118,10 +120,49 @@ _CURRICULUM_SYSTEM_PROMPT = """\
 ```
 
 노드명은 n8n 공식 명칭만 사용. 한국어 안내, 노드명/파라미터명은 영문 원문 유지.
-
+{{roadmap_block}}
 [RAG 컨텍스트 — 난이도 {detected_level} 필터 적용]
 {{context}}
 """
+
+_ROADMAP_BLOCK_TEMPLATE = """
+## 주차별 로드맵 (온톨로지 선행 학습 그래프 기반 — 반드시 이 구조를 그대로 따를 것)
+아래는 유저 요청과 관련된 개념을 온톨로지의 선행 의존성 그래프(LearningGraph)에서
+역순으로 추적하여 이미 결정된 주차 구성이다. 임의로 주차 수·순서·난이도를 바꾸지 말고,
+각 주차의 개념·난이도·다룰 노드를 그대로 사용하여 제목과 설명만 채워 넣을 것:
+{roadmap_lines}
+"""
+
+
+def _match_learning_concept(detected_short_types: list[str]) -> LearningNode | None:
+    """감지된 노드 타입 목록과 node_types 중첩이 가장 큰 LearningGraph concept을 찾는다.
+
+    겹치는 개념이 없으면 None을 반환해, 특정 주제가 감지되지 않는 일반적인
+    커리큘럼 요청(예: "커리큘럼 짜줘")에서는 기존 정규식 레벨 감지로 폴백한다.
+    """
+    if not detected_short_types:
+        return None
+    detected = {t.lower() for t in detected_short_types}
+    best: LearningNode | None = None
+    best_overlap = 0
+    for ln in LEARNING_NODES:
+        overlap = len(detected & {t.lower() for t in ln.node_types})
+        if overlap > best_overlap:
+            best_overlap = overlap
+            best = ln
+    return best
+
+
+def _build_roadmap(target: LearningNode) -> tuple[list[LearningNode], str]:
+    """target 개념까지의 선행 학습 체인(위상 정렬 순서)을 주차별 로드맵 텍스트로 변환."""
+    chain = get_learning_prerequisites(target.concept) + [target]
+    lines = "\n".join(
+        f"- {i}주차: 개념={ln.concept}, 난이도={ln.level}, "
+        f"다룰 노드={', '.join(ln.node_types)}, 예상 소요={ln.est_minutes}분"
+        for i, ln in enumerate(chain, start=1)
+    )
+    return chain, lines
+
 
 class CurriculumService:
     def __init__(self, engine):
@@ -226,24 +267,54 @@ class CurriculumService:
         return cards or self._default_cards()
 
     async def stream(self, ctx: dict) -> AsyncGenerator[str, None]:
-        # 레벨 감지 → 개인 맞춤 RAG 필터 적용
+        # 레벨 감지(정규식) — 특정 주제가 감지되지 않을 때의 폴백 기본값
         level = _detect_level(ctx["message"], ctx.get("history"))
-        rag_types = _LEVEL_TO_RAG_FILTER.get(level, {"official_docs", "book"})
-        num_weeks = _LEVEL_WEEKS.get(level, 4)
 
-        log.info("[Curriculum] 감지 레벨=%s, RAG 타입=%s, 주차=%d", level, rag_types, num_weeks)
-        yield sse("intent", {"curriculum_level": level, "weeks": num_weeks})
+        # 온톨로지 노드 감지 → LearningGraph 선행 의존성 체인 매칭 시도.
+        # 유저 요청에서 특정 노드/서비스가 감지되면, 정규식 레벨 추정 대신
+        # 온톨로지의 선행 학습 그래프(LEARNING_NODES)를 역순으로 추적해
+        # 주차 수·난이도·순서를 결정론적으로 확정한다(§5.2에서 보고하던
+        # "설계되었으나 호출부가 없던" 레이어 5를 실제로 연결).
+        chain: list[LearningNode] = []
+        roadmap_block = ""
+        try:
+            eq = get_ontology_enhancer().enhance(query=ctx["message"], intent="GENERAL")
+            detected_short_types = [n.short_type for n in eq.detected_nodes]
+        except Exception:
+            detected_short_types = []
+
+        target = _match_learning_concept(detected_short_types)
+        if target is not None:
+            chain, roadmap_lines = _build_roadmap(target)
+            level = target.level
+            num_weeks = len(chain)
+            roadmap_block = _ROADMAP_BLOCK_TEMPLATE.format(roadmap_lines=roadmap_lines)
+            log.info("[Curriculum] LearningGraph 매칭: target=%s, 체인=%s, 주차=%d",
+                      target.concept, [ln.concept for ln in chain], num_weeks)
+        else:
+            num_weeks = _LEVEL_WEEKS.get(level, 4)
+
+        rag_types = _LEVEL_TO_RAG_FILTER.get(level, {"official_docs", "book"})
+
+        log.info("[Curriculum] 감지 레벨=%s, RAG 타입=%s, 주차=%d, 온톨로지매칭=%s",
+                  level, rag_types, num_weeks, bool(target))
+        yield sse("intent", {
+            "curriculum_level": level,
+            "weeks": num_weeks,
+            "ontology_matched_concept": target.concept if target else None,
+        })
 
         chunks = await _rag_with_filter(
             engine=self.engine,
             query=ctx.get("rag_query") or ctx["message"],
             filter_types=rag_types,
             top_n=12,
+            detected_node_types=[t for ln in chain for t in ln.node_types] or detected_short_types,
         )
         context_str = _build_context(chunks)
         level_prompt = _CURRICULUM_SYSTEM_PROMPT.replace(
             "{detected_level}", level
-        ).replace("{{context}}", context_str)
+        ).replace("{{roadmap_block}}", roadmap_block).replace("{{context}}", context_str)
         system = level_prompt
         user = (
             f"유저 학습 수준: {level}\n"
@@ -344,6 +415,7 @@ class ExpressionService:
             query=query,
             filter_types={"spec", "cli_spec", "official_docs"},
             top_n=6,
+            detected_node_types=[node_type] if node_type else None,
         )
 
         # 온톨로지 힌트 + 오타 교정 추가
@@ -526,7 +598,7 @@ class WorkflowBuildService:
             }
 
     # ── Phase 2: 노드별 RAG 병렬 검색 ────────────────────────────
-    async def _resolve_nodes(self, plan: dict) -> dict[str, list[dict]]:
+    async def _resolve_nodes(self, plan: dict, detected_node_types: list[str] | None = None) -> dict[str, list[dict]]:
         import asyncio as _asyncio
         queries: list[tuple[str, str]] = []  # (label, query)
 
@@ -544,7 +616,7 @@ class WorkflowBuildService:
             queries.append(("output", f"{output_type} n8n node"))
 
         tasks = [
-            _rag_with_filter(self.engine, q, {"spec", "official_docs"}, 4)
+            _rag_with_filter(self.engine, q, {"spec", "official_docs"}, 4, detected_node_types)
             for _, q in queries
         ]
         results = await _asyncio.gather(*tasks)
@@ -595,7 +667,7 @@ class WorkflowBuildService:
         yield sse("token", "\n\n---\n\n")
 
         # Phase 2: 노드 스펙 병렬 검색
-        node_chunks = await self._resolve_nodes(plan)
+        node_chunks = await self._resolve_nodes(plan, ctx.get("detected_nodes"))
 
         # Phase 3: 어셈블 (스트리밍)
         context_str = self._build_assembly_context(ctx, node_chunks)
@@ -636,7 +708,8 @@ class WorkflowBuildService:
 
 async def _rag_with_filter(engine, query: str,
                             filter_types: set | None,
-                            top_n: int) -> list[dict]:
+                            top_n: int,
+                            detected_node_types: list[str] | None = None) -> list[dict]:
     """
     HybridRetriever(BM25)를 스레드풀에서 비동기 실행해 메인 이벤트 루프와 격리한다.
 
@@ -644,15 +717,28 @@ async def _rag_with_filter(engine, query: str,
     들고 있는 ChromaDB/토크나이저 네이티브 바인딩(`builtins.Bindings`)이 원천적으로
     피클링이 불가능해 매 호출마다 100% 실패하고 스레드풀로 재시도하는 구조였음 —
     항상 실패하는 시도를 매번 반복하며 지연만 유발했으므로 제거하고 스레드풀만 사용.
+
+    detected_node_types가 주어지면, 온톨로지 재랭킹(rerank_chunks)으로 감지된
+    노드 및 그 관계(RelationGraph)에 등장하는 노드명이 청크 본문에 등장할 때
+    가산점을 주어 재정렬한다(§5.2에서 "정의는 되어 있으나 호출되지 않는다"고
+    보고하던 기능을 실제로 연결).
     """
     import asyncio
     from functools import partial
 
     loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(
+    chunks = await loop.run_in_executor(
         None,
         partial(_sync_retrieve, engine, query, filter_types, top_n),
     )
+    if chunks and detected_node_types:
+        from domain_ontology import get_node_def
+        from ontology_enhancer import get_ontology_enhancer
+
+        node_defs = [d for d in (get_node_def(t) for t in detected_node_types) if d is not None]
+        if node_defs:
+            chunks = get_ontology_enhancer().rerank_chunks(chunks, node_defs)
+    return chunks
 
 
 def _sync_retrieve(engine, query: str,
@@ -771,12 +857,24 @@ async def _stream_llm(
     openai_api_key: str | None = None, image_urls: list[str] | None = None,
 ) -> AsyncGenerator[str, None]:
     """
-    OpenAI Chat Completions (stream=true) 비동기 스트리밍.
-    model 이 'openai:'로 시작하면 그 모델명을, 아니면 서버 기본 모델(settings.llm_model)을 사용.
+    LLM 스트리밍 진입점 — model 접두사로 제공자를 분기한다(§4.4 H4 교차모델 검증).
+    'openai:'   → OpenAI Chat Completions (기본 경로, 기존 동작 그대로 유지)
+    'gemini:'   → Gemini generateContent (신규, §4.4 교차모델 검증 전용)
+    접두사가 없으면 서버 기본 모델(settings.llm_model, OpenAI)을 사용.
     openai_api_key 가 없으면 서버 기본 키(settings.openai_api_key, BYOK 미지정 시)를 사용.
     history 가 있으면 multi-turn messages 배열로 전달.
-    image_urls 가 있으면 OpenAI vision API 로 이미지 포함 전송.
+    image_urls 는 OpenAI 경로에서만 지원한다(vision) — Gemini 경로는 본 연구 범위에서 미지원.
     """
+    if model.startswith("gemini:"):
+        model_name = model[len("gemini:"):]
+        api_key = settings.gemini_api_key
+        if not api_key:
+            yield "Gemini API 키가 설정되어 있지 않습니다. 관리자에게 문의해 주세요."
+            return
+        async for token in _stream_gemini(system, user, model_name, history, api_key):
+            yield token
+        return
+
     model_name = model[len("openai:"):] if model.startswith("openai:") else settings.llm_model
     api_key = openai_api_key or settings.openai_api_key
 
@@ -786,3 +884,58 @@ async def _stream_llm(
 
     async for token in _stream_openai(system, user, model_name, history, api_key, image_urls):
         yield token
+
+
+async def _stream_gemini(
+    system: str,
+    user: str,
+    model_name: str,
+    history: list | None,
+    api_key: str,
+) -> AsyncGenerator[str, None]:
+    """Gemini generateContent 스트리밍(§4.4 H4 교차모델 검증 전용).
+
+    OpenAI 경로와 동일한 (system, user, history) 계약을 유지해, 상위 서비스
+    코드(H_pre 프롬프트 구성)를 전혀 수정하지 않고 모델 제공자만 교체할 수 있게 한다.
+    Gemini는 "assistant"가 아닌 "model" 역할명을 사용하므로 history 매핑 시 변환한다.
+    """
+    try:
+        from google import genai
+        from google.genai import types
+    except ImportError:
+        yield "google-genai 패키지가 설치되지 않았습니다. 관리자에게 문의해 주세요."
+        return
+
+    contents: list = []
+    if history:
+        for turn in history:
+            role = getattr(turn, "role", None) or (turn.get("role") if isinstance(turn, dict) else "")
+            content = getattr(turn, "content", None) or (turn.get("content") if isinstance(turn, dict) else "")
+            if role in ("user", "assistant") and content:
+                gemini_role = "model" if role == "assistant" else "user"
+                contents.append(types.Content(role=gemini_role, parts=[types.Part(text=str(content))]))
+    contents.append(types.Content(role="user", parts=[types.Part(text=user)]))
+
+    try:
+        client = genai.Client(api_key=api_key)
+        stream = await client.aio.models.generate_content_stream(
+            model=model_name,
+            contents=contents,
+            config=types.GenerateContentConfig(
+                system_instruction=system or None,
+                temperature=0.1,
+                max_output_tokens=8192,
+            ),
+        )
+        async for chunk in stream:
+            if chunk.text:
+                yield chunk.text
+    except Exception as e:
+        log.error("[Gemini] 스트리밍 오류: %s", e)
+        err_msg = str(e)
+        if "API key" in err_msg or "401" in err_msg or "API_KEY_INVALID" in err_msg:
+            yield "Gemini API 키가 올바르지 않습니다."
+        elif "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
+            yield "Gemini 요청 한도를 초과했습니다. 잠시 후 다시 시도해 주세요."
+        else:
+            yield f"Gemini 오류: {err_msg[:200]}"

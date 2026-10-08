@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     reranker_model:     str  = "bge-reranker-v2-m3"
     llm_model:          str  = "gpt-4o-mini"
 
+    # Gemini 인프라(§4.4 H4 교차모델 검증용) — 환경변수 GEMINI_API_KEY로 오버라이드
+    gemini_api_key:     str  = ""
+
     # Ollama 인프라 (레거시, 더 이상 기본 경로로 사용되지 않음)
     ollama_base_url:    str  = "http://localhost:11434"
 

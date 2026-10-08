@@ -2804,6 +2804,398 @@ _NODE_DEFS: List[N8NNodeDef] = [
         role=NodeRole.UTILITY,
         tags=frozenset({"execution", "data", "save", "persist", "workflow"}),
     ),
+
+    # ══════════════════════════════════════════════════════════════════
+    # SINKS — 2026-09 노드 커버리지 보강 (수동 완전 명세)
+    # 실제 n8n 인스턴스 카탈로그 전수조사로 발견된 273개 누락 노드 중, Tool/Trigger
+    # 변형 관계로 반자동 연결되지 않는 217개 독립 서비스 노드 가운데 실사용 빈도가
+    # 높다고 판단되는 노드를 선별하여, 기존 수동 노드와 동일한 수준(역할·태그·관계)
+    # 으로 완전 명세하였다.
+    # ══════════════════════════════════════════════════════════════════
+    N8NNodeDef(
+        short_type="awsLambda", full_type="n8n-nodes-base.awsLambda",
+        display_name="AWS Lambda", role=NodeRole.SINK,
+        tags=frozenset({"aws", "lambda", "serverless", "function", "cloud"}),
+        relations=[
+            NodeRelation("httpRequest", RelationType.COMMONLY_USED_WITH, 0.6,
+                         "Lambda 함수 호출 결과를 후속 API 연동에 활용"),
+            NodeRelation("code", RelationType.ANTI_PATTERN_WITH, 0.4,
+                         "단순 로직은 Code 노드로 대체 가능 — Lambda는 별도 배포·긴 실행시간이 필요할 때만 권장"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="awsSns", full_type="n8n-nodes-base.awsSns",
+        display_name="AWS SNS", role=NodeRole.SINK,
+        tags=frozenset({"aws", "sns", "notification", "pubsub", "cloud"}),
+        relations=[
+            NodeRelation("awsSqs", RelationType.PATTERN_MEMBER, 0.7,
+                         "SNS 팬아웃 → SQS 구독 패턴의 구성원"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="awsSqs", full_type="n8n-nodes-base.awsSqs",
+        display_name="AWS SQS", role=NodeRole.SINK,
+        tags=frozenset({"aws", "sqs", "queue", "cloud"}),
+        relations=[
+            NodeRelation("awsSns", RelationType.PATTERN_MEMBER, 0.7,
+                         "SNS 팬아웃 → SQS 구독 패턴의 구성원"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="awsDynamodb", full_type="n8n-nodes-base.awsDynamodb",
+        display_name="AWS DynamoDB", role=NodeRole.SINK,
+        tags=frozenset({"aws", "dynamodb", "nosql", "database", "cloud"}),
+        relations=[
+            NodeRelation("set", RelationType.COMMONLY_USED_WITH, 0.7,
+                         "DynamoDB 아이템 스키마에 맞춘 필드 정제에 Set 필요"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="azureCosmosDb", full_type="n8n-nodes-base.azureCosmosDb",
+        display_name="Azure Cosmos DB", role=NodeRole.SINK,
+        tags=frozenset({"azure", "cosmosdb", "nosql", "database", "cloud"}),
+        relations=[
+            NodeRelation("set", RelationType.COMMONLY_USED_WITH, 0.65,
+                         "문서 스키마 정제에 Set 필요"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="azureStorage", full_type="n8n-nodes-base.azureStorage",
+        display_name="Azure Storage", role=NodeRole.SINK,
+        tags=frozenset({"azure", "storage", "blob", "file", "cloud"}),
+    ),
+    N8NNodeDef(
+        short_type="elasticSearch", full_type="n8n-nodes-base.elasticSearch",
+        display_name="Elasticsearch", role=NodeRole.SINK,
+        tags=frozenset({"elasticsearch", "search", "index", "database", "logging"}),
+        relations=[
+            NodeRelation("set", RelationType.COMMONLY_USED_WITH, 0.65,
+                         "색인 전 문서 필드 정제에 Set 필요"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="questDb", full_type="n8n-nodes-base.questDb",
+        display_name="QuestDB", role=NodeRole.SINK,
+        tags=frozenset({"questdb", "timeseries", "database"}),
+    ),
+    N8NNodeDef(
+        short_type="timescaleDb", full_type="n8n-nodes-base.timescaleDb",
+        display_name="TimescaleDB", role=NodeRole.SINK,
+        tags=frozenset({"timescaledb", "timeseries", "database", "postgres"}),
+    ),
+    N8NNodeDef(
+        short_type="crateDb", full_type="n8n-nodes-base.crateDb",
+        display_name="CrateDB", role=NodeRole.SINK,
+        tags=frozenset({"cratedb", "database", "sql"}),
+    ),
+    N8NNodeDef(
+        short_type="oracleDatabase", full_type="n8n-nodes-base.oracleDatabase",
+        display_name="Oracle Database", role=NodeRole.SINK,
+        tags=frozenset({"oracle", "database", "sql", "enterprise"}),
+        relations=[
+            NodeRelation("microsoftSql", RelationType.ANTI_PATTERN_WITH, 0.3,
+                         "동일 워크플로우에서 이종 RDBMS 동시 연결은 드물고 유지보수 복잡도 증가"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="microsoftSql", full_type="n8n-nodes-base.microsoftSql",
+        display_name="Microsoft SQL", role=NodeRole.SINK,
+        tags=frozenset({"microsoft", "sql", "database", "mssql"}),
+    ),
+    N8NNodeDef(
+        short_type="googleBigQuery", full_type="n8n-nodes-base.googleBigQuery",
+        display_name="Google BigQuery", role=NodeRole.SINK,
+        tags=frozenset({"google", "bigquery", "database", "analytics", "warehouse"}),
+        relations=[
+            NodeRelation("scheduleTrigger", RelationType.COMMONLY_USED_WITH, 0.7,
+                         "정기 배치 집계·리포팅 패턴에서 자주 조합됨"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="googleAds", full_type="n8n-nodes-base.googleAds",
+        display_name="Google Ads", role=NodeRole.SINK,
+        tags=frozenset({"google", "ads", "marketing", "advertising"}),
+    ),
+    N8NNodeDef(
+        short_type="googleTasks", full_type="n8n-nodes-base.googleTasks",
+        display_name="Google Tasks", role=NodeRole.SINK,
+        tags=frozenset({"google", "tasks", "productivity", "todo"}),
+    ),
+    N8NNodeDef(
+        short_type="googleChat", full_type="n8n-nodes-base.googleChat",
+        display_name="Google Chat", role=NodeRole.SINK,
+        tags=frozenset({"google", "chat", "messaging", "collaboration"}),
+        relations=[
+            NodeRelation("slack", RelationType.ANTI_PATTERN_WITH, 0.3,
+                         "동일 알림을 Slack과 Google Chat 양쪽에 중복 발송하는 것은 대개 불필요"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="googleCloudStorage", full_type="n8n-nodes-base.googleCloudStorage",
+        display_name="Google Cloud Storage", role=NodeRole.SINK,
+        tags=frozenset({"google", "storage", "file", "cloud", "bucket"}),
+    ),
+    N8NNodeDef(
+        short_type="googleContacts", full_type="n8n-nodes-base.googleContacts",
+        display_name="Google Contacts", role=NodeRole.SINK,
+        tags=frozenset({"google", "contacts", "crm"}),
+    ),
+    N8NNodeDef(
+        short_type="googleTranslate", full_type="n8n-nodes-base.googleTranslate",
+        display_name="Google Translate", role=NodeRole.PROCESSING,
+        tags=frozenset({"google", "translate", "language", "ai"}),
+        relations=[
+            NodeRelation("set", RelationType.COMMONLY_USED_WITH, 0.65,
+                         "번역 결과를 원본 필드와 함께 재구성할 때 Set 필요"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="microsoftDynamicsCrm", full_type="n8n-nodes-base.microsoftDynamicsCrm",
+        display_name="Microsoft Dynamics CRM", role=NodeRole.SINK,
+        tags=frozenset({"microsoft", "crm", "dynamics", "sales"}),
+    ),
+    N8NNodeDef(
+        short_type="microsoftSharePoint", full_type="n8n-nodes-base.microsoftSharePoint",
+        display_name="Microsoft SharePoint", role=NodeRole.SINK,
+        tags=frozenset({"microsoft", "sharepoint", "document", "collaboration"}),
+    ),
+    N8NNodeDef(
+        short_type="activeCampaign", full_type="n8n-nodes-base.activeCampaign",
+        display_name="ActiveCampaign", role=NodeRole.SINK,
+        tags=frozenset({"activecampaign", "crm", "marketing", "email"}),
+        relations=[
+            NodeRelation("convertKit", RelationType.ANTI_PATTERN_WITH, 0.3,
+                         "동일 목적의 이메일 마케팅 서비스 중복 연동은 대개 불필요"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="convertKit", full_type="n8n-nodes-base.convertKit",
+        display_name="ConvertKit", role=NodeRole.SINK,
+        tags=frozenset({"convertkit", "email", "marketing"}),
+    ),
+    N8NNodeDef(
+        short_type="mailerLite", full_type="n8n-nodes-base.mailerLite",
+        display_name="MailerLite", role=NodeRole.SINK,
+        tags=frozenset({"mailerlite", "email", "marketing"}),
+    ),
+    N8NNodeDef(
+        short_type="mailGun", full_type="n8n-nodes-base.mailGun",
+        display_name="Mailgun", role=NodeRole.SINK,
+        tags=frozenset({"mailgun", "email", "transactional"}),
+        relations=[
+            NodeRelation("emailSend", RelationType.REPLACES, 0.5,
+                         "SMTP 직접 발송(Send Email) 대신 API 기반 발송 대행 서비스로 대체 가능"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="customerIo", full_type="n8n-nodes-base.customerIo",
+        display_name="Customer.io", role=NodeRole.SINK,
+        tags=frozenset({"customerio", "marketing", "automation", "crm"}),
+    ),
+    N8NNodeDef(
+        short_type="zoHoCrm", full_type="n8n-nodes-base.zoHoCrm",
+        display_name="Zoho CRM", role=NodeRole.SINK,
+        tags=frozenset({"zoho", "crm", "sales"}),
+    ),
+    N8NNodeDef(
+        short_type="freshworksCrm", full_type="n8n-nodes-base.freshworksCrm",
+        display_name="Freshworks CRM", role=NodeRole.SINK,
+        tags=frozenset({"freshworks", "crm", "sales"}),
+    ),
+    N8NNodeDef(
+        short_type="monicaCrm", full_type="n8n-nodes-base.monicaCrm",
+        display_name="Monica CRM", role=NodeRole.SINK,
+        tags=frozenset({"monica", "crm", "personal"}),
+    ),
+    N8NNodeDef(
+        short_type="freshdesk", full_type="n8n-nodes-base.freshdesk",
+        display_name="Freshdesk", role=NodeRole.SINK,
+        tags=frozenset({"freshdesk", "support", "helpdesk", "ticket"}),
+        relations=[
+            NodeRelation("freshservice", RelationType.ANTI_PATTERN_WITH, 0.3,
+                         "같은 회사의 유사 헬프데스크 제품 — 동일 목적 중복 연동은 대개 불필요"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="freshservice", full_type="n8n-nodes-base.freshservice",
+        display_name="Freshservice", role=NodeRole.SINK,
+        tags=frozenset({"freshservice", "support", "itsm", "ticket"}),
+    ),
+    N8NNodeDef(
+        short_type="helpScout", full_type="n8n-nodes-base.helpScout",
+        display_name="Help Scout", role=NodeRole.SINK,
+        tags=frozenset({"helpscout", "support", "helpdesk", "email"}),
+    ),
+    N8NNodeDef(
+        short_type="serviceNow", full_type="n8n-nodes-base.serviceNow",
+        display_name="ServiceNow", role=NodeRole.SINK,
+        tags=frozenset({"servicenow", "itsm", "enterprise", "ticket"}),
+    ),
+    N8NNodeDef(
+        short_type="circleci", full_type="n8n-nodes-base.circleci",
+        display_name="CircleCI", role=NodeRole.SINK,
+        tags=frozenset({"circleci", "ci", "cd", "devops"}),
+        relations=[
+            NodeRelation("gitLabTrigger", RelationType.COMMONLY_USED_WITH, 0.5,
+                         "저장소 이벤트 트리거 이후 CI 파이프라인 상태 조회에 함께 사용"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="jenkins", full_type="n8n-nodes-base.jenkins",
+        display_name="Jenkins", role=NodeRole.SINK,
+        tags=frozenset({"jenkins", "ci", "cd", "devops"}),
+    ),
+    N8NNodeDef(
+        short_type="travisci", full_type="n8n-nodes-base.travisci",
+        display_name="Travis CI", role=NodeRole.SINK,
+        tags=frozenset({"travisci", "ci", "cd", "devops"}),
+    ),
+    N8NNodeDef(
+        short_type="bitbucketTrigger", full_type="n8n-nodes-base.bitbucketTrigger",
+        display_name="Bitbucket Trigger", role=NodeRole.TRIGGER,
+        tags=frozenset({"bitbucket", "trigger", "git", "devops"}),
+        relations=[
+            NodeRelation("gitLab", RelationType.ANTI_PATTERN_WITH, 0.3,
+                         "동일 저장소를 여러 Git 호스팅 서비스 트리거로 중복 감시하는 것은 대개 불필요"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="netlify", full_type="n8n-nodes-base.netlify",
+        display_name="Netlify", role=NodeRole.SINK,
+        tags=frozenset({"netlify", "hosting", "deploy", "devops"}),
+    ),
+    N8NNodeDef(
+        short_type="coda", full_type="n8n-nodes-base.coda",
+        display_name="Coda", role=NodeRole.SINK,
+        tags=frozenset({"coda", "productivity", "document", "database"}),
+    ),
+    N8NNodeDef(
+        short_type="confluence", full_type="n8n-nodes-base.confluence",
+        display_name="Confluence", role=NodeRole.SINK,
+        tags=frozenset({"confluence", "atlassian", "document", "wiki", "collaboration"}),
+        relations=[
+            NodeRelation("jiraTool", RelationType.COMMONLY_USED_WITH, 0.6,
+                         "동일 Atlassian 생태계(Jira) 연동과 함께 쓰이는 경우가 많음"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="grist", full_type="n8n-nodes-base.grist",
+        display_name="Grist", role=NodeRole.SINK,
+        tags=frozenset({"grist", "spreadsheet", "database", "productivity"}),
+    ),
+    N8NNodeDef(
+        short_type="box", full_type="n8n-nodes-base.box",
+        display_name="Box", role=NodeRole.SINK,
+        tags=frozenset({"box", "storage", "file", "collaboration"}),
+        relations=[
+            NodeRelation("dropbox", RelationType.ANTI_PATTERN_WITH, 0.3,
+                         "동일 목적의 파일 저장소 중복 연동은 대개 불필요"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="line", full_type="n8n-nodes-base.line",
+        display_name="LINE", role=NodeRole.SINK,
+        tags=frozenset({"line", "messaging", "chat", "notification"}),
+    ),
+    N8NNodeDef(
+        short_type="gong", full_type="n8n-nodes-base.gong",
+        display_name="Gong", role=NodeRole.SINK,
+        tags=frozenset({"gong", "sales", "analytics", "call"}),
+    ),
+    N8NNodeDef(
+        short_type="messagebird", full_type="n8n-nodes-base.messagebird",
+        display_name="MessageBird", role=NodeRole.SINK,
+        tags=frozenset({"messagebird", "sms", "messaging", "notification"}),
+        relations=[
+            NodeRelation("twilio", RelationType.ANTI_PATTERN_WITH, 0.3,
+                         "동일 목적의 SMS 발송 서비스 중복 연동은 대개 불필요"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="mistralAi", full_type="n8n-nodes-base.mistralAi",
+        display_name="Mistral AI", role=NodeRole.PROCESSING,
+        tags=frozenset({"mistral", "ai", "llm", "language"}),
+        relations=[
+            NodeRelation("openai", RelationType.ANTI_PATTERN_WITH, 0.3,
+                         "동일 워크플로우에서 복수 LLM 제공자 동시 연동은 특별한 이유(비교·폴백) 없이는 드묾"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="jinaAi", full_type="n8n-nodes-base.jinaAi",
+        display_name="Jina AI", role=NodeRole.PROCESSING,
+        tags=frozenset({"jina", "ai", "embedding", "search"}),
+    ),
+    N8NNodeDef(
+        short_type="perplexity", full_type="n8n-nodes-base.perplexity",
+        display_name="Perplexity", role=NodeRole.PROCESSING,
+        tags=frozenset({"perplexity", "ai", "search", "llm"}),
+        relations=[
+            NodeRelation("httpRequest", RelationType.COMMONLY_USED_WITH, 0.5,
+                         "검색 결과를 후속 API 연동으로 전달하는 패턴에서 함께 사용"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="segment", full_type="n8n-nodes-base.segment",
+        display_name="Segment", role=NodeRole.SINK,
+        tags=frozenset({"segment", "analytics", "cdp", "tracking"}),
+    ),
+    N8NNodeDef(
+        short_type="splunk", full_type="n8n-nodes-base.splunk",
+        display_name="Splunk", role=NodeRole.SINK,
+        tags=frozenset({"splunk", "logging", "observability", "security"}),
+    ),
+    N8NNodeDef(
+        short_type="grafana", full_type="n8n-nodes-base.grafana",
+        display_name="Grafana", role=NodeRole.SINK,
+        tags=frozenset({"grafana", "monitoring", "observability", "dashboard"}),
+    ),
+    N8NNodeDef(
+        short_type="metabase", full_type="n8n-nodes-base.metabase",
+        display_name="Metabase", role=NodeRole.SINK,
+        tags=frozenset({"metabase", "analytics", "bi", "dashboard"}),
+    ),
+    N8NNodeDef(
+        short_type="posthog", full_type="n8n-nodes-base.posthog",
+        display_name="PostHog", role=NodeRole.SINK,
+        tags=frozenset({"posthog", "analytics", "product", "tracking"}),
+    ),
+    N8NNodeDef(
+        short_type="sentryIo", full_type="n8n-nodes-base.sentryIo",
+        display_name="Sentry.io", role=NodeRole.SINK,
+        tags=frozenset({"sentry", "error", "monitoring", "observability"}),
+    ),
+    N8NNodeDef(
+        short_type="paypal", full_type="n8n-nodes-base.paypal",
+        display_name="PayPal", role=NodeRole.SINK,
+        tags=frozenset({"paypal", "payment", "billing"}),
+        relations=[
+            NodeRelation("stripe", RelationType.ANTI_PATTERN_WITH, 0.3,
+                         "동일 결제 목적의 복수 PG사 동시 연동은 특별한 이유 없이는 드묾"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="paddle", full_type="n8n-nodes-base.paddle",
+        display_name="Paddle", role=NodeRole.SINK,
+        tags=frozenset({"paddle", "payment", "billing", "subscription"}),
+    ),
+    N8NNodeDef(
+        short_type="workflowTrigger", full_type="n8n-nodes-base.workflowTrigger",
+        display_name="Workflow Trigger", role=NodeRole.TRIGGER,
+        tags=frozenset({"workflow", "trigger", "lifecycle", "meta"}),
+        relations=[
+            NodeRelation("executeWorkflow", RelationType.COMPLEMENTED_BY, 0.7,
+                         "서브워크플로우 호출(Execute Workflow)과 짝을 이루는 생명주기 트리거"),
+        ],
+    ),
+    N8NNodeDef(
+        short_type="n8n", full_type="n8n-nodes-base.n8n",
+        display_name="n8n", role=NodeRole.UTILITY,
+        tags=frozenset({"n8n", "meta", "self", "workflow", "api"}),
+        relations=[
+            NodeRelation("workflowTrigger", RelationType.COMMONLY_USED_WITH, 0.5,
+                         "n8n 자체 API로 워크플로우/실행 이력을 조회·관리하는 메타 자동화 패턴"),
+        ],
+    ),
 ]
 
 # ══════════════════════════════════════════════════════════════════════
@@ -2936,9 +3328,74 @@ _RAW_ALL_NODES: List[str] = [
     "googleAnalyticsTool","htmlExtract","datatable","form","functionItem",
 ]
 
+# 실제 운영 중인 n8n 인스턴스의 노드 카탈로그(`n8n export:nodes`, n8n-nodes-base.* 706개)를
+# 전수조사하여, 위 _RAW_ALL_NODES(RAG 코퍼스 언급 빈도 기준)에 없는 노드를 추가로 확보한 목록.
+# 대부분 AI 에이전트용 Tool 변형 노드(예: slackTool)와 HITL(Human-in-the-loop) 노드,
+# 그리고 RAG 코퍼스 구축 이후 n8n에 새로 추가된 노드(confluence, perplexity, airtop 등)이다.
+# n8n 내부 테스트/트레이닝 전용 노드(e2eTestPollingTrigger, n8nTraining* 2종)는 실제
+# 사용자 워크플로우에 등장하지 않으므로 제외하였다.
+_RAW_CATALOG_EXTRA_NODES: List[str] = [
+    "actionNetworkTool","activeCampaignTool","adaloTool","affinityTool","agileCrmTool",
+    "airtableTool","airtableTrigger","airtop","airtopTool","amqpTool",
+    "apiTemplateIoTool","asanaTool","autopilotTool","awsLambdaTool","awsS3Tool",
+    "awsSesTool","awsSnsTool","awsTextractTool","awsTranscribeTool","bambooHrTool",
+    "beeminderTool","bitlyTool","bitwardenTool","BrandfetchTool","bubbleTool",
+    "chargebeeTool","circleCiTool","ciscoWebexTool","citrixAdc","clearbitTool",
+    "clickUpTool","clockifyTool","cloudflareTool","cockpitTool","codaTool",
+    "coinGeckoTool","compressionTool","confluence","contentfulTool","convertKitTool",
+    "copperTool","crateDbTool","cryptoTool","currents","currentsTool","currentsTrigger",
+    "customerIoTool","databricksTool","dataTableTool","dateTimeTool","deepLTool",
+    "demioTool","dhlTool","discordHitlTool","discourseTool","driftTool","dropboxTool",
+    "dropcontactTool","egoiTool","elasticsearchTool","elasticSecurityTool",
+    "emailSendHitlTool","emailSendTool","emeliaTool","erpNextTool",
+    "facebookGraphApiTool","filemakerTool","freshdeskTool","freshserviceTool",
+    "freshworksCrmTool","getResponseTool","ghostTool","githubTool","gitlabTool",
+    "gitTool","gmailHitlTool","gongTool","googleAdsTool","googleBigQueryTool",
+    "googleBooksTool","googleBusinessProfileTool","googleChatHitlTool","googleChatTool",
+    "googleCloudNaturalLanguageTool","googleCloudStorageTool","googleContactsTool",
+    "googleFirebaseCloudFirestoreTool","googleFirebaseRealtimeDatabaseTool",
+    "googlePerspectiveTool","googleSlidesTool","googleTranslateTool","gotifyTool",
+    "goToWebinarTool","grafanaTool","graphqlTool","gristTool","gSuiteAdminTool",
+    "hackerNewsTool","haloPSATool","harvestTool","helpScoutTool","highLevelTool",
+    "homeAssistantTool","httpRequestTool","hubspotTool","humanticAiTool","hunterTool",
+    "intercomTool","invoiceNinjaTool","iterableTool","jenkinsTool","jinaAiTool",
+    "jwtTool","kafkaTool","keapTool","koBoToolboxTool","ldapTool","lemlistTool",
+    "linearTool","lineTool","lingvaNexTool","linkedInTool","loneScaleTool","magento2",
+    "magento2Tool","mailcheck","mailcheckTool","mailchimpTool","mailerLiteTool",
+    "mailgunTool","mailjetTool","mandrillTool","marketstack","marketstackTool",
+    "matrixTool","mattermostTool","mauticTool","mediumTool","messageAnAgent",
+    "messageAnAgentTool","messageBirdTool","metabaseTool","microsoftDynamicsCrmTool",
+    "microsoftEntraTool","microsoftExcelSharePoint","microsoftExcelSharePointTool",
+    "microsoftExcelTool","microsoftGraphSecurityTool","microsoftOneDriveTool",
+    "microsoftOutlookHitlTool","microsoftSharePointTool","microsoftSqlTool",
+    "microsoftTeamsHitlTool","microsoftTeamsTool","microsoftToDoTool","mispTool",
+    "mistralAiTool","moceanTool","mondayComTool","monicaCrmTool","mqttTool","msg91",
+    "msg91Tool","mySqlTool","n8n","n8nTrigger","nasaTool","netlifyTool","nextCloudTool",
+    "nocoDbTool","npmTool","odooTool","oktaTool","oneSimpleApiTool","onfleetTool",
+    "openThesaurusTool","openWeatherMapTool","oracleDatabase","oracleDatabaseTool",
+    "ouraTool","paddleTool","pagerDutyTool","peekalinkTool","perplexity",
+    "perplexityTool","phantombusterTool","philipsHueTool","pipedriveTool","plivoTool",
+    "postBinTool","postHogTool","profitWellTool","pushbulletTool","pushcutTool",
+    "pushoverTool","questDbTool","quickbaseTool","quickbooksTool","quickChartTool",
+    "rabbitmqTool","raindropTool","redditTool","rocketchatTool","rssFeedReadTool",
+    "rundeckTool","s3Tool","salesforceTool","salesmateTool","seaTableTool",
+    "securityScorecardTool","segmentTool","sendGridTool","sendInBlueTool",
+    "sendInBlueTrigger","sendyTool","sentryIoTool","serviceNowTool","shopifyTool",
+    "signl4Tool","simulate","simulateTrigger","slackHitlTool","slackTool","sms77",
+    "sms77Tool","snowflakeTool","splunkTool","spotifyTool","stackbyTool",
+    "storyblokTool","strapiTool","stravaTool","stripeTool","syncroMspTool","taigaTool",
+    "tapfiliateTool","telegramHitlTool","theHiveProjectTool","theHiveTool","timeSaved",
+    "timescaleDbTool","todoistTool","totpTool","travisCiTool","trelloTool","twakeTool",
+    "twilioTool","twistTool","unleashedSoftwareTool","upleadTool","uprocTool",
+    "uptimeRobotTool","urlScanIoTool","venafiTlsProtectCloudTool",
+    "venafiTlsProtectDatacenterTool","veroTool","vonageTool","webflowTool","wekanTool",
+    "whatsAppHitlTool","whatsAppTool","workflowTrigger","xeroTool","yourlsTool",
+    "youTubeTool","zammadTool","zendeskTool","zohoCrmTool","zoomTool","zulipTool",
+]
+
 _AUTO_NODE_DEFS: List[N8NNodeDef] = []
 _seen_auto: set = set()
-for _raw in _RAW_ALL_NODES:
+for _raw in _RAW_ALL_NODES + _RAW_CATALOG_EXTRA_NODES:
     _key = _raw.lower()
     if _key in _MANUAL_SHORT_SET or _key in _seen_auto:
         continue
@@ -2951,7 +3408,47 @@ for _raw in _RAW_ALL_NODES:
         tags=_make_tags(_raw),
     ))
 
-# 전체 노드 목록: 수동(우선) + 자동 생성
+# ── 3-A-보강. Tool/Trigger 변형 노드에 대한 반자동(semi-manual) 관계 부여 ──
+# 자동 생성 노드 중 "XxxTool"/"XxxHitlTool"(AI 에이전트용 도구 래퍼) 또는
+# "XxxTrigger" 형태의 short_type을 가지면서, 그 기반이 되는 "Xxx" 노드가 이미
+# 온톨로지(수동 또는 자동)에 존재하는 경우가 있다. 이 둘은 "동일 서비스의 다른
+# 호출 형태"라는 n8n 자체의 구조로 보장되는 관계이므로(예: slackTool은 slack과
+# 동일한 Slack API를 AI 에이전트가 호출 가능한 형태로 감싼 것), 임의로 관계를
+# 창작하는 것이 아니라 명칭 규칙으로 확정 가능한 사실만을 관계 그래프에 반영한다.
+# 이러한 도출 규칙 없이 이름만으로 메타데이터가 생성되는 나머지 노드(레이어 1
+# 표에서 "순수 자동"으로 분류)와 구분하기 위해 별도 함수로 분리하였다.
+def _link_variant_relations(nodes: "List[N8NNodeDef]") -> int:
+    by_short: Dict[str, N8NNodeDef] = {n.short_type.lower(): n for n in _NODE_DEFS + nodes}
+    linked = 0
+    for n in nodes:
+        low = n.short_type.lower()
+        base_key: Optional[str] = None
+        suffix: Optional[str] = None
+        for suf in ("hitltool", "tool", "trigger"):
+            if low.endswith(suf) and len(low) > len(suf):
+                base_key = low[: -len(suf)]
+                suffix = suf
+                break
+        if base_key is None or base_key not in by_short or base_key == low:
+            continue
+        base_node = by_short[base_key]
+        if n.relations:
+            continue
+        if suffix in ("tool", "hitltool"):
+            n.relations.append(NodeRelation(
+                base_node.short_type, RelationType.COMPLEMENTED_BY, 0.9,
+                "동일 서비스의 AI 에이전트용 Tool 래퍼 — 표준 노드와 함께 고려됨"))
+        else:  # trigger
+            n.relations.append(NodeRelation(
+                base_node.short_type, RelationType.COMMONLY_USED_WITH, 0.8,
+                f"{base_node.display_name} 트리거-액션 쌍 — 같은 서비스 내에서 함께 사용되는 경우가 많음"))
+        linked += 1
+    return linked
+
+
+_SEMI_MANUAL_LINKED_COUNT: int = _link_variant_relations(_AUTO_NODE_DEFS)
+
+# 전체 노드 목록: 수동(우선) + 자동 생성(그중 일부는 위 반자동 관계 보강 포함)
 _ALL_NODE_DEFS: List[N8NNodeDef] = _NODE_DEFS + _AUTO_NODE_DEFS
 
 # 빠른 조회용 인덱스 (모두 소문자 키로 정규화, 수동 노드가 자동보다 우선)

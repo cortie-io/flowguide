@@ -308,6 +308,21 @@ def _rerank_node_chunks(chunks: list[dict], message: str) -> list[dict]:
     return sorted(chunks, key=score, reverse=True)
 
 
+def _apply_ontology_rerank(chunks: list[dict], detected_short_types: list[str]) -> list[dict]:
+    """ctx의 detected_nodes(short_type 문자열 목록)를 N8NNodeDef로 복원해
+    OntologyEnhancer.rerank_chunks()에 위임한다. 감지된 노드가 없으면 원본 그대로 반환."""
+    if not detected_short_types:
+        return chunks
+    from domain_ontology import get_node_def
+    from ontology_enhancer import get_ontology_enhancer
+
+    node_defs = [get_node_def(t) for t in detected_short_types]
+    node_defs = [n for n in node_defs if n is not None]
+    if not node_defs:
+        return chunks
+    return get_ontology_enhancer().rerank_chunks(chunks, node_defs)
+
+
 _TYPE_COLOR = {
     "string":   "#60A5FA",
     "number":   "#34D399",
@@ -464,6 +479,13 @@ class GeneralRAGService:
                 None,
                 partial(_sync_retrieve, self.engine, expanded_query, None, 8)
             )
+
+        # 온톨로지 기반 재랭킹 — 감지된 노드 및 그 관계(RelationGraph)로 확장된
+        # 노드명이 청크 본문에 등장하면 가산점을 부여해 재정렬한다. 이 함수는
+        # 설계는 되어 있었으나(ontology_enhancer.rerank_chunks) 호출부가 없어
+        # 실제 검색 품질에는 기여하지 못하고 있었다(§5.2) — 이번에 연결.
+        if chunks:
+            chunks = _apply_ontology_rerank(chunks, ctx.get("detected_nodes") or [])
 
         # ── 노드 존재 검증 (Layer 1: LLM 호출 전 차단) ───────────────
         specific_node = _extract_node_query_target(ctx["message"])

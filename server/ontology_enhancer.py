@@ -96,6 +96,15 @@ def _fuzzy_threshold(length: int) -> int:
     return 2
 
 
+# 짧은 사전 키(예: "메일", 5자모)는 threshold=1에서 무관한 실제 단어와도
+# 편집거리 1 안에 들어와 오탐을 낸다. 실사용 중 발견된 구체적 충돌 사례를
+# 화이트리스트 방식이 아닌 블록리스트로 관리한다 — 전체 임계값을 올리면
+# "노션"/"수식" 같은 다른 5자모 키의 정상 오타 교정까지 막히기 때문이다.
+# 실제 발견 사례: "매일"(every day) → 자모 편집거리 1로 "메일"(mail, emailSend)에
+# 오매칭되어, "매일 아침 스케줄" 류의 질의에서 엉뚱한 Send Email 노드가 감지됨.
+_KO_FUZZY_STOPWORDS = frozenset({"매일"})
+
+
 def _strip_ko_particle(word: str) -> str:
     """단어 끝 조사/어미 제거 (최장 우선)."""
     for p in _KO_PARTICLES:
@@ -311,8 +320,33 @@ class OntologyEnhancer:
       Step 6 — 영어 퍼지 매칭 (문자 Levenshtein)
     """
 
-    def enhance(self, query: str, intent: str = "GENERAL") -> "EnhancedQuery":
+    def enhance(
+        self, query: str, intent: str = "GENERAL", expansion_hint: str = ""
+    ) -> "EnhancedQuery":
+        """쿼리를 온톨로지 기반으로 확장한다.
+
+        expansion_hint: IntentRouter의 LLM 분류 호출에서 함께 받아온 사전 맥락
+        확장 힌트(예: "Schedule Trigger, HTTP Request, Slack"). 사용자가 노드명을
+        직접 언급하지 않고 목적만 서술한 질의에서, 원본 쿼리 텍스트만으로는
+        놓칠 노드를 추가로 감지하기 위한 보조 신호다(HyDE, Gao et al. 2022의
+        가상 문서 확장을 노드 탐지에 응용). 힌트에 실재하지 않는 노드가
+        섞여 있어도 get_node_def() 조회에서 자연히 걸러지므로 무해하다.
+        """
         detected_nodes, typo_corrections = self._detect_nodes(query)
+
+        expansion_detected: List[N8NNodeDef] = []
+        if expansion_hint:
+            hint_nodes, _hint_corrections = self._detect_nodes(expansion_hint)
+            existing_shorts = {n.short_type for n in detected_nodes}
+            expansion_detected = [n for n in hint_nodes if n.short_type not in existing_shorts]
+            if expansion_detected:
+                detected_nodes = detected_nodes + expansion_detected
+                log.info(
+                    "[OntologyEnhancer] 사전 확장 힌트로 추가 감지: %s "
+                    "(원본 쿼리엔 미언급, 힌트=%r)",
+                    [n.short_type for n in expansion_detected], expansion_hint,
+                )
+
         related_terms  = self._expand_related_terms(detected_nodes)
         filter_types   = self._decide_filter_strategy(intent, detected_nodes)
         pattern        = self._detect_pattern(detected_nodes)
@@ -336,6 +370,7 @@ class OntologyEnhancer:
             pattern=pattern,
             ontology_hints=ontology_hints,
             typo_corrections=typo_corrections,
+            expansion_detected_nodes=expansion_detected,
         )
 
     def rerank_chunks(
@@ -473,6 +508,8 @@ class OntologyEnhancer:
         for cand in candidates:
             stripped = _strip_ko_particle(cand)
             for token in dict.fromkeys([cand, stripped]):
+                if token in _KO_FUZZY_STOPWORDS:
+                    continue
                 token_jamo = _decompose_jamo(token)
                 thresh = _fuzzy_threshold(len(token_jamo))
                 if thresh == 0:
@@ -599,6 +636,9 @@ class EnhancedQuery:
     ontology_hints:     List[str]                 = dc_field(default_factory=list)
     # 퍼지 매칭으로 오타가 교정된 경우: [(user_typed, canonical_display_name), ...]
     typo_corrections:   List[Tuple[str, str]]     = dc_field(default_factory=list)
+    # 원본 쿼리에는 없었지만 LLM 사전 확장 힌트(§3.1)에서 추가로 감지된 노드.
+    # detected_nodes에도 합산 포함되어 있으며, 이 필드는 출처 구분을 위한 투명성 기록용.
+    expansion_detected_nodes: List[N8NNodeDef]    = dc_field(default_factory=list)
 
     @property
     def has_pattern(self) -> bool:

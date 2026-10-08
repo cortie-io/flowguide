@@ -1,6 +1,10 @@
+import { auth } from "@/app/(auth)/auth";
 const N9N_API = process.env.N9N_API ?? "http://127.0.0.1:8000";
 
 export async function POST(request: Request) {
+  // 로그인한 사용자만 백엔드까지 보낸다(사용자 n8n 주소로 서버가 대신 요청함) — 아니면 기본 판별로
+  const session = await auth();
+  if (!session?.user) return Response.json({ intent: "GENERAL", needs_canvas: false });
   let body: { message?: string; session_id?: string; model?: string; n8n_url?: string; openai_api_key?: string };
   try {
     body = await request.json();

@@ -14,6 +14,7 @@ httpx>=0.27.0
 
 # OpenAI (사용자 BYOK 지원)
 openai>=1.0.0
+google-genai>=1.0.0
 
 # RAG 인프라 (inference 모듈 지원)
 chromadb>=0.5.0

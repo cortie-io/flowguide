@@ -1,0 +1,7 @@
+{
+  "n_queries": 330,
+  "k_repeats": 3,
+  "n_agree": 255,
+  "drr": 0.7727272727272727,
+  "mean_within_query_pcr_std": 0.04310758922945021
+}
